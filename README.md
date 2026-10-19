@@ -37,7 +37,7 @@ and used as its starting layouts:
 | GWLB | Transit Gateway |
 |---|---|
 | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
-| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering, on-premises over Site-to-Site VPN |
+| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering, on-premises over Site-to-Site VPN across the Internet |
 
 ## Install
 

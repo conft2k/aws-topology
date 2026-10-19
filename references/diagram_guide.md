@@ -253,6 +253,16 @@ the Region between the customer gateway and the TGW/VGW. Don't add a duplicate w
 another node already is that service (a GWLBe is the PrivateLink endpoint). Only a
 connection with no icon in the bundle (TGW peering) stays a connector label.
 
+**Show what a hybrid connection runs over.** A Site-to-Site VPN is IPsec over the
+public Internet, so its path is customer gateway → `resource/Internet` (outside the
+AWS Cloud box, between the on-premises group and the Cloud border) → Site-to-Site VPN
+(inside the Region) → TGW/VGW, with "IPsec" on the Internet → VPN segment. Leave
+≈150px between the on-premises group and the Cloud border for that hop. A Direct
+Connect path is private and never passes the Internet icon: customer router →
+`service/AWS-Direct-Connect` (the DX location, outside the Region) → Direct Connect
+gateway / TGW. When both exist, draw them as two separate paths so the difference is
+visible.
+
 **Never invent or hand-draw a service icon.** If a service isn't in the bundle,
 use the closest category icon or a plain labeled rounded rect — don't approximate the
 official mark.
