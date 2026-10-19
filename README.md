@@ -29,10 +29,15 @@ What it enforces:
 Finished diagrams in [`docs/examples/`](docs/examples/) (SVG + PNG), drawn with the skill
 and used as its starting layouts:
 
-| NLB | ALB | GWLB |
-|---|---|---|
-| ![NLB reference architecture](docs/examples/nlb-reference-architecture.png) | ![ALB reference architecture](docs/examples/alb-reference-architecture.png) | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) |
-| Internet-facing NLB, TLS listener, ASG target group across two AZs | 3-tier: ALB with AWS WAF, app ASG, RDS Multi-AZ | Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC |
+| NLB | ALB |
+|---|---|
+| ![NLB reference architecture](docs/examples/nlb-reference-architecture.png) | ![ALB reference architecture](docs/examples/alb-reference-architecture.png) |
+| Internet-facing NLB, TLS listener, ASG target group across two AZs | 3-tier: ALB with AWS WAF, app ASG, RDS Multi-AZ |
+
+| GWLB | Transit Gateway |
+|---|---|
+| ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
+| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering, on-premises over Site-to-Site VPN |
 
 ## Install
 

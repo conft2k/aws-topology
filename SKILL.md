@@ -42,7 +42,8 @@ ambiguous; otherwise proceed with a sensible default and note assumptions.
 
 ### 1b. Start from the closest reference example
 `docs/examples/` holds finished, checked reference diagrams — NLB, ALB (3-tier with
-WAF and RDS Multi-AZ) and GWLB (distributed inspection). When the request resembles
+WAF and RDS Multi-AZ), GWLB (distributed inspection) and Transit Gateway (hub and
+spoke in two Regions joined by TGW peering, VPCs as single icons). When the request resembles
 one of them, open its SVG and reuse its layout and coordinates (canvas, AZ rows, tier
 columns, gap, IGW, regional-services row, note line) instead of laying out from
 scratch. `docs/example.svg` is the minimal skeleton.
@@ -227,7 +228,7 @@ All 873 icons are packed into one JSON bundle (keeps the skill's file count low)
 - `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable final SVG.
 - `scripts/check_layout.py` — flag lines over labels/icons, overlapping labels, text under 12px.
 - `scripts/build_bundle.py` — rebuild `icons.json` from a newer official package.
-- `docs/examples/` — checked NLB, ALB and GWLB reference diagrams (SVG + PNG) to start from.
+- `docs/examples/` — checked NLB, ALB, GWLB and TGW reference diagrams (SVG + PNG) to start from.
 
 ## Updating the icon set
 
