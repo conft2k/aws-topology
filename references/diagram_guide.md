@@ -247,17 +247,20 @@ between letters.
 the name of an AWS service or resource — "Site-to-Site VPN", "Direct Connect",
 "PrivateLink", "VPC peering" — and `find_icon.py` finds its icon, put that icon on the
 path as a node (with its label below, the same size `S` as every node) and keep only
-the protocol on the connector ("IPsec", "GENEVE :6081"). Place it in the container
-it belongs to: a Site-to-Site VPN connection is a Regional resource, so it sits inside
-the Region between the customer gateway and the TGW/VGW. Don't add a duplicate when
+the protocol on the connector ("IPsec", "GENEVE :6081"). Place it where the reader
+expects it on the path: a Site-to-Site VPN is the link between on-premises and AWS, so
+its icon sits **outside the AWS Cloud box**, between the Internet icon and the Cloud
+border (see below). Don't add a duplicate when
 another node already is that service (a GWLBe is the PrivateLink endpoint). Only a
 connection with no icon in the bundle (TGW peering) stays a connector label.
 
 **Show what a hybrid connection runs over.** A Site-to-Site VPN is IPsec over the
-public Internet, so its path is customer gateway → `resource/Internet` (outside the
-AWS Cloud box, between the on-premises group and the Cloud border) → Site-to-Site VPN
-(inside the Region) → TGW/VGW, with "IPsec" on the Internet → VPN segment. Leave
-≈150px between the on-premises group and the Cloud border for that hop. A Direct
+public Internet, so its path is customer gateway → `resource/Internet` →
+`service/AWS-Site-to-Site-VPN` → TGW/VGW, with the Internet and VPN icons both
+**outside the AWS Cloud box**, between the on-premises group and the Cloud border, and
+"IPsec" on the Internet → VPN segment. Leave ≈260px between the on-premises group and
+the Cloud border for those two hops, and pull the Cloud and Region borders in so they
+hug their contents rather than leaving the space empty inside. A Direct
 Connect path is private and never passes the Internet icon: customer router →
 `service/AWS-Direct-Connect` (the DX location, outside the Region) → Direct Connect
 gateway / TGW. When both exist, draw them as two separate paths so the difference is

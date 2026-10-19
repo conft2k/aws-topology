@@ -190,8 +190,9 @@ Before delivering, go through this checklist on the render:
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes).
 - [ ] Every AWS service/resource with an official icon is an icon node, not a label.
-- [ ] A Site-to-Site VPN path passes the Internet icon (outside the AWS Cloud); a
-      Direct Connect path does not.
+- [ ] A Site-to-Site VPN path is CGW → Internet → Site-to-Site VPN → TGW/VGW, with the
+      Internet and VPN icons outside the AWS Cloud; a Direct Connect path does not pass
+      the Internet icon.
 - [ ] `check_layout.py` prints "Layout OK" and `embed.py` exits 0.
 
 Save the final SVG where the user asked (in a repo, usually next to the docs that
