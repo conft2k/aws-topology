@@ -111,10 +111,14 @@ separate load balancers.
   IGW → load balancer is one straight line. Keep Users and the IGW in that gap in
   every diagram of the set, even when the IGW fans out to per-AZ nodes (e.g. GWLB
   endpoints) — consistent placement matters more than saving a bend.
-- **Two flows in one gap get two lanes.** If the gap also carries another horizontal
-  path (e.g. the GWLBe ⇄ GWLB inspection trunk), widen it to ~120px and put the paths
-  on lanes ≥30px apart, with the two horizontals over different x ranges, so they
-  never read as one continuous line.
+- **Keep the main nodes on one line; number the steps when the path detours.** If
+  the traffic leaves the line and comes back (e.g. IGW → per-AZ GWLBe → GWLB), keep
+  Users, the IGW and the load balancer on the same line anyway. Break the line where
+  the branches leave and rejoin it (≥40px apart, so it never looks like one direct
+  connector), and add numbered step badges — a 10px-radius squid-ink circle with a
+  white bold 12px number next to each hop (① IGW → GWLBe, ② GWLBe → GWLB, ...) —
+  plus a one-line legend in the note. Don't move nodes to separate lanes to avoid the
+  ambiguity; the numbers resolve it and the alignment stays consistent across the set.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
   at that box, instead of one arrow per AZ or per instance.
