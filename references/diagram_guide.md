@@ -108,7 +108,13 @@ separate load balancers.
   it visibly belongs to every AZ it spans. Keep it clear of the AZ and subnet borders
   (≥8px; make the gap ≥110px so icon and label fit), label it with the short type:
   "ALB", "NLB", "GWLB". Put the IGW on the VPC border at the same height so the path
-  IGW → load balancer is one straight line.
+  IGW → load balancer is one straight line. Keep Users and the IGW in that gap in
+  every diagram of the set, even when the IGW fans out to per-AZ nodes (e.g. GWLB
+  endpoints) — consistent placement matters more than saving a bend.
+- **Two flows in one gap get two lanes.** If the gap also carries another horizontal
+  path (e.g. the GWLBe ⇄ GWLB inspection trunk), widen it to ~120px and put the paths
+  on lanes ≥30px apart, with the two horizontals over different x ranges, so they
+  never read as one continuous line.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
   at that box, instead of one arrow per AZ or per instance.
