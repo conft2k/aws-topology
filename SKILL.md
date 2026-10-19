@@ -112,8 +112,11 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
 - **Traffic flows left → right**: users and entry points on the left, data stores on the
   right, every main-path arrow pointing right. In a VPC that means tiers as columns
   (public → private → data) and AZs as rows. Top-to-bottom only for non-traffic
-  diagrams or on request — see the guide's layout rules. Align on a grid, generous
-  whitespace.
+  diagrams or on request — see the guide's layout rules. Align on a grid.
+- **Compact layout, readable text**: containers hug their contents (16–24px padding,
+  node centers ~100–120px apart, no empty areas), and text is 14px for node and
+  container labels, 12px for connector/secondary labels, never smaller — see the
+  guide's "Compact, not empty" and "Text size".
 - Root `font-family` starts with a Korean font that is **installed on this machine** —
   check with `fc-list | grep -iE 'CJK KR|Pretendard'` (see the guide's "Font"). cairosvg
   uses only the first family and drops every Hangul label if that one is Arial or isn't

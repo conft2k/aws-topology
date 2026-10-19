@@ -116,8 +116,8 @@ separate load balancers.
   the user asked for it. Say so in the reply.
 
 Each service icon is a self-contained square SVG with the product's colored gradient
-tile. Always put a text label directly below the icon (product name), centered,
-~11–13px.
+tile. Always put a text label directly below the icon (product name), centered, at
+the node label size from "Text size" below (14px at S=48).
 
 ### One icon size for every node
 
@@ -146,7 +146,7 @@ AgentCore layer", "what changes in this migration"). Then:
   diagram is "important", nothing is emphasized — keep everything at `S`.
 - Keep the icon's center on the grid point it would have at `S` (`x = cx - E/2`), so
   rows and connectors stay aligned; connectors end `E/2 + 4` from the center.
-- Shift its label down to `cy + E/2 + 16`, and make it bold if that helps. Don't
+- Shift its label down to `cy + E/2 + 18`, and make it bold if that helps. Don't
   change label size or the icon's colors.
 - Never shrink the other icons to make the emphasized ones look bigger.
 - Say in the reply which services were emphasized and why.
@@ -184,7 +184,7 @@ and the border.
   When both exist, put them on different edges (or well apart on the same edge) so
   their connectors don't cross.
 - **Center the label under the icon**: `text-anchor="middle"` at the icon's center x
-  (= the border x on a left/right edge), baseline about 14px below the icon's bottom.
+  (= the border x on a left/right edge), baseline 18px below the icon's bottom.
   Keep gateway labels short so they fit the mask and don't crowd the border: **"IGW"**
   and **"VGW"** by default; write out "Internet gateway" only when the user asks.
 - **Mask the border behind the icon *and* the label with one white rect**, drawn before
@@ -192,10 +192,10 @@ and the border.
   border line, which a text halo does not hide (the line still shows between glyphs).
   Size the rect from the label's width:
   - text width `tw` ≈ `0.6 × font-size` per Latin character, `1.0 × font-size` per
-    Hangul character (11px: "IGW" ≈ 20px, so the mask is just the icon width; a
-    spelled-out "Internet gateway" ≈ 95px needs a 103px mask);
+    Hangul character (14px: "IGW" ≈ 25px, so the mask is just the icon width; a
+    spelled-out "Internet gateway" ≈ 135px needs a 143px mask);
   - `mask_w = max(S, tw + 8)`, `mask_x = cx - mask_w/2`;
-  - `mask_y = icon_y`, `mask_h = S + 18` (icon plus one label line; add 14 per extra line).
+  - `mask_y = icon_y`, `mask_h = S + 22` (icon plus one label line; add 16 per extra line).
 
   No line may cross the label: besides the VPC border, check that no connector, subnet
   border or other container border passes through the mask area. Move the label
@@ -210,15 +210,15 @@ and the border.
 ```svg
 <!-- VPC: x=60 y=70 width=780 height=480 → right edge at x=840, left edge at x=60 -->
 <!-- IGW on the right edge, facing the Internet (S=48 → x = 840 - 24 = 816).
-     Label "IGW" at 11px ≈ 20px < S → mask_w = S = 48, mask_x = 816 -->
-<rect x="816" y="290" width="48" height="66" fill="#FFFFFF"/>
+     Label "IGW" at 14px ≈ 25px < S → mask_w = S = 48, mask_x = 816 -->
+<rect x="816" y="290" width="48" height="70" fill="#FFFFFF"/>
 <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="816" y="290" width="48" height="48"/>
-<text x="840" y="352" font-size="11" text-anchor="middle" fill="#232F3E">IGW</text>
-<!-- If the user wants the full name: "Internet gateway" ≈ 95px → mask_w = 103, mask_x = 840 - 51.5 = 788.5 -->
+<text x="840" y="356" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
+<!-- If the user wants the full name: "Internet gateway" ≈ 135px → mask_w = 143, mask_x = 840 - 71.5 = 768.5 -->
 <!-- VGW on the left edge, facing on-prem (x = 60 - 24 = 36); label is narrower than the icon -->
-<rect x="36" y="400" width="48" height="66" fill="#FFFFFF"/>
+<rect x="36" y="400" width="48" height="70" fill="#FFFFFF"/>
 <image href="bundle:resource/Amazon-VPC_VPN-Gateway" x="36" y="400" width="48" height="48"/>
-<text x="60" y="462" font-size="11" text-anchor="middle" fill="#232F3E">VGW</text>
+<text x="60" y="466" font-size="14" text-anchor="middle" fill="#232F3E">VGW</text>
 ```
 
 Render resource icons at the same size `S` as service icons, with a short label
@@ -270,59 +270,60 @@ Always deliver the embedded version (post-embed.py) so the diagram renders stand
 
 ### Skeleton
 
-Copy this as the starting point; it follows the nesting order, the ≥30px container
-padding, one icon size, and the IGW-on-the-border rule (IGW → ALB in the public
-subnet → EC2 in the private subnet).
+Copy this as the starting point; it follows the nesting order, compact 16–24px
+container padding, 14px labels, one icon size, and the IGW-on-the-border rule
+(IGW → ALB in the public subnet → EC2 in the private subnet). Grow containers only as
+far as their contents need.
 
 ```svg
-<svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+<svg viewBox="0 0 556 312" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
   <!-- one arrowhead marker, reused by every connector -->
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
-  <rect width="900" height="600" fill="#FFFFFF"/>
+  <rect width="556" height="312" fill="#FFFFFF"/>
 
   <!-- AWS Cloud boundary -->
-  <rect x="20" y="20" width="860" height="560" rx="8" fill="none" stroke="#232F3E" stroke-width="2"/>
-  <image href="bundle:group/AWS-Cloud-logo_32" x="20" y="20" width="32" height="32"/>
-  <text x="62" y="42" font-size="13" fill="#232F3E" font-weight="600">AWS Cloud</text>
+  <rect x="16" y="16" width="524" height="280" rx="8" fill="none" stroke="#232F3E" stroke-width="2"/>
+  <image href="bundle:group/AWS-Cloud-logo_32" x="16" y="16" width="32" height="32"/>
+  <text x="58" y="38" font-size="15" fill="#232F3E" font-weight="600">AWS Cloud</text>
 
-  <!-- Region: 30px inside the Cloud (40px on top for the Cloud label) -->
-  <rect x="50" y="60" width="800" height="490" rx="6" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
-  <image href="bundle:group/Region_32" x="50" y="60" width="24" height="24"/>
-  <text x="82" y="77" font-size="12" fill="#00A4A6" font-weight="600">Region ap-northeast-2</text>
+  <!-- Region: 20px inside the Cloud, below its header -->
+  <rect x="36" y="56" width="484" height="220" rx="6" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
+  <image href="bundle:group/Region_32" x="36" y="56" width="24" height="24"/>
+  <text x="68" y="74" font-size="14" fill="#00A4A6" font-weight="600">Region ap-northeast-2</text>
 
-  <!-- VPC: 30px inside the Region on the right and bottom; the left edge (x=110) leaves room for the IGW -->
-  <rect x="110" y="100" width="710" height="420" rx="6" fill="none" stroke="#8C4FFF" stroke-width="2"/>
-  <image href="bundle:group/Virtual-private-cloud-VPC_32" x="110" y="100" width="24" height="24"/>
-  <text x="142" y="117" font-size="12" fill="#8C4FFF" font-weight="600">VPC 10.0.0.0/16</text>
+  <!-- VPC: left edge at x=96 leaves room for the IGW mask (72–120) inside the Region -->
+  <rect x="96" y="88" width="404" height="168" rx="6" fill="none" stroke="#8C4FFF" stroke-width="2"/>
+  <image href="bundle:group/Virtual-private-cloud-VPC_32" x="96" y="88" width="24" height="24"/>
+  <text x="128" y="106" font-size="14" fill="#8C4FFF" font-weight="600">VPC 10.0.0.0/16</text>
 
-  <!-- subnets; the public one starts at x=170, well clear of the IGW mask (which ends at 134) -->
-  <rect x="170" y="150" width="270" height="320" rx="6" fill="none" stroke="#7AA116" stroke-width="1.5"/>
-  <image href="bundle:group/Public-subnet_32" x="170" y="150" width="24" height="24"/>
-  <text x="202" y="167" font-size="12" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="490" y="150" width="280" height="320" rx="6" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
-  <image href="bundle:group/Private-subnet_32" x="490" y="150" width="24" height="24"/>
-  <text x="522" y="167" font-size="12" fill="#00A4A6" font-weight="600">Private subnet</text>
+  <!-- subnets, sized to one node each: header ~28px, icon, 18px to the label, ~18px below -->
+  <rect x="136" y="118" width="160" height="118" rx="6" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <image href="bundle:group/Public-subnet_32" x="136" y="118" width="24" height="24"/>
+  <text x="168" y="136" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
+  <rect x="320" y="118" width="160" height="118" rx="6" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <image href="bundle:group/Private-subnet_32" x="320" y="118" width="24" height="24"/>
+  <text x="352" y="136" font-size="14" fill="#00A4A6" font-weight="600">Private subnet</text>
 
-  <!-- Internet gateway centered on the VPC left border (110 - 48/2 = 86), facing the Internet.
-       Label "IGW" (≈ 20px) is narrower than the icon → mask_w = 48, mask_x = 86,
-       36px clear of the Region border at x=50. -->
-  <rect x="86" y="290" width="48" height="66" fill="#FFFFFF"/>
-  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="86" y="290" width="48" height="48"/>
-  <text x="110" y="352" font-size="11" text-anchor="middle" fill="#232F3E">IGW</text>
+  <!-- Internet gateway centered on the VPC left border (96 - 48/2 = 72), facing the Internet.
+       Label "IGW" (≈ 25px) is narrower than the icon → mask_w = 48, mask_h = S + 22 = 70,
+       36px clear of the Region border at x=36. -->
+  <rect x="72" y="152" width="48" height="70" fill="#FFFFFF"/>
+  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="72" y="152" width="48" height="48"/>
+  <text x="96" y="218" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
 
-  <!-- nodes: every node icon uses the same S=48; labels centered 14px below the icon -->
-  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="276" y="290" width="48" height="48"/>
-  <text x="300" y="352" font-size="11" text-anchor="middle" fill="#232F3E">ALB</text>
-  <image href="bundle:service/Amazon-EC2" x="606" y="290" width="48" height="48"/>
-  <text x="630" y="352" font-size="11" text-anchor="middle" fill="#232F3E">EC2</text>
+  <!-- nodes: every node icon uses the same S=48; 14px labels, baseline 18px below the icon -->
+  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="192" y="152" width="48" height="48"/>
+  <text x="216" y="218" font-size="14" text-anchor="middle" fill="#232F3E">ALB</text>
+  <image href="bundle:service/Amazon-EC2" x="376" y="152" width="48" height="48"/>
+  <text x="400" y="218" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
 
-  <!-- connectors on the icons' center line; the first starts at the IGW's inner half -->
-  <line x1="138" y1="314" x2="272" y2="314" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="328" y1="314" x2="602" y2="314" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <!-- connectors on the icons' center line, all pointing right; the first starts at the IGW's inner half -->
+  <line x1="124" y1="176" x2="188" y2="176" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="244" y1="176" x2="372" y2="176" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
 </svg>
 ```
 
@@ -342,8 +343,18 @@ subnet → EC2 in the private subnet).
   Even spacing. Misaligned icons look amateurish.
 - **Label everything.** Every icon gets a product-name label. Every connector that
   isn't obvious gets a verb/protocol label ("HTTPS", "invoke", "read/write").
-- **Whitespace.** Don't cram. Give containers padding (≥30px inside AWS Cloud, ≥20px
-  inside VPC) so nested boxes breathe.
+- **Compact, not empty.** Size every container to what it holds: 16–24px between a
+  container's border and its children (the header row — badge + label — takes ~28px
+  at the top), and node centers about 2–2.5 × S apart (100–120px at S=48). Don't leave
+  empty quadrants or a subnet much larger than its contents; shrink the box or the
+  canvas instead. The diagram should fill its canvas with ≤24px outer margin. Only the
+  rules that need room get it: ≥8px around an IGW/VGW mask, ≥8px between labels and
+  borders, and a gap between AZ rows tall enough for a load balancer and its label.
+- **Text size.** Labels must stay readable when the diagram is scaled down into a doc
+  or slide. At S=48: node labels **14px**, container labels **14px bold** (AWS Cloud
+  15px), connector and secondary labels (protocol, sub-captions, notes) **12px**.
+  Never go below 12px. Scale the sizes with `S` (≈ 0.3 × S for node labels) if you
+  change it, and give each label line 16–18px of height when you compute spacing.
 - **Color discipline.** Icons carry their own colors; keep containers, text, and
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
