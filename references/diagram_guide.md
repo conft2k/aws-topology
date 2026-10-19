@@ -36,9 +36,12 @@ any AWS reviewer.
 - **Availability Zone, Security group, Generic group** — groups with **no badge icon**:
   a labeled rect in the color below, nothing in the corner (`find_icon.py az` says so).
 
-In an SVG you render these as: a rounded `<rect>` with the group's signature border
-color + a small `<image>` of the group icon pinned to the top-left corner + a text
-label next to it. The group icon PNGs/SVGs are 32px corner badges, NOT full frames.
+In an SVG you render these as: a **square-cornered** `<rect>` (no `rx`/`ry`) with the
+group's signature border color + a small `<image>` of the group icon pinned to the
+top-left corner + a text label next to it. The group icon PNGs/SVGs are 32px corner
+badges, NOT full frames. The official toolkit draws every group as a plain rectangle;
+a rounded border leaves the square badge's corner sticking out past the curve, so
+embed.py rejects a rounded rect that carries a group badge.
 
 ### Group border colors (use these exact hex values)
 
@@ -163,6 +166,7 @@ set. Draw every one of them as its icon — never as a text chip, pill or labele
 | Gateway endpoint (S3, DynamoDB) | `resource/Amazon-VPC_Endpoints` | inside the VPC box (outside any subnet — it is a route-table target, not an ENI), near the edge facing the service, on the flow line to it; never on the border |
 | Interface endpoint (PrivateLink) | `resource/Amazon-VPC_Endpoints` | inside the subnet that holds its ENIs |
 | EC2 Instance Connect Endpoint | `resource/Amazon-VPC_Endpoints` (no dedicated icon) | inside its subnet, labeled "EICE" |
+| Gateway Load Balancer endpoint | `resource/Amazon-VPC_Endpoints` (no dedicated icon) | one per AZ in its GWLBe subnet, labeled "GWLBe"; the GWLB itself is one node in the appliance VPC |
 | Virtual private gateway (VGW) / customer gateway | `resource/Amazon-VPC_VPN-Gateway` / `_Customer-Gateway` | on the VPC border / on-prem side |
 | Peering connection | `resource/Amazon-VPC_Peering-Connection` | between the two VPCs |
 | Router, NACL, ENI, Flow Logs | `resource/Amazon-VPC_Router`, `_Network-Access-Control-List`, `_Elastic-Network-Interface`, `_Flow-Logs` | as needed |
@@ -286,25 +290,25 @@ far as their contents need.
   <rect width="556" height="312" fill="#FFFFFF"/>
 
   <!-- AWS Cloud boundary -->
-  <rect x="16" y="16" width="524" height="280" rx="8" fill="none" stroke="#232F3E" stroke-width="2"/>
+  <rect x="16" y="16" width="524" height="280" fill="none" stroke="#232F3E" stroke-width="2"/>
   <image href="bundle:group/AWS-Cloud-logo_32" x="16" y="16" width="32" height="32"/>
   <text x="58" y="38" font-size="15" fill="#232F3E" font-weight="600">AWS Cloud</text>
 
   <!-- Region: 20px inside the Cloud, below its header -->
-  <rect x="36" y="56" width="484" height="220" rx="6" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
+  <rect x="36" y="56" width="484" height="220" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
   <image href="bundle:group/Region_32" x="36" y="56" width="24" height="24"/>
   <text x="68" y="74" font-size="14" fill="#00A4A6" font-weight="600">Region ap-northeast-2</text>
 
   <!-- VPC: left edge at x=96 leaves room for the IGW mask (72–120) inside the Region -->
-  <rect x="96" y="88" width="404" height="168" rx="6" fill="none" stroke="#8C4FFF" stroke-width="2"/>
+  <rect x="96" y="88" width="404" height="168" fill="none" stroke="#8C4FFF" stroke-width="2"/>
   <image href="bundle:group/Virtual-private-cloud-VPC_32" x="96" y="88" width="24" height="24"/>
   <text x="128" y="106" font-size="14" fill="#8C4FFF" font-weight="600">VPC 10.0.0.0/16</text>
 
   <!-- subnets, sized to one node each: header ~28px, icon, 18px to the label, ~18px below -->
-  <rect x="136" y="118" width="160" height="118" rx="6" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <rect x="136" y="118" width="160" height="118" fill="none" stroke="#7AA116" stroke-width="1.5"/>
   <image href="bundle:group/Public-subnet_32" x="136" y="118" width="24" height="24"/>
   <text x="168" y="136" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="320" y="118" width="160" height="118" rx="6" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <rect x="320" y="118" width="160" height="118" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
   <image href="bundle:group/Private-subnet_32" x="320" y="118" width="24" height="24"/>
   <text x="352" y="136" font-size="14" fill="#00A4A6" font-weight="600">Private subnet</text>
 

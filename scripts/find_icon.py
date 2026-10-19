@@ -44,6 +44,8 @@ ALIASES = {
     "s3 endpoint": "vpc endpoints", "dynamodb endpoint": "vpc endpoints",
     "eice": "vpc endpoints", "instance connect endpoint": "vpc endpoints",
     "ec2 instance connect endpoint": "vpc endpoints", "tgw": "transit gateway",
+    "gwlbe": "vpc endpoints", "gwlb endpoint": "vpc endpoints",
+    "gateway load balancer endpoint": "vpc endpoints",
     "aws cloud": "aws cloud logo", "cloud": "aws cloud logo",
     "on-prem": "corporate data center", "on-premises": "corporate data center",
     "onprem": "corporate data center", "data center": "corporate data center",

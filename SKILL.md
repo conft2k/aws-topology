@@ -80,8 +80,9 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
 <image href="bundle:resource/Amazon-VPC_Endpoints" x="482" y="331" width="48" height="48"/>
 ```
 
-- Draw group containers first (AWS Cloud, Region, VPC, subnets) as rounded rects whose
-  border color matches the group icon (VPC is purple `#8C4FFF`) + a corner group-icon
+- Draw group containers first (AWS Cloud, Region, VPC, subnets) as **square-cornered**
+  rects (no `rx` — the official style; a rounded border makes the square corner badge
+  stick out, and embed.py rejects it) whose border color matches the group icon (VPC is purple `#8C4FFF`) + a corner group-icon
   badge + a label. The AWS Cloud badge is **always** `group/AWS-Cloud-logo_32` (with
   the AWS logo; `_Dark` on dark backgrounds), never the logo-less `group/AWS-Cloud_32`
   — embed.py rejects it.

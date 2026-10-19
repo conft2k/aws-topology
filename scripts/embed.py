@@ -30,6 +30,29 @@ REF_RE = re.compile(r'(?:xlink:)?href\s*=\s*(["\'])bundle:([^"\']+)\1')
 # The AWS Cloud container always carries the AWS logo; these are the logo-less outlines.
 REPLACED = {"group/AWS-Cloud_32": "group/AWS-Cloud-logo_32",
             "group/AWS-Cloud_32_Dark": "group/AWS-Cloud-logo_32_Dark"}
+# Group containers are square-cornered in the official style; a rounded rect with a
+# group badge pinned to its top-left corner leaves the badge's corner sticking out.
+RECT_RE = re.compile(r'<rect\b[^>]*>')
+GROUP_IMG_RE = re.compile(r'<image\b[^>]*?href\s*=\s*(["\'])bundle:group/[^"\']+\1[^>]*>')
+
+
+def attr(tag: str, name: str):
+    m = re.search(rf'\b{name}\s*=\s*["\']([^"\']*)["\']', tag)
+    return m.group(1) if m else None
+
+
+def rounded_groups(svg: str):
+    """(x, y) of rounded rects whose top-left corner holds a group badge."""
+    badges = {(attr(m.group(0), "x"), attr(m.group(0), "y")) for m in GROUP_IMG_RE.finditer(svg)}
+    out = []
+    for m in RECT_RE.finditer(svg):
+        tag = m.group(0)
+        r = attr(tag, "rx") or attr(tag, "ry")
+        if r and float(r) > 0 and (attr(tag, "x"), attr(tag, "y")) in badges:
+            out.append((attr(tag, "x"), attr(tag, "y")))
+    return out
+
+
 # <image> hrefs that would still need a file or network fetch after embedding.
 EXTERNAL_RE = re.compile(
     r'<image\b[^>]*?(?:xlink:)?href\s*=\s*(["\'])(?!data:|bundle:|#)([^"\']+)\1')
@@ -81,7 +104,12 @@ def main():
         print("NO AWS LOGO (the AWS Cloud badge must include the AWS logo):")
         for r in replaced:
             print(f"  bundle:{r} -> use bundle:{REPLACED[r]}")
-    if missing or external or replaced:
+    rounded = rounded_groups(svg)
+    if rounded:
+        print("ROUNDED GROUP (group containers are square-cornered — drop rx/ry):")
+        for x, y in rounded:
+            print(f"  <rect x=\"{x}\" y=\"{y}\" ...> carries a group badge")
+    if missing or external or replaced or rounded:
         if dst.exists():
             dst.unlink()  # never leave a stale or half-embedded final file behind
         sys.exit(f"Nothing written to {dst}; fix the refs above and re-run.")
