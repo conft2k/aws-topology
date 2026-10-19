@@ -92,6 +92,27 @@ Load balancers: `alb`, `nlb` and `gwlb` resolve to the typed resource icon
 (`resource/Elastic-Load-Balancing_Application-Load-Balancer` etc.); use the generic
 `service/Elastic-Load-Balancing` (`elb`) only when the type is unspecified.
 
+### Fully managed multi-AZ services are one node
+
+In a standard reference architecture, a fully managed service that AWS runs across
+AZs for you — ALB, NLB, GWLB (and the Auto Scaling group that spans the AZs) — is
+drawn **once**, as a single node, not once per AZ. Its per-AZ nodes, ENIs and IPs are
+AWS's implementation detail; drawing them makes the reader think they manage
+separate load balancers.
+
+- **One icon per load balancer**, placed in the gap between the AZ columns at the
+  height of the tier it serves (public subnets for internet-facing, private for
+  internal), so it visibly belongs to every AZ it spans. Keep it clear of the AZ and
+  subnet borders (≥8px), label it with the short type: "ALB", "NLB", "GWLB".
+- **One connector from the load balancer to its targets.** Wrap the targets in one
+  Auto Scaling group / target group box that spans the AZs, and point a single arrow
+  at that box, instead of one arrow per AZ or per instance.
+- **Zonal resources stay per AZ**: NAT gateways, subnets, EC2 instances, interface
+  endpoint ENIs and RDS primary/standby are drawn in each AZ they live in.
+- **Per-AZ nodes only on request**: draw one LB node per AZ only when the diagram is
+  about that behavior (static EIP per AZ, cross-zone load balancing, AZ failover) and
+  the user asked for it. Say so in the reply.
+
 Each service icon is a self-contained square SVG with the product's colored gradient
 tile. Always put a text label directly below the icon (product name), centered,
 ~11–13px.
@@ -344,7 +365,8 @@ are fine and common for FSI customer diagrams.
 ## Common diagram types & which layers to draw
 
 - **3-tier web app**: AWS Cloud > Region > VPC > public subnet (ALB) + private subnets
-  (ECS/EC2, RDS). Show AZ split if HA matters.
+  (ECS/EC2, RDS). Show AZ split if HA matters, with one ALB across the AZs (see
+  "Fully managed multi-AZ services are one node").
 - **Serverless**: skip VPC. API Gateway > Lambda > DynamoDB, with S3/CloudFront front.
 - **Container (EKS/ECS)**: VPC > subnets > cluster; show ALB, node groups, ECR.
 - **Hybrid (EKS Hybrid Nodes, Direct Connect)**: Corporate-data-center group on one side,

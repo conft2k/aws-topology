@@ -95,6 +95,11 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
   specific services are meant to be highlighted, enlarge just those to one emphasis
   size (~1.33×, 64px) on the same grid centers — see the guide's "Emphasis is the one
   exception".
+- Draw a **fully managed multi-AZ service (ALB, NLB, GWLB) as one node**, not one per
+  AZ: a single icon in the gap between the AZ columns at its tier, with one arrow to a
+  target group / Auto Scaling group box that spans the AZs. Zonal resources (NAT
+  gateways, instances, subnets) stay per AZ. Per-AZ LB nodes only when the user asks
+  about per-AZ behavior — see the guide's "Fully managed multi-AZ services are one node".
 - Put every Internet gateway and VGW (virtual private gateway) **on the VPC border**:
   icon centered on the border line (e.g. `x = vpcX + vpcW - S/2` for the right edge),
   on the edge facing the Internet / on-prem side, label centered directly below it —
@@ -157,6 +162,8 @@ wrap the SVG in a minimal HTML file instead.
   inside the VPC box, outside the subnets; interface endpoints go inside their subnet.
 - Don't color the VPC border green; it's purple `#8C4FFF`.
 - Don't put private services (RDS, internal ALB) outside a subnet container.
+- Don't draw an ALB, NLB or GWLB once per AZ in a standard reference diagram — one
+  load balancer is one node.
 - Don't mix icon sizes (e.g. 56px services next to 36px gateways) — one size for every
   node icon, unless you are deliberately emphasizing specific services.
 - Don't use rainbow connectors or inconsistent arrow styles.
