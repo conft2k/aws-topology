@@ -39,6 +39,11 @@ and used as its starting layouts:
 | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
 | Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering, on-premises over Site-to-Site VPN across the Internet |
 
+| AWS Cloud WAN |
+|---|
+| ![AWS Cloud WAN reference architecture](docs/examples/cloudwan-reference-architecture.png) |
+| One global core network: a core network edge per Region, Production / Development segments spanning the Regions, on-premises over Site-to-Site VPN |
+
 ## Install
 
 ```bash
