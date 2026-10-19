@@ -44,7 +44,7 @@ ambiguous; otherwise proceed with a sensible default and note assumptions.
 `docs/examples/` holds finished, checked reference diagrams — NLB, ALB (3-tier with
 WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
 spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Cloud WAN
-(core network edges per Region, segments as rows spanning the Regions). When the request resembles
+(core network as a container across the Regions, an edge per Region, segments as rows). When the request resembles
 one of them, open its SVG and reuse its layout and coordinates (canvas, AZ rows, tier
 columns, gap, IGW, regional-services row, note line) instead of laying out from
 scratch. `docs/example.svg` is the minimal skeleton.

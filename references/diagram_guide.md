@@ -450,12 +450,16 @@ are fine and common for FSI customer diagrams.
 - **Container (EKS/ECS)**: VPC > subnets > cluster; show ALB, node groups, ECR.
 - **Hybrid (EKS Hybrid Nodes, Direct Connect)**: Corporate-data-center group on one side,
   AWS Cloud on the other, connected via Direct Connect / VPN / Transit Gateway icon.
-- **Global network (AWS Cloud WAN)**: `service/AWS-Cloud-WAN` at the top of the AWS
-  Cloud for the core network; Regions as columns, each with one
-  `resource/AWS-Cloud-WAN_Core-Network-Edge` on the main line, joined by a thick
-  "core network" line; segments as grey dashed rows that cross every Region, each
-  led by a `resource/AWS-Cloud-WAN_Segment-Network` icon with the segment name, so a
-  segment visibly spans Regions. VPCs attach to their Region's edge (plain lines).
+- **Global network (AWS Cloud WAN)**: Regions as columns. The **core network is a
+  container**: a purple `#8C4FFF` dashed 2px band across every Region on the main
+  line, with the `service/AWS-Cloud-WAN` icon as its 24px corner badge and the label
+  "Core network" (no group icon exists for it; keep the label short so the Region
+  borders don't cross it). Inside it, one `resource/AWS-Cloud-WAN_Core-Network-Edge`
+  per Region joined by a thick "AWS 백본" line. Segments are grey dashed rows above
+  and below the band that cross every Region, each led by a
+  `resource/AWS-Cloud-WAN_Segment-Network` icon with the segment name, so a segment
+  visibly spans Regions. VPCs stay outside the core network, in their segment row,
+  and attach to their Region's edge with plain lines.
 - **Agentic AI (AgentCore)**: `service/Amazon-Bedrock` for the models,
   `service/Amazon-Bedrock-AgentCore` for the agent platform (see "Bedrock and
   AgentCore" for components), and standard icons for the surrounding infra.
