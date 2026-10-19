@@ -100,10 +100,12 @@ drawn **once**, as a single node, not once per AZ. Its per-AZ nodes, ENIs and IP
 AWS's implementation detail; drawing them makes the reader think they manage
 separate load balancers.
 
-- **One icon per load balancer**, placed in the gap between the AZ columns at the
-  height of the tier it serves (public subnets for internet-facing, private for
-  internal), so it visibly belongs to every AZ it spans. Keep it clear of the AZ and
-  subnet borders (≥8px), label it with the short type: "ALB", "NLB", "GWLB".
+- **One icon per load balancer**, placed in the gap between the AZ rows, in the column
+  of the tier it serves (public subnets for internet-facing, private for internal), so
+  it visibly belongs to every AZ it spans. Keep it clear of the AZ and subnet borders
+  (≥8px; make the gap ≥110px so icon and label fit), label it with the short type:
+  "ALB", "NLB", "GWLB". Put the IGW on the VPC border at the same height so the path
+  IGW → load balancer is one straight line.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
   at that box, instead of one arrow per AZ or per instance.
@@ -326,8 +328,16 @@ subnet → EC2 in the private subnet).
 
 ## Layout rules that make it look professional
 
-- **Left-to-right or top-to-bottom flow.** Users/clients on the left (or top), data
-  stores on the right (or bottom). Follow the request path.
+- **Traffic flows left to right.** When the diagram shows how traffic moves (requests,
+  packets, data), lay it out so the flow reads left → right: users/clients/on-prem on
+  the left, entry points (Route 53, CloudFront, IGW, VGW) next, then load balancers,
+  compute, and data stores on the right. Every main-path arrow points right; only
+  return, outbound (e.g. to a NAT gateway) or control/management connectors may go
+  another way, and those are dashed. To make that work in a VPC, put the **tiers in
+  columns** (public subnet → private subnet → data subnet) and the **AZs in rows**;
+  the IGW then sits on the VPC's left border. Use top-to-bottom only for diagrams that
+  aren't about traffic (account/org structure, a deployment pipeline) or when the user
+  asks for it.
 - **Align icons on a grid.** Same y for a horizontal tier, same x for a vertical tier.
   Even spacing. Misaligned icons look amateurish.
 - **Label everything.** Every icon gets a product-name label. Every connector that

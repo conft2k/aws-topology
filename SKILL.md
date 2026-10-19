@@ -96,7 +96,7 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
   size (~1.33×, 64px) on the same grid centers — see the guide's "Emphasis is the one
   exception".
 - Draw a **fully managed multi-AZ service (ALB, NLB, GWLB) as one node**, not one per
-  AZ: a single icon in the gap between the AZ columns at its tier, with one arrow to a
+  AZ: a single icon in the gap between the AZ rows, in its tier's column, with one arrow to a
   target group / Auto Scaling group box that spans the AZs. Zonal resources (NAT
   gateways, instances, subnets) stay per AZ. Per-AZ LB nodes only when the user asks
   about per-AZ behavior — see the guide's "Fully managed multi-AZ services are one node".
@@ -109,7 +109,11 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
   border" for the mask sizing.
 - Connect with consistent 1.5–2px squid-ink (`#232F3E`) arrows using one shared
   arrowhead marker. Label non-obvious connectors (protocol / verb).
-- Left→right or top→bottom flow, aligned on a grid, generous whitespace.
+- **Traffic flows left → right**: users and entry points on the left, data stores on the
+  right, every main-path arrow pointing right. In a VPC that means tiers as columns
+  (public → private → data) and AZs as rows. Top-to-bottom only for non-traffic
+  diagrams or on request — see the guide's layout rules. Align on a grid, generous
+  whitespace.
 - Root `font-family` starts with a Korean font that is **installed on this machine** —
   check with `fc-list | grep -iE 'CJK KR|Pretendard'` (see the guide's "Font"). cairosvg
   uses only the first family and drops every Hangul label if that one is Arial or isn't
@@ -164,6 +168,8 @@ wrap the SVG in a minimal HTML file instead.
 - Don't put private services (RDS, internal ALB) outside a subnet container.
 - Don't draw an ALB, NLB or GWLB once per AZ in a standard reference diagram — one
   load balancer is one node.
+- Don't route the main traffic path up/down or right-to-left in a traffic diagram;
+  rearrange the containers (tiers as columns) until it flows left → right.
 - Don't mix icon sizes (e.g. 56px services next to 36px gateways) — one size for every
   node icon, unless you are deliberately emphasizing specific services.
 - Don't use rainbow connectors or inconsistent arrow styles.
