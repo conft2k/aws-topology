@@ -107,7 +107,7 @@
   <!-- ===== inspection detour (both directions): GWLBe ⇄ GWLB ⇄ appliances ===== -->
   <polyline points="832,330 440,330 440,252" fill="none" stroke="#232F3E" stroke-width="1.5" marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
   <polyline points="832,330 440,330 440,458" fill="none" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="574" y="322" font-size="12" text-anchor="middle" fill="#232F3E">PrivateLink · GENEVE :6081</text>
+  <text x="574" y="322" font-size="12" text-anchor="middle" fill="#232F3E">GENEVE :6081</text>
   <line x1="888" y1="330" x2="946" y2="330" stroke="#232F3E" stroke-width="1.5" marker-start="url(#arrowStart)" marker-end="url(#arrow)"/>
 
   <!-- numbered steps make the order explicit where the main line breaks at the GWLBe branches -->

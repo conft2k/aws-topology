@@ -8,6 +8,9 @@ Reports, and exits with status 1 on any of them:
   LINE OVER ICON   a connector or container border crosses an icon or badge
   TEXT OVERLAP     two labels overlap, or a label overlaps an icon
   SMALL TEXT       a label is smaller than 12px
+  SERVICE AS TEXT  a connector label names an AWS service or resource that has an
+                   official icon in the bundle — draw it as an icon node instead
+                   (labels centered under an icon are node labels and are skipped)
 
 Anything covered by a white mask rect drawn later (the IGW/VGW on the VPC border)
 is not reported. Text widths are estimated (0.55 × font-size per Latin character,
@@ -18,6 +21,10 @@ which is all the skill's diagrams use.
 import re
 import sys
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import find_icon  # noqa: E402  (same directory; reuses the icon search and aliases)
 
 NS = "{http://www.w3.org/2000/svg}"
 MIN_FONT = 12
@@ -100,7 +107,8 @@ def collect(svg_root):
                 w = text_width(s, fs)
                 anchor = el.get("text-anchor", "start")
                 x0 = x - w / 2 if anchor == "middle" else x - w if anchor == "end" else x
-                texts.append({"s": s, "fs": fs, "box": (x0, y - 0.75 * fs, x0 + w, y + 0.25 * fs), "o": order})
+                texts.append({"s": s, "fs": fs, "box": (x0, y - 0.75 * fs, x0 + w, y + 0.25 * fs), "o": order,
+                              "cx": x0 + w / 2, "y": y})
         elif tag == "line":
             segs.append({"p": (num(el.get("x1")) + ox, num(el.get("y1")) + oy),
                          "q": (num(el.get("x2")) + ox, num(el.get("y2")) + oy),
@@ -136,6 +144,39 @@ def collect(svg_root):
     return texts, segs, masks, icons
 
 
+# A connector label is any text whose box comes within this distance of a connector.
+LABEL_REACH = 14
+ICON_SETS = ("service", "resource")
+
+
+def official_icon(phrase):
+    """The bundle icon a phrase names exactly (score ≥ 95), or None."""
+    if len(find_icon.norm(phrase)) < 3:
+        return None
+    for score, ref in find_icon.search(phrase, k=3):
+        if score >= 95 and ref.split("/", 1)[0] in ICON_SETS:
+            return ref
+    return None
+
+
+def services_in_label(s):
+    parts = re.split(r"\s+·\s+|[(),→⇄↔]|\s+-\s+", s)
+    return [(p.strip(), ref) for p in parts if p.strip() for ref in [official_icon(p.strip())] if ref]
+
+
+def is_node_label(t, icons):
+    """A label (or its sub-caption) centered under an icon names that node, not a connector."""
+    for i in icons:
+        x0, y0, x1, y1 = i["box"]
+        if not i["badge"] and abs(t["cx"] - (x0 + x1) / 2) <= 3 and y1 < t["y"] <= y1 + 44:
+            return True
+    return False
+
+
+def expand(b, d):
+    return (b[0] - d, b[1] - d, b[2] + d, b[3] + d)
+
+
 def masked(box, after, masks):
     return any(m["o"] > after and contains(m["box"], box) for m in masks)
 
@@ -151,6 +192,13 @@ def check(path):
             if seg_hits_box(s["p"], s["q"], b) and not masked(t["box"], s["o"], masks):
                 issues.append(f"LINE OVER TEXT  {s['kind']} {fmt(s)} crosses {t['s']!r}")
                 break
+    connectors = [s for s in segs if s["kind"] == "connector"]
+    for t in texts:
+        near = expand(t["box"], LABEL_REACH)
+        if not is_node_label(t, icons) and any(seg_hits_box(s["p"], s["q"], near) for s in connectors):
+            for phrase, ref in services_in_label(t["s"]):
+                issues.append(f"SERVICE AS TEXT {phrase!r} in connector label {t['s']!r} has an "
+                              f"official icon ({ref}) — draw it as a node")
     for i in icons:
         b = shrink(i["box"], 2.0)
         for s in segs:

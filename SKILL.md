@@ -73,6 +73,18 @@ Bedrock is `service/Amazon-Bedrock` and AgentCore is `service/Amazon-Bedrock-Age
 AgentCore *components* (Runtime, Gateway, Memory, Identity, ...) have no official icon
 yet — see the guide's "Bedrock and AgentCore" for how to draw them.
 
+**Every AWS service or resource in the diagram that has an official icon is drawn as
+that icon** — including the ones that are easy to leave as a connector label: Site-to-
+Site VPN, Direct Connect, PrivateLink, VPC peering, Transit Gateway, Global
+Accelerator, CloudFront, WAF, NAT gateway, endpoints. Run `find_icon.py` on every
+service you are about to write as text; if it returns a score-95 `service/` or
+`resource/` hit, it becomes a node with its icon on the path. Connector labels carry
+only protocols, ports and verbs ("IPsec", "HTTPS :443", "GENEVE :6081", "read/write").
+Two exceptions: a service already shown by another node (the GWLBe *is* the
+PrivateLink endpoint — drop "PrivateLink" from the label rather than adding a second
+icon), and a connection type with no icon in the bundle (TGW peering) stays a label.
+`check_layout.py` flags connector labels that name a service with an icon.
+
 If nothing in `service` matches, search `resource` before concluding there is no
 icon — gateways, endpoints, instances, tables and buckets are resources. Only if
 neither has it, use the closest **category** icon or a plain labeled rounded rect,
@@ -177,6 +189,7 @@ Before delivering, go through this checklist on the render:
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes).
+- [ ] Every AWS service/resource with an official icon is an icon node, not a label.
 - [ ] `check_layout.py` prints "Layout OK" and `embed.py` exits 0.
 
 Save the final SVG where the user asked (in a repo, usually next to the docs that
@@ -197,6 +210,8 @@ the user asked for an editable web page, wrap the SVG in a minimal HTML file ins
 ## What NOT to do
 
 - Don't hand-draw or approximate AWS icons — use the bundled ones.
+- Don't write an AWS service that has an official icon (Site-to-Site VPN, Direct
+  Connect, PrivateLink, ...) as a connector label — draw it as an icon node.
 - Don't draw an Internet Gateway, NAT Gateway, VPC endpoint or EICE as a text chip or
   pill — they all have official resource icons (see the guide's VPC table).
 - Don't put an Internet gateway or VGW inside a subnet, fully inside the VPC, or

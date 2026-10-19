@@ -243,6 +243,16 @@ white-stroked copy of the text drawn first, not `paint-order`, which cairosvg ig
 only helps a line that runs *near* the glyphs; a line crossing the label still shows
 between letters.
 
+**A service with an official icon is never just text.** If a connector would carry
+the name of an AWS service or resource — "Site-to-Site VPN", "Direct Connect",
+"PrivateLink", "VPC peering" — and `find_icon.py` finds its icon, put that icon on the
+path as a node (with its label below, the same size `S` as every node) and keep only
+the protocol on the connector ("IPsec", "GENEVE :6081"). Place it in the container
+it belongs to: a Site-to-Site VPN connection is a Regional resource, so it sits inside
+the Region between the customer gateway and the TGW/VGW. Don't add a duplicate when
+another node already is that service (a GWLBe is the PrivateLink endpoint). Only a
+connection with no icon in the bundle (TGW peering) stays a connector label.
+
 **Never invent or hand-draw a service icon.** If a service isn't in the bundle,
 use the closest category icon or a plain labeled rounded rect — don't approximate the
 official mark.
