@@ -291,10 +291,14 @@ far as their contents need.
 
 ```svg
 <svg viewBox="0 0 556 312" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
-  <!-- one arrowhead marker, reused by every connector -->
+  <!-- one arrowhead marker, reused by every connector; arrowStart is its mirror for
+       two-way links (marker-start), since cairosvg ignores orient="auto-start-reverse" -->
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#232F3E"/>
+    </marker>
+    <marker id="arrowStart" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+      <path d="M8,0 L0,3 L8,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
   <rect width="556" height="312" fill="#FFFFFF"/>
@@ -372,7 +376,24 @@ far as their contents need.
 - **Color discipline.** Icons carry their own colors; keep containers, text, and
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
-- **One arrowhead style, consistent stroke width** (1.5–2px) for all connectors.
+- **One arrowhead style, consistent stroke width** (1.5–2px) for all connectors. A
+  genuinely two-way link (GWLBe ⇄ GWLB, GWLB ⇄ appliances over GENEVE) gets the
+  mirrored `arrowStart` marker on its other end; ordinary request/response flows
+  stay one-way.
+- **Regional services row.** Services that live in the Region but outside the VPC
+  (Route 53, ACM, AWS WAF, CloudWatch, S3 for logs) go in one row inside the Region,
+  above the VPC, on an even grid (~160px apart), each with its name and a 12px
+  sub-caption saying what it does here ("DNS → ALB (alias)", "ALB 액세스 로그").
+  Draw a connector only for what is on the traffic path (the DNS lookup, dashed).
+- **Short container labels.** Name subnets by role — "Public subnet", "App subnet",
+  "DB subnet", "GWLBe subnet", "Appliance subnet" — not "Private subnet (App)": a long
+  header runs into the badge or border of a box that spans it (an ASG, a replication
+  line), and the badge color already says public or private.
+- **Room outside the AWS Cloud.** Users/clients sit outside the AWS Cloud box; leave
+  enough space between them and the Cloud border (≈80px at 12px) for the connector's
+  protocol label to sit clear of the Cloud and Region borders.
+- **Note line.** One 12px note at the bottom right inside the Region, below the VPC,
+  states what the diagram is ("Internet-facing NLB · ...") or the step legend.
 - **Legend** only if the diagram has non-obvious symbols.
 
 ## Font

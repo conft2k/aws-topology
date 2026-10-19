@@ -5,7 +5,7 @@ diagrams with the **official AWS Architecture Icons** — real service, resource
 group icons instead of hand-drawn approximations or text chips — and delivers one
 self-contained SVG.
 
-![Example output: AWS Cloud > Region > VPC with an Internet gateway on the VPC border, an ALB in the public subnet and EC2 in the private subnet](docs/example.svg)
+![Example output: AWS Cloud > Region > VPC with an Internet gateway on the VPC border, an ALB in the public subnet and EC2 in the private subnet](docs/example.png)
 
 What it enforces:
 
@@ -17,8 +17,22 @@ What it enforces:
   including groups that have no icon (Availability Zone, security group).
 - One icon size for every node; Internet gateways and virtual private gateways
   centered on the VPC border with the border masked behind icon and label.
+- Traffic flows left → right (tiers as columns, AZs as rows); ALB/NLB/GWLB are one
+  node across the AZs while zonal resources stay per AZ; detours get numbered steps.
+- Square-cornered official group styles, compact containers and readable 14px/12px text.
 - A final SVG with all icons inlined as base64, verified to contain no external
-  references, and rendered to PNG for a visual check before delivery.
+  references, checked for lines crossing labels or icons, and rendered to PNG for a
+  visual check before delivery.
+
+## Reference examples
+
+Finished diagrams in [`docs/examples/`](docs/examples/) (SVG + PNG), drawn with the skill
+and used as its starting layouts:
+
+| NLB | ALB | GWLB |
+|---|---|---|
+| ![NLB reference architecture](docs/examples/nlb-reference-architecture.png) | ![ALB reference architecture](docs/examples/alb-reference-architecture.png) | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) |
+| Internet-facing NLB, TLS listener, ASG target group across two AZs | 3-tier: ALB with AWS WAF, app ASG, RDS Multi-AZ | Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC |
 
 ## Install
 
@@ -44,6 +58,8 @@ assets/icons.json            873 icons in one JSON bundle (sets: service, resour
                              group, category, legacy)
 scripts/find_icon.py         fuzzy lookup: `find_icon.py alb igw "s3 gateway endpoint"`
 scripts/embed.py             inline bundle: refs as base64; fails on unknown/external refs
+                             and on rounded group containers
+scripts/check_layout.py      flag lines over labels/icons, overlapping labels, text < 12px
 scripts/build_bundle.py      rebuild icons.json from a newly released icon package
 ```
 
@@ -58,6 +74,9 @@ python3 scripts/find_icon.py ec2 "api gateway" igw nat "s3 gateway endpoint"
 
 # in your SVG, reference icons with the bundle: scheme
 #   <image href="bundle:service/AWS-Lambda" x="200" y="200" width="48" height="48"/>
+
+# check the layout (exit 1 lists lines crossing labels/icons, overlaps, small text)
+python3 scripts/check_layout.py draft.svg
 
 # then inline them for a portable file (exit 1 lists anything that would not render)
 python3 scripts/embed.py draft.svg final.svg

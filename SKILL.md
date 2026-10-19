@@ -40,6 +40,13 @@ system (CloudFormation, CDK, Terraform, deploy scripts), map each piece to an AW
 service or resource. Ask a brief clarifying question only if the topology is genuinely
 ambiguous; otherwise proceed with a sensible default and note assumptions.
 
+### 1b. Start from the closest reference example
+`docs/examples/` holds finished, checked reference diagrams — NLB, ALB (3-tier with
+WAF and RDS Multi-AZ) and GWLB (distributed inspection). When the request resembles
+one of them, open its SVG and reuse its layout and coordinates (canvas, AZ rows, tier
+columns, gap, IGW, regional-services row, note line) instead of laying out from
+scratch. `docs/example.svg` is the minimal skeleton.
+
 ### 2. Read the guide
 Read `references/diagram_guide.md` in full. It defines the AWS visual grammar
 (Cloud > Region > VPC > subnet nesting), the exact group border colors, the VPC
@@ -135,8 +142,19 @@ with status 1 and lists the offending hrefs if any `bundle:` ref is unknown or a
 `<image>` still points at an external file or URL; fix them (find_icon.py for names)
 and re-run until it exits 0.
 
-Then render it and look at the result before delivering — overflowing labels and
-lines running through text are only visible in a render:
+Run the layout check on the draft and fix everything it reports until it prints
+"Layout OK":
+
+```bash
+python3 ~/.claude/skills/aws-topology/scripts/check_layout.py draft.svg
+```
+
+It flags a connector or container border crossing a label, icon or badge, labels
+overlapping each other or an icon, and text under 12px — the defects that otherwise
+only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allowed.
+
+Then render it and look at the result before delivering — the check estimates text
+widths, and balance, whitespace and readability still need eyes:
 
 ```bash
 uv run --with cairosvg python -c "import cairosvg,sys; cairosvg.svg2png(url=sys.argv[1], write_to=sys.argv[2], output_width=2000)" final.svg preview.png
@@ -145,10 +163,26 @@ uv run --with cairosvg python -c "import cairosvg,sys; cairosvg.svg2png(url=sys.
 cairosvg ignores CSS-class text halos, so a line showing through a haloed label in the
 preview is not necessarily a bug in the SVG.
 
-Save the final file where the user asked (in a repo, usually next to the docs that
-reference it, e.g. `docs/architecture.svg`), keep drafts and previews in the
-scratchpad, and tell the user the path. If the user asked for an editable web page,
-wrap the SVG in a minimal HTML file instead.
+Before delivering, go through this checklist on the render:
+
+- [ ] Main traffic path reads left → right; only return/outbound/management arrows
+      go another way, and those are dashed.
+- [ ] Tiers are columns, AZs are rows; Users and the IGW sit in the gap between the
+      AZ rows, on one line with the load balancer.
+- [ ] Each ALB/NLB/GWLB is one node in the AZ gap; zonal resources (NAT gateway,
+      GWLBe, instances, RDS primary/standby) appear once per AZ.
+- [ ] A path that leaves the main line and comes back has numbered step badges and a
+      one-line legend.
+- [ ] Group containers are square-cornered, in the official colors and dash styles.
+- [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
+      12px (connectors, notes).
+- [ ] `check_layout.py` prints "Layout OK" and `embed.py` exits 0.
+
+Save the final SVG where the user asked (in a repo, usually next to the docs that
+reference it, e.g. `docs/architecture.svg`). When the diagram is a sample or reference
+for a repo, save its PNG render next to it as well (same name, `.png`), since a PNG
+previews everywhere. Keep drafts in the scratchpad, and tell the user the paths. If
+the user asked for an editable web page, wrap the SVG in a minimal HTML file instead.
 
 ## Output format
 
@@ -191,7 +225,9 @@ All 873 icons are packed into one JSON bundle (keeps the skill's file count low)
 - `references/diagram_guide.md` — conventions, colors, VPC resources, SVG skeleton (read this).
 - `scripts/find_icon.py` — fuzzy lookup → `set/name` reference (with AWS abbreviation aliases).
 - `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable final SVG.
+- `scripts/check_layout.py` — flag lines over labels/icons, overlapping labels, text under 12px.
 - `scripts/build_bundle.py` — rebuild `icons.json` from a newer official package.
+- `docs/examples/` — checked NLB, ALB and GWLB reference diagrams (SVG + PNG) to start from.
 
 ## Updating the icon set
 
