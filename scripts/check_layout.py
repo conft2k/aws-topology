@@ -13,7 +13,7 @@ Reports, and exits with status 1 on any of them:
                    (labels centered under an icon are node labels and are skipped)
 
 Anything covered by a white mask rect drawn later (the IGW/VGW on the VPC border)
-is not reported. Text widths are estimated (0.55 × font-size per Latin character,
+is not reported, nor is a small junction dot (circle, r ≤ 6) sitting on its own line. Text widths are estimated (0.55 × font-size per Latin character,
 1.0 × per Hangul/CJK character), so a hit within a pixel or two is worth a look in
 the render rather than a blind fix. Only translate() transforms are understood,
 which is all the skill's diagrams use.
@@ -136,7 +136,9 @@ def collect(svg_root):
                           "o": order, "badge": "group/" in href[:40]})
         elif tag == "circle":
             cx, cy, r = num(el.get("cx")) + ox, num(el.get("cy")) + oy, num(el.get("r"))
-            icons.append({"box": (cx - r, cy - r, cx + r, cy + r), "o": order, "badge": True})
+            # r <= 6: a junction dot drawn on a connector on purpose (e.g. segment membership)
+            icons.append({"box": (cx - r, cy - r, cx + r, cy + r), "o": order, "badge": True,
+                          "dot": (cx, cy) if r <= 6 else None})
         for child in el:
             walk(child, ox, oy)
 
@@ -177,6 +179,15 @@ def expand(b, d):
     return (b[0] - d, b[1] - d, b[2] + d, b[3] + d)
 
 
+def through(dot, s):
+    """Does segment s pass through point dot (a junction dot sits on its line)?"""
+    (x1, y1), (x2, y2) = s["p"], s["q"]
+    cx, cy = dot
+    length = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 or 1.0
+    dist = abs((x2 - x1) * (y1 - cy) - (x1 - cx) * (y2 - y1)) / length
+    return dist < 1.0
+
+
 def masked(box, after, masks):
     return any(m["o"] > after and contains(m["box"], box) for m in masks)
 
@@ -202,6 +213,8 @@ def check(path):
     for i in icons:
         b = shrink(i["box"], 2.0)
         for s in segs:
+            if i.get("dot") and through(i["dot"], s):
+                continue
             if seg_hits_box(s["p"], s["q"], b) and not masked(i["box"], s["o"], masks):
                 what = "badge" if i["badge"] else "icon"
                 issues.append(f"LINE OVER ICON  {s['kind']} {fmt(s)} crosses the {what} at "

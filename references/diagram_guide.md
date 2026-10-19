@@ -451,15 +451,18 @@ are fine and common for FSI customer diagrams.
 - **Hybrid (EKS Hybrid Nodes, Direct Connect)**: Corporate-data-center group on one side,
   AWS Cloud on the other, connected via Direct Connect / VPN / Transit Gateway icon.
 - **Global network (AWS Cloud WAN)**: Regions as columns. The **core network is a
-  container**: a purple `#8C4FFF` dashed 2px band across every Region on the main
-  line, with the `service/AWS-Cloud-WAN` icon as its 24px corner badge and the label
-  "Core network" (no group icon exists for it; keep the label short so the Region
-  borders don't cross it). Inside it, one `resource/AWS-Cloud-WAN_Core-Network-Edge`
-  per Region joined by a thick "AWS 백본" line. Segments are grey dashed rows above
-  and below the band that cross every Region, each led by a
-  `resource/AWS-Cloud-WAN_Segment-Network` icon with the segment name, so a segment
-  visibly spans Regions. VPCs stay outside the core network, in their segment row,
-  and attach to their Region's edge with plain lines.
+  container** that holds everything that belongs to it — the segments and the core
+  network edges: a purple `#8C4FFF` dashed 2px band across every Region, with the
+  `service/AWS-Cloud-WAN` icon as its 24px corner badge and the label "Core network"
+  (no group icon exists for it; keep the label short so the Region borders don't cross
+  it). Inside it, top to bottom: one segment row, the edge row on the main line (one
+  `resource/AWS-Cloud-WAN_Core-Network-Edge` per Region, joined by a thick "AWS 백본"
+  line), another segment row. Each segment row is a grey dashed box across every
+  Region, led by a `resource/AWS-Cloud-WAN_Segment-Network` icon with the segment
+  name. **VPCs stay outside the core network** (above and below it, in their Region
+  column); each attachment is one plain line from the VPC through its segment row to
+  its Region's edge, with a 5px grey junction dot where it crosses that row to mark
+  the segment membership (explain the dot in the note).
 - **Agentic AI (AgentCore)**: `service/Amazon-Bedrock` for the models,
   `service/Amazon-Bedrock-AgentCore` for the agent platform (see "Bedrock and
   AgentCore" for components), and standard icons for the surrounding infra.
