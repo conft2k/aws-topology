@@ -1,0 +1,24 @@
+aws-topology
+Copyright 2026 conft2k
+
+The code and documentation in this repository (SKILL.md, references/, scripts/)
+are licensed under the Apache License, Version 2.0. See LICENSE.
+
+Third-party content
+-------------------
+
+assets/icons.json is a repackaging of the AWS Architecture Icons
+(Icon-package_07312026, released 2026-07-31) published by Amazon Web Services at
+https://aws.amazon.com/architecture/icons/. The icons are the property of
+Amazon Web Services, Inc. or its affiliates and are NOT covered by the Apache
+License. They are included here, unmodified, solely so that the skill can draw
+AWS architecture diagrams; AWS permits customers and partners to use these
+assets to create architecture diagrams and related materials. Your use of the
+icons is subject to AWS's terms, including the AWS Site Terms
+(https://aws.amazon.com/terms/) and the AWS Trademark Guidelines
+(https://aws.amazon.com/trademark-guidelines/). Do not use them as logos, alter
+them, or imply AWS endorsement.
+
+"Amazon Web Services", "AWS" and the AWS service names are trademarks of
+Amazon.com, Inc. or its affiliates. This project is not affiliated with or
+endorsed by Amazon Web Services.
