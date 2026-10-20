@@ -68,12 +68,8 @@ def data_uri(setname: str, name: str):
     return f"data:image/png;base64,{entry['data']}"
 
 
-def main():
-    if len(sys.argv) != 3:
-        print(__doc__)
-        sys.exit(1)
-    src, dst = Path(sys.argv[1]), Path(sys.argv[2])
-    svg = src.read_text(encoding="utf-8")
+def embed(svg: str):
+    """Inline every bundle: ref. Returns (embedded SVG or None, icon count, problem lines)."""
     missing, replaced, embedded = [], [], 0
 
     def repl(m):
@@ -91,25 +87,32 @@ def main():
         return m.group(0).replace(f"bundle:{ref}", uri)
 
     out = REF_RE.sub(repl, svg)
+    report = []
     if missing:
-        print("MISSING (fix these refs — check names with find_icon.py):")
-        for r in missing:
-            print(f"  bundle:{r}")
+        report.append("MISSING (fix these refs — check names with find_icon.py):")
+        report += [f"  bundle:{r}" for r in missing]
     external = [m.group(2) for m in EXTERNAL_RE.finditer(out)]
     if external:
-        print("EXTERNAL (won't render standalone — switch to bundle: refs):")
-        for r in external:
-            print(f"  {r}")
+        report.append("EXTERNAL (won't render standalone — switch to bundle: refs):")
+        report += [f"  {r}" for r in external]
     if replaced:
-        print("NO AWS LOGO (the AWS Cloud badge must include the AWS logo):")
-        for r in replaced:
-            print(f"  bundle:{r} -> use bundle:{REPLACED[r]}")
+        report.append("NO AWS LOGO (the AWS Cloud badge must include the AWS logo):")
+        report += [f"  bundle:{r} -> use bundle:{REPLACED[r]}" for r in replaced]
     rounded = rounded_groups(svg)
     if rounded:
-        print("ROUNDED GROUP (group containers are square-cornered — drop rx/ry):")
-        for x, y in rounded:
-            print(f"  <rect x=\"{x}\" y=\"{y}\" ...> carries a group badge")
-    if missing or external or replaced or rounded:
+        report.append("ROUNDED GROUP (group containers are square-cornered — drop rx/ry):")
+        report += [f"  <rect x=\"{x}\" y=\"{y}\" ...> carries a group badge" for x, y in rounded]
+    return (None if report else out), embedded, report
+
+
+def main():
+    if len(sys.argv) != 3:
+        print(__doc__)
+        sys.exit(1)
+    src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+    out, embedded, report = embed(src.read_text(encoding="utf-8"))
+    if report:
+        print("\n".join(report))
         if dst.exists():
             dst.unlink()  # never leave a stale or half-embedded final file behind
         sys.exit(f"Nothing written to {dst}; fix the refs above and re-run.")

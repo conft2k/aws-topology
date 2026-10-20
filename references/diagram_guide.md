@@ -1,7 +1,10 @@
 # AWS Architecture Diagram Guide
 
 How to compose a correct, professional AWS architecture diagram using the bundled
-official icons. Read this fully before drawing.
+official icons. Read this fully before drawing. You lay the diagram out as an SVG
+draft in a restricted subset (see "Composing the layout SVG"); `export.py` turns that
+one draft into a portable SVG, a PNG and/or a slide of native PowerPoint shapes, so every
+rule below — coordinates, colors, dash patterns, sizes — carries over to every format.
 
 ## The AWS visual grammar
 
@@ -25,7 +28,7 @@ any AWS reviewer.
 ### Group containers (borders/backgrounds, from the `group` set)
 - **AWS-Cloud-logo_32** — outermost "AWS Cloud" boundary, solid dark border, with the
   AWS logo badge top-left. **Always** use the `-logo` variant; never the logo-less
-  plain-cloud `AWS-Cloud_32` / `AWS-Cloud_32_Dark` (find_icon hides them and embed.py
+  plain-cloud `AWS-Cloud_32` / `AWS-Cloud_32_Dark` (find_icon hides them and export.py
   fails on them). On a dark background use `AWS-Cloud-logo_32_Dark`.
 - **Region_32** — dashed border.
 - **Virtual-private-cloud-VPC_32** — solid purple border, VPC icon top-left.
@@ -36,12 +39,12 @@ any AWS reviewer.
 - **Availability Zone, Security group, Generic group** — groups with **no badge icon**:
   a labeled rect in the color below, nothing in the corner (`find_icon.py az` says so).
 
-In an SVG you render these as: a **square-cornered** `<rect>` (no `rx`/`ry`) with the
+In the layout SVG you draw these as: a **square-cornered** `<rect>` (no `rx`/`ry`) with the
 group's signature border color + a small `<image>` of the group icon pinned to the
 top-left corner + a text label next to it. The group icon PNGs/SVGs are 32px corner
 badges, NOT full frames. The official toolkit draws every group as a plain rectangle;
 a rounded border leaves the square badge's corner sticking out past the curve, so
-embed.py rejects a rounded rect that carries a group badge.
+export.py rejects a rounded rect that carries a group badge.
 
 ### Group border colors (use these exact hex values)
 
@@ -239,10 +242,10 @@ and the border.
 Render resource icons at the same size `S` as service icons, with a short label
 below. When an icon sits on a container border or a connector, break the line at the
 icon instead of drawing it underneath, and keep its label off the line: put a white rect
-behind the label (as for IGW/VGW above) where a line would cross it. A text halo (a
-white-stroked copy of the text drawn first, not `paint-order`, which cairosvg ignores)
-only helps a line that runs *near* the glyphs; a line crossing the label still shows
-between letters.
+behind the label (as for IGW/VGW above) where a line would cross it. Don't use text
+halos (a white-stroked copy of the text): PowerPoint text boxes have no stroke, so
+export.py rejects stroked text — the white mask rect is the only way to keep a line
+off a label.
 
 **A service with an official icon is never just text.** If a connector would carry
 the name of an AWS service or resource — "Site-to-Site VPN", "Direct Connect",
@@ -288,23 +291,40 @@ Do not guess names — they're specific (`Amazon-EC2`, `AWS-Lambda`, `Amazon-API
 `Amazon-Simple-Storage-Service`, `Amazon-VPC_Internet-Gateway`). Run:
 
 ```bash
-python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py "s3" "step functions" "cloudfront"
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py "s3" "step functions" "cloudfront"
 ```
 
 It prints ranked `set/name` references. List a whole set with
-`python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py --list service`.
+`python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py --list service`.
 
-## Composing the SVG
+## Composing the layout SVG
 
-Output a single self-contained `.svg` (or an HTML wrapper if the user wants a web page).
-Reference each icon with the `bundle:` href scheme, then run `scripts/embed.py` to inline
-every icon as base64 so the final file is portable and renders anywhere:
+The SVG is a layout draft, not the deliverable: `scripts/export.py` checks it and writes
+the formats asked for — a portable SVG with every icon inlined, a PNG, and/or a slide of
+native PowerPoint shapes. Reference each icon with the `bundle:` href scheme; the export
+looks it up in the bundle (inlined as base64 in the SVG, an SVG picture on the slide):
 
 ```
 <image href="bundle:service/AWS-Lambda" x="200" y="200" width="48" height="48"/>
 ```
 
-Always deliver the embedded version (post-embed.py) so the diagram renders standalone.
+Use the same subset whatever the format, so one draft serves them all — the export checks
+it even when only an SVG or PNG is wanted:
+
+| SVG | PowerPoint |
+|---|---|
+| `<rect>` (`fill`, `stroke`, `stroke-width`, `stroke-dasharray`, `rx` for no-icon boxes only) | rectangle / rounded rectangle; the dash pattern is kept exactly |
+| `<image href="bundle:set/name">` (or an inlined `data:` URI) | picture with the official SVG icon and a PNG fallback |
+| `<text>` (`font-size`, `font-weight`, `fill`, `text-anchor`), one line each | text box, no wrap, same anchor |
+| `<line>`, `<polyline fill="none">` with `marker-start` / `marker-end` | straight connector / open freeform with triangle arrowheads |
+| `<circle>` | oval (step badges, junction dots) |
+| `<g transform="translate(x,y)">` | offset applied to its children |
+| `<defs>`, `<marker>` | read for the arrowheads only |
+
+No `<path>` outside markers, no other transforms (scale, rotate), no CSS classes or
+`style=""`, no stroked text. Colors as `#RRGGBB`. The full-canvas white background rect
+is dropped (the slide is white). One draft is one slide; the export scales it to fit a
+16:9 slide, so the canvas size decides the slide's text size (see "Text size").
 
 ### Skeleton
 
@@ -397,6 +417,10 @@ far as their contents need.
   15px), connector and secondary labels (protocol, sub-captions, notes) **12px**.
   Never go below 12px. Scale the sizes with `S` (≈ 0.3 × S for node labels) if you
   change it, and give each label line 16–18px of height when you compute spacing.
+  On the slide the px sizes become points through the fit-to-slide scale, so the
+  canvas size decides the result: every label must come out at **≥ 10pt** (a titled
+  canvas of at most ~1100 × 540), and only when that is unavoidable down to **8pt**
+  (~1380 × 675), never smaller. Tighten or split the diagram before going under 10pt.
 - **Color discipline.** Icons carry their own colors; keep containers, text, and
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
@@ -422,14 +446,12 @@ far as their contents need.
 
 ## Font
 
-AWS decks use **Pretendard** for Korean/bilingual content and Arial/Amazon Ember for
-English. Put a Korean-capable family **that is installed on the machine doing the
-render** first in the root `font-family`. Browsers fall back per glyph, but cairosvg
-(used for the preview) uses only the first family, with no fallback when it is
+Put a Korean-capable family **that is installed on the machine doing the render** first
+in the draft's root `font-family`. It is the font of the SVG deliverable and of the PNG,
+and `check_layout.py` estimates widths from it. Browsers fall back per glyph, but
+cairosvg (used for the PNG) uses only the first family, with no fallback when it is
 missing: with Arial or an uninstalled font first, every Hangul label silently
-disappears from the render.
-
-Check before choosing:
+disappears from the render. Check before choosing:
 
 ```bash
 fc-list | grep -iE 'CJK KR|Pretendard'
@@ -437,10 +459,19 @@ fc-list | grep -iE 'CJK KR|Pretendard'
 
 - Noto Sans CJK KR installed → `font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif"`
 - Only Pretendard installed → `font-family="'Pretendard', 'Noto Sans CJK KR', Arial, sans-serif"`
-- Neither → tell the user the preview will drop Hangul, or keep labels in English.
+- Neither → tell the user the PNG will drop Hangul, or keep labels in English.
 
-Both Korean fonts include Latin glyphs, so English labels are unaffected. Korean labels
-are fine and common for FSI customer diagrams.
+The slide's fonts are set by the PowerPoint export, not by the `font-family`: Latin text
+in **Arial** and Korean in **Malgun Gothic (맑은 고딕)** by default, which ship with
+Windows and Microsoft Office. Override with `--font` / `--ea-font` when the deck uses
+another typeface (AWS Korean decks often use Pretendard: `--ea-font Pretendard`), and
+tell the user the font has to be installed where the deck is opened — PowerPoint
+substitutes a missing font. The slide preview (`--preview`) picks an installed Korean
+font by itself.
+
+Korean labels are fine and common for FSI customer diagrams. Real fonts are a little
+wider or narrower than the estimate, so slide text boxes get slack on both sides and
+never wrap; keep ≥8px between a label and the nearest border, as the layout rules say.
 
 ## Common diagram types & which layers to draw
 

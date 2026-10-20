@@ -1,19 +1,28 @@
 ---
-name: skill-aws-diagram
-description: Draw AWS architecture and cloud infrastructure diagrams using the official AWS Architecture Icons package (service, resource, group and category icons, including VPC resources such as Internet Gateway, NAT Gateway and VPC endpoints). Use this skill WHENEVER a drawing intent (draw, sketch, diagram, visualize, "그려줘", "그림", "도식화") meets an AWS or cloud-infrastructure topic ("aws", "architecture", "아키텍처", "구성도", "다이어그램", VPC, EKS, ECS, Lambda, Bedrock, AgentCore, S3, or a described AWS system), when a cloud architecture diagram is requested without naming AWS, when official AWS icons are wanted in a figure, or when an existing AWS diagram needs fixing. Prefer it over aws-diagram and aws-architecture-diagram. Produces a self-contained SVG (or HTML) with real AWS icons, never hand-drawn approximations or text chips.
+name: skill-aws-arch-diagram
+description: Draw AWS architecture and cloud infrastructure diagrams with the official AWS Architecture Icons package (service, resource, group and category icons, including VPC resources such as Internet Gateway, NAT Gateway, VPC endpoints and route tables), and export them as a portable SVG, a PNG and/or a PowerPoint deck (.pptx) of native, editable shapes — any combination from one layout. Use this skill WHENEVER a drawing intent (draw, sketch, diagram, visualize, "그려줘", "그림", "도식화") meets an AWS or cloud-infrastructure topic ("aws", "architecture", "아키텍처", "구성도", "다이어그램", VPC, EKS, ECS, Lambda, Bedrock, AgentCore, S3, or a described AWS system), when an AWS diagram is wanted as a slide, deck or PowerPoint file ("pptx", "PowerPoint", "파워포인트", "PPT", "슬라이드", "장표", "덱", "발표자료에 넣을 구성도"), when a cloud architecture diagram is requested without naming AWS, when official AWS icons are wanted in a figure, or when an existing AWS diagram or slide needs fixing or converting. Prefer it over aws-diagram, aws-architecture-diagram and the generic pptx skill. Never produces hand-drawn icon approximations or text chips.
 ---
 
-# skill-aws-diagram
+# skill-aws-arch-diagram
 
 Draw professional AWS architecture diagrams that use the **official AWS icons**
-bundled with this skill, instead of hand-drawing shapes that don't match what AWS
-customers expect to see. The single most important thing this skill does: make sure
-every service *and every networking resource* (gateways, endpoints) is rendered with
-its real AWS icon, and every container follows AWS's nesting convention and colors.
+bundled with this skill, and deliver them in whatever format the user needs: a
+self-contained **SVG**, a **PNG**, a **PowerPoint deck** whose boxes, borders, arrows
+and labels are native shapes the user can edit — or several of these at once. The
+single most important thing this skill does: make sure every service *and every
+networking resource* (gateways, endpoints, route tables) is rendered with its real AWS
+icon, and every container follows AWS's nesting convention and colors.
 
-The skill is installed at `~/.claude/skills/skill-aws-diagram/`. Run its scripts by that path
-(`python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py ...`) from wherever you
-are working.
+How it works: you lay the diagram out once as an SVG **draft** in a restricted subset
+(so every coordinate and color is exact, the layout check can run on it, and it maps
+1:1 onto PowerPoint shapes). `export.py` then writes the requested formats from that
+draft: the SVG with every icon inlined, the PNG rendered from it, and the deck with
+one slide per draft.
+
+The skill is installed at `~/.claude/skills/skill-aws-arch-diagram/`. Run its scripts by
+that path from wherever you are working. `find_icon.py` and `check_layout.py` need only
+Python; the export needs python-pptx and cairosvg — run it with
+`uv run --with python-pptx --with cairosvg python ...` (no install needed).
 
 ## When to use
 
@@ -21,12 +30,17 @@ Any request that pairs a **drawing intent** with an **AWS / cloud-infra topic**.
 - "AWS 아키텍처 그려줘" / "draw the architecture for this system on AWS"
 - "이 구성을 다이어그램으로 만들어줘" (about an AWS stack)
 - "diagram the VPC / EKS / serverless / AgentCore setup"
-- "show me how CloudFront → ALB → ECS → RDS connects"
-- Fixing or restyling an existing AWS diagram.
-- Any figure that should contain official AWS icons.
+- "AWS 아키텍처를 PPT 장표로 만들어줘" / "이 구성도를 파워포인트에서 편집할 수 있게"
+- "README에 넣을 SVG랑 발표용 pptx 둘 다"
+- Fixing, restyling or converting an existing AWS diagram or slide.
+- Any figure or slide that should contain official AWS icons.
 
 If the request is purely conceptual (no drawing) or not AWS-related, this skill
 doesn't apply.
+
+**Pick the formats** from the request: a document, README or web page → SVG (plus PNG
+when it should preview everywhere, e.g. a repo sample); a slide, deck or "editable in
+PowerPoint" → PPTX; both when asked. With no hint, deliver an SVG and its PNG.
 
 ## Workflow
 
@@ -38,22 +52,25 @@ Extract the components, their AWS services, and the flow (who calls what, what's
 public vs private, what's on-prem). If the user gave a stack in prose or an existing
 system (CloudFormation, CDK, Terraform, deploy scripts), map each piece to an AWS
 service or resource. Ask a brief clarifying question only if the topology is genuinely
-ambiguous; otherwise proceed with a sensible default and note assumptions.
+ambiguous; otherwise proceed with a sensible default and note assumptions. For a deck,
+settle the slide titles (one line each, or none) and the list of slides.
 
 ### 1b. Start from the closest reference example
-`docs/examples/` holds finished, checked reference diagrams — NLB, ALB (3-tier with
+`docs/examples/` holds finished, checked reference layouts — NLB, ALB (3-tier with
 WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
 spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Cloud WAN
-(segments and an edge per Region inside the core network container, VPCs outside). When the request resembles
-one of them, open its SVG and reuse its layout and coordinates (canvas, AZ rows, tier
-columns, gap, IGW, regional-services row, note line) instead of laying out from
-scratch. `docs/example.svg` is the minimal skeleton.
+(segments and an edge per Region inside the core network container, VPCs outside) —
+as drafts (`*.svg`), their PNGs, the deck made from them (`reference-architectures.pptx`)
+and a render of each slide (`slides/`). When the request resembles one of them, open
+its SVG and reuse its layout and coordinates (canvas, AZ rows, tier columns, gap, IGW,
+regional-services row, note line) instead of laying out from scratch.
+`docs/example.svg` is the minimal skeleton.
 
 ### 2. Read the guide
 Read `references/diagram_guide.md` in full. It defines the AWS visual grammar
 (Cloud > Region > VPC > subnet nesting), the exact group border colors, the VPC
-resource icon table, layout rules, and the SVG skeleton.
-The diagram will look wrong if you skip it.
+resource icon table, layout rules, the draft subset and the skeleton. The diagram will
+look wrong if you skip it.
 
 ### 3. Find the exact icons
 All icons live inside a single bundle, `assets/icons.json` (not a folder of files).
@@ -61,12 +78,12 @@ For every service, resource and container, look up its exact reference — do no
 it from memory:
 
 ```bash
-python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
 ```
 
 It prints ranked `set/name` references (e.g. `service/AWS-Lambda`, `group/AWS-Cloud-logo_32`,
 `resource/Amazon-VPC_Internet-Gateway`). Common
-abbreviations (alb, ecs, s3, vpc, igw, nat, vpce, eice, ...) are aliased. List a whole
+abbreviations (alb, ecs, s3, vpc, igw, nat, vpce, eice, rtb, ...) are aliased. List a whole
 set with `--list resource`. Sets available: `service` (303), `resource` (513),
 `group` (15), `category` (26), `legacy` (16 retired service icons).
 
@@ -75,11 +92,11 @@ AgentCore *components* (Runtime, Gateway, Memory, Identity, ...) have no officia
 yet — see the guide's "Bedrock and AgentCore" for how to draw them.
 
 **Every AWS service or resource in the diagram that has an official icon is drawn as
-that icon** — including the ones that are easy to leave as a connector label: Site-to-
-Site VPN, Direct Connect, PrivateLink, VPC peering, Transit Gateway, Global
-Accelerator, CloudFront, WAF, NAT gateway, endpoints. Run `find_icon.py` on every
-service you are about to write as text; if it returns a score-95 `service/` or
-`resource/` hit, it becomes a node with its icon on the path. Connector labels carry
+that icon** — including the ones that are easy to leave as a connector label or a text
+box: Site-to-Site VPN, Direct Connect, PrivateLink, VPC peering, Transit Gateway, Global
+Accelerator, CloudFront, WAF, NAT gateway, endpoints, route tables. Run `find_icon.py`
+on every service or resource you are about to write as text; if it returns a score-95
+`service/` or `resource/` hit, it becomes a node with its icon. Connector labels carry
 only protocols, ports and verbs ("IPsec", "HTTPS :443", "GENEVE :6081", "read/write").
 Two exceptions: a service already shown by another node (the GWLBe *is* the
 PrivateLink endpoint — drop "PrivateLink" from the label rather than adding a second
@@ -87,13 +104,16 @@ icon), and a connection type with no icon in the bundle (TGW peering) stays a la
 `check_layout.py` flags connector labels that name a service with an icon.
 
 If nothing in `service` matches, search `resource` before concluding there is no
-icon — gateways, endpoints, instances, tables and buckets are resources. Only if
-neither has it, use the closest **category** icon or a plain labeled rounded rect,
-and say so to the user. Never hand-draw a fake product mark.
+icon — gateways, endpoints, instances, tables and buckets are resources. An icon filed
+under another service still counts when it is the package's only icon for the thing
+(route tables are `resource/Amazon-Route-53_Route-Table`). Only if neither set has it,
+use the closest **category** icon or a plain labeled rounded rect, and say so to the
+user. Never hand-draw a fake product mark.
 
-### 4. Compose the SVG
-Build a single `.svg` following the skeleton and layout rules in the guide. Reference
-each icon with the **`bundle:` scheme** in the `href` — this is how embed.py finds it:
+### 4. Compose the draft
+Build one `.svg` draft per diagram (one per slide for a deck) in the scratchpad, named
+`<name>.draft.svg`, following the skeleton and layout rules in the guide. Reference
+each icon with the **`bundle:` scheme** in the `href` — this is how the export finds it:
 
 ```xml
 <image href="bundle:service/AWS-Lambda"   x="200" y="200" width="48" height="48"/>
@@ -101,15 +121,21 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
 <image href="bundle:resource/Amazon-VPC_Endpoints" x="482" y="331" width="48" height="48"/>
 ```
 
+Use only the elements of the draft subset (guide: "Composing the layout SVG"), whatever
+formats are wanted: `rect`, `image`, one-line `text`, `line`, `polyline fill="none"`,
+`circle`, `g transform="translate(...)"`, and arrow markers in `defs`. Presentation
+attributes only (no `style=`/`class=`), `#RRGGBB` colors, no `<path>` outside markers,
+and no text halos — mask a label with a white rect instead.
+
 - Draw group containers first (AWS Cloud, Region, VPC, subnets) as **square-cornered**
   rects (no `rx` — the official style; a rounded border makes the square corner badge
-  stick out, and embed.py rejects it) whose border color matches the group icon (VPC is purple `#8C4FFF`) + a corner group-icon
-  badge + a label. The AWS Cloud badge is **always** `group/AWS-Cloud-logo_32` (with
-  the AWS logo; `_Dark` on dark backgrounds), never the logo-less `group/AWS-Cloud_32`
-  — embed.py rejects it.
+  stick out, and the export rejects it) whose border color matches the group icon (VPC
+  is purple `#8C4FFF`) + a corner group-icon badge + a label. The AWS Cloud badge is
+  **always** `group/AWS-Cloud-logo_32` (with the AWS logo; `_Dark` on dark
+  backgrounds), never the logo-less `group/AWS-Cloud_32` — the export rejects it.
 - Place each service and resource as an `<image href="bundle:...">` with a centered
   label directly below. **Every node icon is the same size** — services, resources
-  (IGW, NAT, endpoints, ALB) and users/servers alike, 48px by default.
+  (IGW, NAT, endpoints, route tables, ALB) and users/servers alike, 48px by default.
   Availability Zones and security groups have no badge icon — label-only rects in the
   guide's group colors.
   Only container corner badges (22–32px) and legend icons differ. If space is tight,
@@ -139,45 +165,70 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
   node centers ~100–120px apart, no empty areas), and text is 14px for node and
   container labels, 12px for connector/secondary labels, never smaller — see the
   guide's "Compact, not empty" and "Text size".
+- **Size the canvas for the format.** A document SVG/PNG can be as large as its content
+  needs (the reference layouts are up to 1180 × 768). A slide is scaled to fit 16:9
+  (below the title band if there is one), so the canvas decides the slide's text size:
+  - **Slide text is 10pt or larger.** Every label on the slide — the 12px connector and
+    secondary labels included — must land at **≥ 10pt**: with a title a canvas of at
+    most about **1100 × 540** (1100 × 600 without a title), close to 16:8 (16:9 without)
+    so it fills the slide. Get there by tightening the layout, shortening labels or
+    splitting the diagram over two slides.
+  - Only when that is genuinely impossible — the diagram can't be split or tightened
+    without losing what it shows — may the smallest text go down to **8pt**, never below
+    (canvas up to about 1380 × 675 with a title, 1380 × 755 without). Then tell the user
+    which slide is under 10pt, its smallest size and why it couldn't be avoided.
+  - When the same diagram is wanted as a document image *and* a slide, use one draft if
+    it fits the slide limits; otherwise draw a compact slide draft next to the document
+    one (same grammar and icons, fewer rows or a split) and tell the user.
+  - The reference layouts come out at 7–8pt on a titled slide — reuse their grammar and
+    grid for slides, not their canvas size.
 - Root `font-family` starts with a Korean font that is **installed on this machine** —
   check with `fc-list | grep -iE 'CJK KR|Pretendard'` (see the guide's "Font"). cairosvg
-  uses only the first family and drops every Hangul label if that one is Arial or isn't
-  installed.
+  uses only the first family and drops every Hangul label from the PNG if that one is
+  Arial or isn't installed. The deck's fonts are set separately (`--font`/`--ea-font`).
 
-### 5. Make it portable and verify
-Inline all icons as base64 so the final file renders standalone anywhere:
-
-```bash
-python3 ~/.claude/skills/skill-aws-diagram/scripts/embed.py draft.svg final.svg
-```
-
-It replaces every `bundle:set/name` href with a data: URI from the bundle. It exits
-with status 1 and lists the offending hrefs if any `bundle:` ref is unknown or any
-`<image>` still points at an external file or URL; fix them (find_icon.py for names)
-and re-run until it exits 0.
-
-Run the layout check on the draft and fix everything it reports until it prints
+### 5. Check, export and verify
+Run the layout check on each draft and fix everything it reports until it prints
 "Layout OK":
 
 ```bash
-python3 ~/.claude/skills/skill-aws-diagram/scripts/check_layout.py draft.svg
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/check_layout.py name.draft.svg
 ```
 
 It flags a connector or container border crossing a label, icon or badge, labels
 overlapping each other or an icon, and text under 12px — the defects that otherwise
 only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allowed.
 
-Then render it and look at the result before delivering — the check estimates text
-widths, and balance, whitespace and readability still need eyes:
+Then export the formats you need — any combination, from the same drafts:
 
 ```bash
-uv run --with cairosvg python -c "import cairosvg,sys; cairosvg.svg2png(url=sys.argv[1], write_to=sys.argv[2], output_width=2000)" final.svg preview.png
+uv run --with python-pptx --with cairosvg python ~/.claude/skills/skill-aws-arch-diagram/scripts/export.py \
+  a.draft.svg b.draft.svg --svg --png --out-dir docs \
+  --pptx docs/architecture.pptx --title "Slide A" --title "Slide B" --preview
 ```
 
-cairosvg ignores CSS-class text halos, so a line showing through a haloed label in the
-preview is not necessarily a bug in the SVG.
+- `--svg` writes `<out-dir>/<name>.svg` per draft with every icon inlined as base64, so
+  it renders standalone anywhere; `--png` renders it to `<name>.png` (`--png-width`,
+  default 2000).
+- `--pptx DECK` writes one 16:9 deck, one slide per draft in order, `--title` once per
+  slide; `--font` / `--ea-font` change the Latin / Korean typeface (default Arial /
+  Malgun Gothic). `--preview` renders each slide back to `DECK-1.png`, `DECK-2.png`, ...
+  from what the .pptx actually contains (not PowerPoint: text uses the installed Korean
+  font, so widths differ a little; if PowerPoint or LibreOffice is available, also open
+  the deck there).
+- Every draft is checked before anything is written: unknown `bundle:` refs, an
+  `<image>` pointing at an external file, an AWS Cloud badge without the logo, a rounded
+  group container, or anything outside the draft subset (`<path>`, scale/rotate
+  transforms, `style=`, text halos). The export exits with status 1, writes nothing and
+  lists the offending elements; fix them and re-run until it exits 0.
+- For each slide under 10pt it prints a note, and under 8pt a WARNING — a slide with
+  that warning is not deliverable.
 
-Before delivering, go through this checklist on the render:
+The single-format scripts behind it also run on their own: `embed.py draft.svg out.svg`,
+`svg2pptx.py drafts... -o deck.pptx [--title ...]`, `render_pptx.py deck.pptx preview`.
+
+Look at every PNG / slide render before delivering — the check estimates text widths,
+and balance, whitespace and readability still need eyes. Go through this checklist:
 
 - [ ] Main traffic path reads left → right; only return/outbound/management arrows
       go another way, and those are dashed.
@@ -189,22 +240,35 @@ Before delivering, go through this checklist on the render:
       one-line legend.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
-      12px (connectors, notes).
-- [ ] Every AWS service/resource with an official icon is an icon node, not a label.
+      12px (connectors, notes); a slide is filled without crowding the title.
+- [ ] Slides: the export printed no note — all slide text is ≥ 10pt; 8–10pt only when
+      unavoidable and the user is told; never under 8pt.
+- [ ] Every AWS service/resource with an official icon is an icon node, not a label or
+      text box.
 - [ ] A Site-to-Site VPN path is CGW → Internet → Site-to-Site VPN → TGW/VGW, with the
       Internet and VPN icons outside the AWS Cloud; a Direct Connect path does not pass
       the Internet icon.
-- [ ] `check_layout.py` prints "Layout OK" and `embed.py` exits 0.
+- [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
 
-Save the final SVG where the user asked (in a repo, usually next to the docs that
-reference it, e.g. `docs/architecture.svg`). When the diagram is a sample or reference
-for a repo, save its PNG render next to it as well (same name, `.png`), since a PNG
-previews everywhere. Keep drafts in the scratchpad, and tell the user the paths. If
-the user asked for an editable web page, wrap the SVG in a minimal HTML file instead.
+Save the outputs where the user asked (in a repo, usually next to the docs that
+reference them, e.g. `docs/architecture.svg`, `docs/architecture.pptx`). When a diagram
+is a sample or reference for a repo, save the PNG next to the SVG and the slide renders
+next to the deck (`--preview`), since a PNG previews everywhere. Keep drafts in the
+scratchpad unless the user wants the layout source too, and tell the user the paths.
+If the user asked for an editable web page, wrap the exported SVG in a minimal HTML
+file.
 
 ## Output format
 
-- Default deliverable: one self-contained, base64-embedded `.svg`.
+- **SVG**: one self-contained file per diagram, every icon inlined as base64.
+- **PNG**: rendered from that SVG, 2000px wide by default.
+- **PPTX**: 16:9, one architecture per slide. The diagram on each slide is one group
+  named "Architecture diagram" — it moves and scales as a unit, and ungrouping it gives
+  the individual shapes. Containers, connectors and labels are PowerPoint shapes; icons
+  are pictures carrying the official SVG (PowerPoint 2016+/Microsoft 365 draw the vector
+  and can "Convert to Shape"; older viewers show the embedded PNG fallback), each named
+  after its icon (`Amazon-EC2`, ...). Tell the user which fonts the deck uses (default
+  Arial + Malgun Gothic).
 - Preserve official icon colors; keep containers/text/arrows in AWS neutrals and the
   group colors from the guide.
 - Bilingual (Korean/English) labels are expected and fine for FSI/customer diagrams.
@@ -213,7 +277,10 @@ the user asked for an editable web page, wrap the SVG in a minimal HTML file ins
 
 ## What NOT to do
 
-- Don't hand-draw or approximate AWS icons — use the bundled ones.
+- Don't hand-draw or approximate AWS icons — use the bundled ones, and don't swap in
+  PowerPoint's built-in icons or clip art.
+- Don't build a slide with python-pptx by hand or with the generic pptx skill — lay it
+  out as a draft and export it, so the layout check and the exact group styles apply.
 - Don't write an AWS service that has an official icon (Site-to-Site VPN, Direct
   Connect, PrivateLink, ...) as a connector label — draw it as an icon node.
 - Don't draw an Internet Gateway, NAT Gateway, VPC endpoint, EICE or route table as a
@@ -233,8 +300,10 @@ the user asked for an editable web page, wrap the SVG in a minimal HTML file ins
 - Don't mix icon sizes (e.g. 56px services next to 36px gateways) — one size for every
   node icon, unless you are deliberately emphasizing specific services.
 - Don't use rainbow connectors or inconsistent arrow styles.
-- Don't deliver an SVG that references external icon files (won't render for the user)
-  — always run `embed.py` for the final version.
+- Don't cram several architectures onto one slide — one diagram per slide, more slides
+  if needed.
+- Don't deliver an SVG that references external icon files or `bundle:` refs (won't
+  render for the user) — always deliver the exported version.
 
 ## Asset inventory
 
@@ -244,12 +313,16 @@ All 873 icons are packed into one JSON bundle (keeps the skill's file count low)
   released 2026-07-31 (`Icon-package_07312026`; re-downloaded and found identical on
   2026-10-19). Sets: `service`, `resource`, `group`, `category`, `legacy`. SVGs stored
   as text.
-- `references/diagram_guide.md` — conventions, colors, VPC resources, SVG skeleton (read this).
+- `references/diagram_guide.md` — conventions, colors, VPC resources, the draft subset and skeleton (read this).
 - `scripts/find_icon.py` — fuzzy lookup → `set/name` reference (with AWS abbreviation aliases).
-- `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable final SVG.
 - `scripts/check_layout.py` — flag lines over labels/icons, overlapping labels, text under 12px.
+- `scripts/export.py` — check drafts and write any of SVG, PNG and PPTX in one step.
+- `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable SVG.
+- `scripts/svg2pptx.py` — convert drafts into a deck of native PowerPoint shapes.
+- `scripts/render_pptx.py` — render each slide of a deck to PNG for the visual check.
 - `scripts/build_bundle.py` — rebuild `icons.json` from a newer official package.
-- `docs/examples/` — checked NLB, ALB, GWLB, TGW and Cloud WAN reference diagrams (SVG + PNG) to start from.
+- `docs/examples/` — checked NLB, ALB, GWLB, TGW and Cloud WAN reference layouts
+  (drafts + PNG), the deck made from them and a render of each slide (`slides/`).
 
 ## Updating the icon set
 
@@ -257,7 +330,7 @@ AWS publishes a new package a few times a year at
 https://aws.amazon.com/architecture/icons/. To pick it up:
 
 1. Download the "Icon package" zip and unzip it into an empty scratch directory.
-2. `python3 ~/.claude/skills/skill-aws-diagram/scripts/build_bundle.py <unzipped-dir>`
+2. `python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/build_bundle.py <unzipped-dir>`
 3. Check the printed set counts, re-check the group colors in the guide against the
    new group SVGs and the "Groups" slide of the PPTx toolkit (download it from the same
    page; unzip the .pptx and grep `srgbClr`/`prstDash` in `ppt/slides/slide*.xml` —

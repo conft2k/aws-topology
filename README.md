@@ -1,16 +1,19 @@
-# skill-aws-diagram
+# skill-aws-arch-diagram
 
 A [Claude Code](https://claude.com/claude-code) skill that draws AWS architecture
 diagrams with the **official AWS Architecture Icons** — real service, resource and
-group icons instead of hand-drawn approximations or text chips — and delivers one
-self-contained SVG.
+group icons instead of hand-drawn approximations or text chips — and exports them as a
+self-contained **SVG**, a **PNG** and/or a **PowerPoint deck** of native, editable
+shapes, all from one layout.
+
+It merges the former `skill-aws-diagram` (SVG) and `skill-aws-pptx` (PowerPoint) skills.
 
 ![Example output: AWS Cloud > Region > VPC with an Internet gateway on the VPC border, an ALB in the public subnet and EC2 in the private subnet](docs/example.png)
 
 What it enforces:
 
 - Every service **and every networking resource** (Internet gateway, NAT gateway, VPC
-  endpoints, load balancers) is drawn with its official icon, looked up by name from a
+  endpoints, route tables, load balancers) is drawn with its official icon, looked up by name from a
   bundled copy of the icon package — never typed from memory.
 - AWS's nesting convention (AWS Cloud > Region > VPC > subnets) with the group border
   colors and dash styles taken from the official package and its PowerPoint toolkit,
@@ -20,14 +23,18 @@ What it enforces:
 - Traffic flows left → right (tiers as columns, AZs as rows); ALB/NLB/GWLB are one
   node across the AZs while zonal resources stay per AZ; detours get numbered steps.
 - Square-cornered official group styles, compact containers and readable 14px/12px text.
-- A final SVG with all icons inlined as base64, verified to contain no external
-  references, checked for lines crossing labels or icons, and rendered to PNG for a
-  visual check before delivery.
+- One draft subset (rect, image, text, line, polyline, circle) that maps 1:1 onto
+  PowerPoint shapes, checked for lines crossing labels or icons before export.
+- `export.py` writes any mix of formats: an SVG with all icons inlined as base64, a PNG,
+  and a 16:9 deck whose containers, connectors and labels are PowerPoint shapes and
+  whose icons are the official SVGs; slide text is kept at 10pt or larger (8pt only when
+  unavoidable).
 
 ## Reference examples
 
 Finished diagrams in [`docs/examples/`](docs/examples/) (SVG + PNG), drawn with the skill
-and used as its starting layouts:
+and used as its starting layouts. [`reference-architectures.pptx`](docs/examples/reference-architectures.pptx)
+holds the same five as slides, with a render of each in [`docs/examples/slides/`](docs/examples/slides/).
 
 | NLB | ALB |
 |---|---|
@@ -47,28 +54,37 @@ and used as its starting layouts:
 ## Install
 
 ```bash
-git clone https://github.com/conft2k/skill-aws-diagram ~/.claude/skills/skill-aws-diagram
+git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
 ```
 
-Or clone it elsewhere and symlink it to `~/.claude/skills/skill-aws-diagram`. Restart
+Or clone it elsewhere and symlink it to `~/.claude/skills/skill-aws-arch-diagram`. Restart
 Claude Code; the skill triggers on requests like "draw the AWS architecture for …",
-"diagram this VPC", or "AWS 아키텍처 그려줘".
+"diagram this VPC", "AWS 아키텍처 그려줘" or "이 구성도를 PPT 장표로 만들어줘".
 
-Requirements: Python 3.9+ (no third-party packages for the scripts). The optional
-PNG preview uses [cairosvg](https://cairosvg.org/) via `uv run --with cairosvg`;
-Korean labels in the preview need a CJK font installed (e.g. Noto Sans CJK KR).
+Requirements: Python 3.9+. `find_icon.py`, `check_layout.py` and `embed.py` need no
+third-party packages; the export runs with
+`uv run --with python-pptx --with cairosvg` ([uv](https://docs.astral.sh/uv/)), so
+nothing is installed globally. Korean labels in PNGs need a CJK font installed (e.g.
+Noto Sans CJK KR). Decks: PowerPoint 2016 or later / Microsoft 365 draws the SVG icons as
+vectors; older viewers fall back to the embedded PNGs. Slides use Arial and Malgun Gothic
+(맑은 고딕) by default; change them with `--font` / `--ea-font`.
 
 ## Layout
 
 ```
 SKILL.md                     the skill: workflow, rules, what not to do
 references/diagram_guide.md  AWS visual grammar, group colors, VPC resource table,
-                             SVG skeleton, layout and font rules
+                             draft subset and skeleton, layout, text-size and font rules
 assets/icons.json            873 icons in one JSON bundle (sets: service, resource,
                              group, category, legacy)
 scripts/find_icon.py         fuzzy lookup: `find_icon.py alb igw "s3 gateway endpoint"`
+scripts/export.py            drafts -> any of SVG / PNG / PPTX (+ slide previews); checks
+                             every draft first and writes nothing if one fails
 scripts/embed.py             inline bundle: refs as base64; fails on unknown/external refs
                              and on rounded group containers
+scripts/svg2pptx.py          drafts -> .pptx of native shapes; fails on anything it can't
+                             convert exactly
+scripts/render_pptx.py       render each slide of a deck to PNG
 scripts/check_layout.py      flag lines over labels/icons, overlapping labels, text < 12px
 scripts/build_bundle.py      rebuild icons.json from a newly released icon package
 ```
@@ -88,8 +104,15 @@ python3 scripts/find_icon.py ec2 "api gateway" igw nat "s3 gateway endpoint"
 # check the layout (exit 1 lists lines crossing labels/icons, overlaps, small text)
 python3 scripts/check_layout.py draft.svg
 
-# then inline them for a portable file (exit 1 lists anything that would not render)
-python3 scripts/embed.py draft.svg final.svg
+# export any mix of formats (exit 1 lists anything that would not render or convert)
+uv run --with python-pptx --with cairosvg python scripts/export.py \
+  a.draft.svg b.draft.svg --svg --png --out-dir out \
+  --pptx out/deck.pptx --title "Slide A" --title "Slide B" --preview
+
+# or one format at a time
+python3 scripts/embed.py a.draft.svg a.svg
+uv run --with python-pptx --with cairosvg python scripts/svg2pptx.py a.draft.svg -o deck.pptx
+uv run --with python-pptx --with cairosvg python scripts/render_pptx.py deck.pptx deck-preview
 ```
 
 ## Updating the icon set
@@ -115,5 +138,5 @@ The skill's code and documentation are licensed under the Apache License 2.0
 
 `assets/icons.json` repackages the AWS Architecture Icons, which belong to Amazon Web
 Services and are **not** covered by that license; they are included unmodified so the
-skill can draw AWS diagrams, and your use of them is subject to AWS's terms. See
-[NOTICE](NOTICE). This project is not affiliated with or endorsed by AWS.
+skill can draw AWS diagrams, and your use of them is subject to AWS's terms. The icons
+embedded in the example SVGs, PNGs and deck are the same AWS icons. See [NOTICE](NOTICE). This project is not affiliated with or endorsed by AWS.
