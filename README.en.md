@@ -8,8 +8,6 @@ group icons instead of hand-drawn approximations or text chips — and exports t
 self-contained **SVG**, a **PNG** and/or a **PowerPoint deck** of native, editable
 shapes, all from one layout.
 
-It merges the former `skill-aws-diagram` (SVG) and `skill-aws-pptx` (PowerPoint) skills.
-
 ![Example output: AWS Cloud > Region > VPC with an Internet gateway on the VPC border, an ALB in the public subnet and EC2 in the private subnet](docs/example.png)
 
 What it enforces:

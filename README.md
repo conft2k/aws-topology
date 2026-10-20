@@ -8,8 +8,6 @@
 독립 실행되는 **SVG**, **PNG**, 편집 가능한 도형으로 된 **PowerPoint 덱**을 원하는 조합으로
 만듭니다.
 
-예전의 `skill-aws-diagram`(SVG)과 `skill-aws-pptx`(PowerPoint) 두 skill을 합친 것입니다.
-
 ![출력 예: AWS Cloud > Region > VPC, VPC 경계 위의 Internet gateway, 퍼블릭 서브넷의 ALB와 프라이빗 서브넷의 EC2](docs/example.png)
 
 지키는 규칙:
