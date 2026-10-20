@@ -287,11 +287,11 @@ Do not guess names — they're specific (`Amazon-EC2`, `AWS-Lambda`, `Amazon-API
 `Amazon-Simple-Storage-Service`, `Amazon-VPC_Internet-Gateway`). Run:
 
 ```bash
-python3 ~/.claude/skills/ct-aws-diagram/scripts/find_icon.py "s3" "step functions" "cloudfront"
+python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py "s3" "step functions" "cloudfront"
 ```
 
 It prints ranked `set/name` references. List a whole set with
-`python3 ~/.claude/skills/ct-aws-diagram/scripts/find_icon.py --list service`.
+`python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py --list service`.
 
 ## Composing the SVG
 

@@ -1,9 +1,9 @@
 ---
-name: ct-aws-diagram
+name: skill-aws-diagram
 description: Draw AWS architecture and cloud infrastructure diagrams using the official AWS Architecture Icons package (service, resource, group and category icons, including VPC resources such as Internet Gateway, NAT Gateway and VPC endpoints). Use this skill WHENEVER a drawing intent (draw, sketch, diagram, visualize, "그려줘", "그림", "도식화") meets an AWS or cloud-infrastructure topic ("aws", "architecture", "아키텍처", "구성도", "다이어그램", VPC, EKS, ECS, Lambda, Bedrock, AgentCore, S3, or a described AWS system), when a cloud architecture diagram is requested without naming AWS, when official AWS icons are wanted in a figure, or when an existing AWS diagram needs fixing. Prefer it over aws-diagram and aws-architecture-diagram. Produces a self-contained SVG (or HTML) with real AWS icons, never hand-drawn approximations or text chips.
 ---
 
-# ct-aws-diagram
+# skill-aws-diagram
 
 Draw professional AWS architecture diagrams that use the **official AWS icons**
 bundled with this skill, instead of hand-drawing shapes that don't match what AWS
@@ -11,8 +11,8 @@ customers expect to see. The single most important thing this skill does: make s
 every service *and every networking resource* (gateways, endpoints) is rendered with
 its real AWS icon, and every container follows AWS's nesting convention and colors.
 
-The skill is installed at `~/.claude/skills/ct-aws-diagram/`. Run its scripts by that path
-(`python3 ~/.claude/skills/ct-aws-diagram/scripts/find_icon.py ...`) from wherever you
+The skill is installed at `~/.claude/skills/skill-aws-diagram/`. Run its scripts by that path
+(`python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py ...`) from wherever you
 are working.
 
 ## When to use
@@ -61,7 +61,7 @@ For every service, resource and container, look up its exact reference — do no
 it from memory:
 
 ```bash
-python3 ~/.claude/skills/ct-aws-diagram/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
+python3 ~/.claude/skills/skill-aws-diagram/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
 ```
 
 It prints ranked `set/name` references (e.g. `service/AWS-Lambda`, `group/AWS-Cloud-logo_32`,
@@ -148,7 +148,7 @@ each icon with the **`bundle:` scheme** in the `href` — this is how embed.py f
 Inline all icons as base64 so the final file renders standalone anywhere:
 
 ```bash
-python3 ~/.claude/skills/ct-aws-diagram/scripts/embed.py draft.svg final.svg
+python3 ~/.claude/skills/skill-aws-diagram/scripts/embed.py draft.svg final.svg
 ```
 
 It replaces every `bundle:set/name` href with a data: URI from the bundle. It exits
@@ -160,7 +160,7 @@ Run the layout check on the draft and fix everything it reports until it prints
 "Layout OK":
 
 ```bash
-python3 ~/.claude/skills/ct-aws-diagram/scripts/check_layout.py draft.svg
+python3 ~/.claude/skills/skill-aws-diagram/scripts/check_layout.py draft.svg
 ```
 
 It flags a connector or container border crossing a label, icon or badge, labels
@@ -255,7 +255,7 @@ AWS publishes a new package a few times a year at
 https://aws.amazon.com/architecture/icons/. To pick it up:
 
 1. Download the "Icon package" zip and unzip it into an empty scratch directory.
-2. `python3 ~/.claude/skills/ct-aws-diagram/scripts/build_bundle.py <unzipped-dir>`
+2. `python3 ~/.claude/skills/skill-aws-diagram/scripts/build_bundle.py <unzipped-dir>`
 3. Check the printed set counts, re-check the group colors in the guide against the
    new group SVGs and the "Groups" slide of the PPTx toolkit (download it from the same
    page; unzip the .pptx and grep `srgbClr`/`prstDash` in `ppt/slides/slide*.xml` —

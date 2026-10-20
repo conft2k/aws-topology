@@ -1,4 +1,4 @@
-# ct-aws-diagram
+# skill-aws-diagram
 
 A [Claude Code](https://claude.com/claude-code) skill that draws AWS architecture
 diagrams with the **official AWS Architecture Icons** — real service, resource and
@@ -47,10 +47,10 @@ and used as its starting layouts:
 ## Install
 
 ```bash
-git clone https://github.com/conft2k/ct-aws-diagram ~/.claude/skills/ct-aws-diagram
+git clone https://github.com/conft2k/skill-aws-diagram ~/.claude/skills/skill-aws-diagram
 ```
 
-Or clone it elsewhere and symlink it to `~/.claude/skills/ct-aws-diagram`. Restart
+Or clone it elsewhere and symlink it to `~/.claude/skills/skill-aws-diagram`. Restart
 Claude Code; the skill triggers on requests like "draw the AWS architecture for …",
 "diagram this VPC", or "AWS 아키텍처 그려줘".
 
