@@ -1,142 +1,140 @@
 # skill-aws-arch-diagram
 
-A [Claude Code](https://claude.com/claude-code) skill that draws AWS architecture
-diagrams with the **official AWS Architecture Icons** — real service, resource and
-group icons instead of hand-drawn approximations or text chips — and exports them as a
-self-contained **SVG**, a **PNG** and/or a **PowerPoint deck** of native, editable
-shapes, all from one layout.
+> English: [README.en.md](README.en.md)
 
-It merges the former `skill-aws-diagram` (SVG) and `skill-aws-pptx` (PowerPoint) skills.
+**공식 AWS Architecture Icons**로 AWS 아키텍처 구성도를 그리는
+[Claude Code](https://claude.com/claude-code) skill입니다. 손으로 흉내 낸 아이콘이나
+텍스트 박스 대신 실제 서비스·리소스·그룹 아이콘을 쓰고, 하나의 레이아웃에서
+독립 실행되는 **SVG**, **PNG**, 편집 가능한 도형으로 된 **PowerPoint 덱**을 원하는 조합으로
+만듭니다.
 
-![Example output: AWS Cloud > Region > VPC with an Internet gateway on the VPC border, an ALB in the public subnet and EC2 in the private subnet](docs/example.png)
+예전의 `skill-aws-diagram`(SVG)과 `skill-aws-pptx`(PowerPoint) 두 skill을 합친 것입니다.
 
-What it enforces:
+![출력 예: AWS Cloud > Region > VPC, VPC 경계 위의 Internet gateway, 퍼블릭 서브넷의 ALB와 프라이빗 서브넷의 EC2](docs/example.png)
 
-- Every service **and every networking resource** (Internet gateway, NAT gateway, VPC
-  endpoints, route tables, load balancers) is drawn with its official icon, looked up by name from a
-  bundled copy of the icon package — never typed from memory.
-- AWS's nesting convention (AWS Cloud > Region > VPC > subnets) with the group border
-  colors and dash styles taken from the official package and its PowerPoint toolkit,
-  including groups that have no icon (Availability Zone, security group).
-- One icon size for every node; Internet gateways and virtual private gateways
-  centered on the VPC border with the border masked behind icon and label.
-- Traffic flows left → right (tiers as columns, AZs as rows); ALB/NLB/GWLB are one
-  node across the AZs while zonal resources stay per AZ; detours get numbered steps.
-- Square-cornered official group styles, compact containers and readable 14px/12px text.
-- One draft subset (rect, image, text, line, polyline, circle) that maps 1:1 onto
-  PowerPoint shapes, checked for lines crossing labels or icons before export.
-- `export.py` writes any mix of formats: an SVG with all icons inlined as base64, a PNG,
-  and a 16:9 deck whose containers, connectors and labels are PowerPoint shapes and
-  whose icons are the official SVGs; slide text is kept at 10pt or larger (8pt only when
-  unavoidable).
+지키는 규칙:
 
-## Reference examples
+- 모든 서비스와 **모든 네트워킹 리소스**(Internet gateway, NAT gateway, VPC 엔드포인트,
+  라우팅 테이블, 로드 밸런서)를 공식 아이콘으로 그립니다. 아이콘은 기억에 의존하지 않고
+  번들로 포함한 아이콘 패키지에서 이름으로 찾습니다.
+- AWS의 중첩 규칙(AWS Cloud > Region > VPC > 서브넷)을 따르고, 그룹 테두리 색과 점선
+  모양은 공식 패키지와 PowerPoint 툴킷에서 가져옵니다. 아이콘이 없는 그룹(Availability
+  Zone, 보안 그룹)도 포함합니다.
+- 모든 노드의 아이콘 크기는 하나로 통일합니다. Internet gateway와 가상 프라이빗 게이트웨이는
+  VPC 경계선 위 가운데에 두고, 아이콘과 라벨 뒤의 경계선은 가립니다.
+- 트래픽은 왼쪽에서 오른쪽으로 흐릅니다(티어는 열, AZ는 행). ALB/NLB/GWLB는 AZ에 걸친
+  노드 하나로 그리고, AZ별 리소스는 AZ마다 그립니다. 경로가 돌아가면 단계 번호를 붙입니다.
+- 공식 그룹 스타일(직각 모서리), 내용에 맞춘 컨테이너, 읽기 쉬운 14px/12px 글자를 씁니다.
+- 초안은 PowerPoint 도형과 1:1로 대응하는 SVG 부분 집합(rect, image, text, line,
+  polyline, circle)으로 그리고, 내보내기 전에 선이 라벨이나 아이콘을 지나가는지 검사합니다.
+- `export.py`는 원하는 형식을 조합해 씁니다: 모든 아이콘을 base64로 넣은 SVG, PNG,
+  그리고 컨테이너·연결선·라벨은 PowerPoint 도형이고 아이콘은 공식 SVG인 16:9 덱입니다.
+  슬라이드 글자는 10pt 이상으로 유지합니다(피할 수 없을 때만 8pt까지).
 
-Finished diagrams in [`docs/examples/`](docs/examples/) (SVG + PNG), drawn with the skill
-and used as its starting layouts. [`reference-architectures.pptx`](docs/examples/reference-architectures.pptx)
-holds the same five as slides, with a render of each in [`docs/examples/slides/`](docs/examples/slides/).
+## 참조 예제
+
+[`docs/examples/`](docs/examples/)에 이 skill로 그린 완성 구성도(SVG + PNG)가 있고, 새 구성도의
+시작 레이아웃으로 씁니다. [`reference-architectures.pptx`](docs/examples/reference-architectures.pptx)에는
+같은 다섯 개가 슬라이드로 들어 있고, 슬라이드별 렌더는 [`docs/examples/slides/`](docs/examples/slides/)에 있습니다.
 
 | NLB | ALB |
 |---|---|
-| ![NLB reference architecture](docs/examples/nlb-reference-architecture.png) | ![ALB reference architecture](docs/examples/alb-reference-architecture.png) |
-| Internet-facing NLB, TLS listener, ASG target group across two AZs | 3-tier: ALB with AWS WAF, app ASG, RDS Multi-AZ |
+| ![NLB 참조 아키텍처](docs/examples/nlb-reference-architecture.png) | ![ALB 참조 아키텍처](docs/examples/alb-reference-architecture.png) |
+| 인터넷 대상 NLB, TLS 리스너, 두 AZ에 걸친 ASG 대상 그룹 | 3-tier: AWS WAF를 붙인 ALB, 앱 ASG, RDS Multi-AZ |
 
 | GWLB | Transit Gateway |
 |---|---|
-| ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
-| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering, on-premises over Site-to-Site VPN across the Internet |
+| ![GWLB 참조 아키텍처](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway 참조 아키텍처](docs/examples/tgw-reference-architecture.png) |
+| 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결 |
 
 | AWS Cloud WAN |
 |---|
-| ![AWS Cloud WAN reference architecture](docs/examples/cloudwan-reference-architecture.png) |
-| One global core network: a core network edge per Region, Production / Development segments spanning the Regions, on-premises over Site-to-Site VPN |
+| ![AWS Cloud WAN 참조 아키텍처](docs/examples/cloudwan-reference-architecture.png) |
+| 하나의 글로벌 코어 네트워크: 리전마다 코어 네트워크 엣지, 리전에 걸친 Production / Development 세그먼트, Site-to-Site VPN으로 온프레미스 연결 |
 
-## Install
+## 설치
 
 ```bash
 git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
 ```
 
-Or clone it elsewhere and symlink it to `~/.claude/skills/skill-aws-arch-diagram`. Restart
-Claude Code; the skill triggers on requests like "draw the AWS architecture for …",
-"diagram this VPC", "AWS 아키텍처 그려줘" or "이 구성도를 PPT 장표로 만들어줘".
+다른 곳에 clone한 뒤 `~/.claude/skills/skill-aws-arch-diagram`으로 심볼릭 링크를 걸어도
+됩니다. Claude Code를 다시 시작하면 "AWS 아키텍처 그려줘", "이 VPC 구성도 그려줘",
+"이 구성도를 PPT 장표로 만들어줘", "draw the AWS architecture for …" 같은 요청에서
+skill이 동작합니다.
 
-Requirements: Python 3.9+. `find_icon.py`, `check_layout.py` and `embed.py` need no
-third-party packages; the export runs with
-`uv run --with python-pptx --with cairosvg` ([uv](https://docs.astral.sh/uv/)), so
-nothing is installed globally. Korean labels in PNGs need a CJK font installed (e.g.
-Noto Sans CJK KR). Decks: PowerPoint 2016 or later / Microsoft 365 draws the SVG icons as
-vectors; older viewers fall back to the embedded PNGs. Slides use Arial and Malgun Gothic
-(맑은 고딕) by default; change them with `--font` / `--ea-font`.
+요구 사항: Python 3.9 이상. `find_icon.py`, `check_layout.py`, `embed.py`는 외부 패키지가
+필요 없습니다. 내보내기는 `uv run --with python-pptx --with cairosvg`([uv](https://docs.astral.sh/uv/))로
+실행하므로 전역 설치가 없습니다. PNG에 한국어 라벨을 그리려면 CJK 글꼴(예: Noto Sans CJK KR)이
+설치되어 있어야 합니다. 덱은 PowerPoint 2016 이상 / Microsoft 365에서 SVG 아이콘을 벡터로
+그리고, 그보다 오래된 뷰어는 함께 넣은 PNG를 보여 줍니다. 슬라이드 글꼴은 기본이 Arial과
+맑은 고딕이며 `--font` / `--ea-font`로 바꿀 수 있습니다.
 
-## Layout
+## 구성
 
 ```
-SKILL.md                     the skill: workflow, rules, what not to do
-references/diagram_guide.md  AWS visual grammar, group colors, VPC resource table,
-                             draft subset and skeleton, layout, text-size and font rules
-assets/icons.json            873 icons in one JSON bundle (sets: service, resource,
+SKILL.md                     skill 본문: 작업 순서, 규칙, 하지 말 것
+references/diagram_guide.md  AWS 시각 문법, 그룹 색, VPC 리소스 표, 초안 문법과 골격,
+                             레이아웃·글자 크기·글꼴 규칙
+assets/icons.json            아이콘 873개를 담은 JSON 번들 (세트: service, resource,
                              group, category, legacy)
-scripts/find_icon.py         fuzzy lookup: `find_icon.py alb igw "s3 gateway endpoint"`
-scripts/export.py            drafts -> any of SVG / PNG / PPTX (+ slide previews); checks
-                             every draft first and writes nothing if one fails
-scripts/embed.py             inline bundle: refs as base64; fails on unknown/external refs
-                             and on rounded group containers
-scripts/svg2pptx.py          drafts -> .pptx of native shapes; fails on anything it can't
-                             convert exactly
-scripts/render_pptx.py       render each slide of a deck to PNG
-scripts/check_layout.py      flag lines over labels/icons, overlapping labels, text < 12px
-scripts/build_bundle.py      rebuild icons.json from a newly released icon package
+scripts/find_icon.py         이름으로 아이콘 찾기: `find_icon.py alb igw "s3 gateway endpoint"`
+scripts/export.py            초안 -> SVG / PNG / PPTX 중 원하는 형식 (+ 슬라이드 미리보기);
+                             모든 초안을 먼저 검사하고 하나라도 실패하면 아무것도 쓰지 않음
+scripts/embed.py             bundle: 참조를 base64로 넣음; 모르는 참조·외부 참조와
+                             모서리가 둥근 그룹 컨테이너에서 실패
+scripts/svg2pptx.py          초안 -> 기본 도형으로 된 .pptx; 정확히 바꿀 수 없는 요소에서 실패
+scripts/render_pptx.py       덱의 슬라이드마다 PNG로 렌더
+scripts/check_layout.py      라벨·아이콘 위를 지나는 선, 겹친 라벨, 12px 미만 글자 검사
+scripts/build_bundle.py      새로 나온 아이콘 패키지로 icons.json 다시 만들기
 ```
 
-### Using the scripts directly
+### 스크립트 직접 쓰기
 
 ```bash
-# find the exact reference for an icon
+# 아이콘의 정확한 참조 이름 찾기
 python3 scripts/find_icon.py ec2 "api gateway" igw nat "s3 gateway endpoint"
 #   [ 95] service/Amazon-EC2
 #   [ 85] resource/Amazon-VPC_Internet-Gateway
 #   ...
 
-# in your SVG, reference icons with the bundle: scheme
+# SVG 초안에서는 bundle: 방식으로 아이콘을 참조
 #   <image href="bundle:service/AWS-Lambda" x="200" y="200" width="48" height="48"/>
 
-# check the layout (exit 1 lists lines crossing labels/icons, overlaps, small text)
+# 레이아웃 검사 (문제가 있으면 exit 1과 함께 라벨·아이콘을 지나는 선, 겹침, 작은 글자를 출력)
 python3 scripts/check_layout.py draft.svg
 
-# export any mix of formats (exit 1 lists anything that would not render or convert)
+# 원하는 형식을 조합해 내보내기 (렌더·변환할 수 없는 요소가 있으면 exit 1과 함께 목록 출력)
 uv run --with python-pptx --with cairosvg python scripts/export.py \
   a.draft.svg b.draft.svg --svg --png --out-dir out \
   --pptx out/deck.pptx --title "Slide A" --title "Slide B" --preview
 
-# or one format at a time
+# 형식 하나씩 만들기
 python3 scripts/embed.py a.draft.svg a.svg
 uv run --with python-pptx --with cairosvg python scripts/svg2pptx.py a.draft.svg -o deck.pptx
 uv run --with python-pptx --with cairosvg python scripts/render_pptx.py deck.pptx deck-preview
 ```
 
-## Updating the icon set
+## 아이콘 세트 업데이트
 
-AWS releases a new icon package roughly quarterly (end of January, April and July) at
-<https://aws.amazon.com/architecture/icons/>. The bundle currently matches
-`Icon-package_07312026`.
+AWS는 대략 분기마다(1월, 4월, 7월 말) <https://aws.amazon.com/architecture/icons/>에 새
+아이콘 패키지를 냅니다. 지금 번들은 `Icon-package_07312026`과 같습니다.
 
 ```bash
 unzip Icon-package_*.zip -d /tmp/aws-icons
 python3 scripts/build_bundle.py /tmp/aws-icons
 ```
 
-Services dropped from the new package move to the `legacy` set automatically. After
-rebuilding, update the package date and set counts in `SKILL.md`, and re-check the
-group colors in `references/diagram_guide.md` (see the "Updating the icon set" section
-of `SKILL.md`).
+새 패키지에서 빠진 서비스는 자동으로 `legacy` 세트로 옮겨집니다. 다시 만든 뒤에는
+`SKILL.md`의 패키지 날짜와 세트별 개수를 고치고, `references/diagram_guide.md`의 그룹 색을
+다시 확인하세요(`SKILL.md`의 "Updating the icon set" 참고).
 
-## License
+## 라이선스
 
-The skill's code and documentation are licensed under the Apache License 2.0
-(see [LICENSE](LICENSE)).
+skill의 코드와 문서는 Apache License 2.0을 따릅니다([LICENSE](LICENSE) 참고).
 
-`assets/icons.json` repackages the AWS Architecture Icons, which belong to Amazon Web
-Services and are **not** covered by that license; they are included unmodified so the
-skill can draw AWS diagrams, and your use of them is subject to AWS's terms. The icons
-embedded in the example SVGs, PNGs and deck are the same AWS icons. See [NOTICE](NOTICE). This project is not affiliated with or endorsed by AWS.
+`assets/icons.json`은 Amazon Web Services 소유의 AWS Architecture Icons를 다시 묶은 것으로,
+위 라이선스의 **대상이 아닙니다**. AWS 구성도를 그리기 위해 수정 없이 포함했으며, 아이콘
+사용에는 AWS 약관이 적용됩니다. 예제 SVG, PNG, 덱에 들어 있는 아이콘도 같은 AWS
+아이콘입니다. [NOTICE](NOTICE)를 참고하세요. 이 프로젝트는 AWS와 제휴 관계가 없고 AWS의
+보증을 받지 않았습니다.
