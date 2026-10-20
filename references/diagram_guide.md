@@ -179,6 +179,7 @@ set. Draw every one of them as its icon — never as a text chip, pill or labele
 | Gateway Load Balancer endpoint | `resource/Amazon-VPC_Endpoints` (no dedicated icon) | one per AZ in its GWLBe subnet, labeled "GWLBe"; the GWLB itself is one node in the appliance VPC |
 | Virtual private gateway (VGW) / customer gateway | `resource/Amazon-VPC_VPN-Gateway` / `_Customer-Gateway` | on the VPC border / on-prem side |
 | Peering connection | `resource/Amazon-VPC_Peering-Connection` | between the two VPCs |
+| Route table (VPC subnet route table, TGW route table) | `resource/Amazon-Route-53_Route-Table` (the package's only route table icon; filed under Route 53 but used for every route table) | inside the VPC outside the subnets (TGW route table: next to the TGW), with the table name as label and the key route as a 12px sub-caption ("10.0.0.0/8 → TGW"); never a text chip |
 | Router, NACL, ENI, Flow Logs | `resource/Amazon-VPC_Router`, `_Network-Access-Control-List`, `_Elastic-Network-Interface`, `_Flow-Logs` | as needed |
 
 #### Internet gateway and VGW sit on the VPC border

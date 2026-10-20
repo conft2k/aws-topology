@@ -43,6 +43,10 @@ ALIASES = {
     "s3 gateway endpoint": "vpc endpoints", "dynamodb gateway endpoint": "vpc endpoints",
     "s3 endpoint": "vpc endpoints", "dynamodb endpoint": "vpc endpoints",
     "eice": "vpc endpoints", "instance connect endpoint": "vpc endpoints",
+    # the package files its only route table icon under Route 53; it is also the VPC/TGW route table
+    "route table": "route 53 route table", "routing table": "route 53 route table",
+    "rtb": "route 53 route table", "vpc route table": "route 53 route table",
+    "tgw route table": "route 53 route table",
     "ec2 instance connect endpoint": "vpc endpoints", "tgw": "transit gateway",
     "gwlbe": "vpc endpoints", "gwlb endpoint": "vpc endpoints",
     "gateway load balancer endpoint": "vpc endpoints",

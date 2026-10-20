@@ -216,8 +216,10 @@ the user asked for an editable web page, wrap the SVG in a minimal HTML file ins
 - Don't hand-draw or approximate AWS icons — use the bundled ones.
 - Don't write an AWS service that has an official icon (Site-to-Site VPN, Direct
   Connect, PrivateLink, ...) as a connector label — draw it as an icon node.
-- Don't draw an Internet Gateway, NAT Gateway, VPC endpoint or EICE as a text chip or
-  pill — they all have official resource icons (see the guide's VPC table).
+- Don't draw an Internet Gateway, NAT Gateway, VPC endpoint, EICE or route table as a
+  text chip or pill — they all have official resource icons (see the guide's VPC table;
+  route tables use `resource/Amazon-Route-53_Route-Table`, the package's only route
+  table icon, even though it is filed under Route 53).
 - Don't put an Internet gateway or VGW inside a subnet, fully inside the VPC, or
   floating outside it — center it on the VPC border.
 - Don't put anything else on the VPC border. Gateway endpoints (S3, DynamoDB) go
