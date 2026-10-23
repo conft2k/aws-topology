@@ -213,7 +213,8 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/check_layout.py name.draft.svg
 ```
 
 It flags a connector or container border crossing a label, icon or badge, labels
-overlapping each other or an icon, and text under 12px — the defects that otherwise
+overlapping each other or an icon, text under 12px, an arrowhead on a stub under
+20px, a trunk squeezed against a container border, and circled-digit step legends — the defects that otherwise
 only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allowed.
 
 Then export the formats you need — any combination, from the same drafts:
@@ -251,6 +252,9 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       go another way, and those are dashed.
 - [ ] Tiers are columns, AZs are rows; Users and the IGW sit in the gap between the
       AZ rows, on one line with the load balancer.
+- [ ] Every arrowhead sits on a segment ≥ 20px long, and a trunk that joins per-AZ
+      lines keeps ≥ 12px from the AZ boxes (widen the corridor, not the canvas on a
+      slide).
 - [ ] Each ALB/NLB/GWLB is one node in the AZ gap; zonal resources (NAT gateway,
       GWLBe, instances, RDS primary/standby) appear once per AZ.
 - [ ] A path that leaves the main line and comes back has numbered step badges, and

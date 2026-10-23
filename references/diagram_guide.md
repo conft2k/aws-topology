@@ -481,7 +481,15 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   they come in from above or below; topology lines without arrowheads too). When every
   line is the same route to the same target (each AZ's NAT gateway → the IGW), join them
   in a corridor outside the AZ boxes and enter the node as one line with one arrowhead
-  on its center line — two arrowheads a few px apart only add noise.
+  on its center line — two arrowheads a few px apart only add noise. **Size the
+  corridor for the trunk and the arrow:** the trunk runs ≥ 12px (document: ~28px)
+  from the AZ boxes it passes, and the arrow from the trunk to the node is ≥ 20px
+  (document: ~48px) so it has a visible shaft — a head sitting right at the junction
+  looks like a glitch. When the node sits on a container border (the IGW on the VPC's
+  right edge), widen that container — and everything right of it — rather than
+  squeezing the trunk; on a slide keep the 1108px canvas width, since a wider canvas
+  shrinks the text under 10pt. check_layout.py reports SHORT ARROW and LINE HUGS
+  BORDER for these.
 - **Outbound through a NAT gateway** is the dashed private-node → NAT gateway hop; the
   NAT gateway → IGW hop may be left implied when the IGW is already on the diagram
   for inbound traffic. Draw it when egress is the point of the diagram (centralized

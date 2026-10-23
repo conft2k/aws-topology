@@ -21,6 +21,10 @@ Reports, and exits with status 1 on any of them:
   SERVICE AS TEXT  a connector label names an AWS service or resource that has an
                    official icon in the bundle — draw it as an icon node instead
                    (labels centered under an icon are node labels and are skipped)
+  SHORT ARROW      the segment carrying an arrowhead is shorter than 20px (a head
+                   stuck on a bend or trunk junction)
+  LINE HUGS BORDER a connector runs alongside a container border less than 12px
+                   from it for more than 20px
   GLYPH STEP       a label numbers steps with circled digits (①) — draw the legend's
                    numbers as the diagram's step badges instead
 
@@ -30,6 +34,7 @@ is not reported, nor is a small junction dot (circle, r ≤ 6) sitting on its ow
 the render rather than a blind fix. Only translate() transforms are understood,
 which is all the skill's diagrams use.
 """
+import math
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -125,15 +130,20 @@ def collect(svg_root):
                 texts.append({"s": s, "fs": fs, "box": (x0, y - 0.75 * fs, x0 + w, y + 0.25 * fs), "o": order,
                               "cx": x0 + w / 2, "y": y,
                               "header": el.get("font-weight", "") in ("600", "700", "bold")})
-        elif tag == "line":
-            segs.append({"p": (num(el.get("x1")) + ox, num(el.get("y1")) + oy),
-                         "q": (num(el.get("x2")) + ox, num(el.get("y2")) + oy),
-                         "kind": "connector", "o": order})
-        elif tag == "polyline":
-            pts = [num(v) for v in re.split(r"[ ,]+", el.get("points", "").strip()) if v]
-            pts = [(pts[i] + ox, pts[i + 1] + oy) for i in range(0, len(pts) - 1, 2)]
-            for p, q in zip(pts, pts[1:]):
-                segs.append({"p": p, "q": q, "kind": "connector", "o": order})
+        elif tag in ("line", "polyline"):
+            if tag == "line":
+                pts = [(num(el.get("x1")) + ox, num(el.get("y1")) + oy),
+                       (num(el.get("x2")) + ox, num(el.get("y2")) + oy)]
+            else:
+                pts = [num(v) for v in re.split(r"[ ,]+", el.get("points", "").strip()) if v]
+                pts = [(pts[i] + ox, pts[i + 1] + oy) for i in range(0, len(pts) - 1, 2)]
+            new = [{"p": p, "q": q, "kind": "connector", "o": order} for p, q in zip(pts, pts[1:])]
+            # The segment an arrowhead sits on (last for marker-end, first for marker-start).
+            if new and el.get("marker-end"):
+                new[-1]["head"] = True
+            if new and el.get("marker-start"):
+                new[0]["head"] = True
+            segs.extend(new)
         elif tag == "rect":
             x, y = num(el.get("x")) + ox, num(el.get("y")) + oy
             w, h = num(el.get("width")), num(el.get("height"))
@@ -177,6 +187,12 @@ HEADER_ICON_CLEAR = 6
 TEXT_GAP = 4
 # A header label (bold) needs this much room above the next box below it.
 HEADER_CLEAR = 8
+# The segment carrying an arrowhead is at least this long (an 8px head plus a 12px shaft), so the arrow reads as a line
+# into the node, not a head stuck on a bend or junction.
+MIN_ARROW = 20
+# A connector running alongside a container border keeps at least this much room from it
+# (a trunk squeezed into a corridor reads as part of the border).
+HUG_CLEAR = 12
 # Circled digits (①–⑳, ❶–➓): a step legend repeats the diagram's badges instead.
 CIRCLED = re.compile("[\u2460-\u2473\u2776-\u2793]")
 ICON_SETS = ("service", "resource")
@@ -226,6 +242,30 @@ def masked(box, after, masks):
 def check(path):
     texts, segs, masks, icons, (cw, ch) = collect(ET.parse(path).getroot())
     issues = []
+    for s in segs:
+        if s.get("head"):
+            (x1, y1), (x2, y2) = s["p"], s["q"]
+            if 0 < math.hypot(x2 - x1, y2 - y1) < MIN_ARROW:
+                issues.append(f"SHORT ARROW     {fmt(s)} is under {MIN_ARROW}px — widen the gap so the arrow "
+                              "has a visible shaft")
+    for s in segs:
+        if s["kind"] != "connector":
+            continue
+        (x1, y1), (x2, y2) = s["p"], s["q"]
+        for b in segs:
+            if b["kind"] != "border":
+                continue
+            (bx1, by1), (bx2, by2) = b["p"], b["q"]
+            if x1 == x2 and bx1 == bx2:      # both vertical
+                d, lo, hi = abs(x1 - bx1), max(min(y1, y2), min(by1, by2)), min(max(y1, y2), max(by1, by2))
+            elif y1 == y2 and by1 == by2:    # both horizontal
+                d, lo, hi = abs(y1 - by1), max(min(x1, x2), min(bx1, bx2)), min(max(x1, x2), max(bx1, bx2))
+            else:
+                continue
+            if 0 < d < HUG_CLEAR and hi - lo > 20:
+                issues.append(f"LINE HUGS BORDER {fmt(s)} runs {d:g}px from the border {fmt(b)} — "
+                              f"keep {HUG_CLEAR}px or more")
+                break
     for t in texts:
         if CIRCLED.search(t["s"]):
             issues.append(f"GLYPH STEP      {t['s']!r} uses circled digits; draw step badges instead")
