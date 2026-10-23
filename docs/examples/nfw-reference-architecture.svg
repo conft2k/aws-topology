@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1324 720" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+<svg viewBox="0 0 1324 822" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#232F3E"/>
@@ -7,7 +7,7 @@
       <path d="M8,0 L0,3 L8,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
-  <rect width="1324" height="720" fill="#FFFFFF"/>
+  <rect width="1324" height="822" fill="#FFFFFF"/>
 
   <!-- Centralized model: spoke VPCs → TGW → inspection VPC (TGW subnet → firewall subnet
        → public subnet with NAT) → IGW. AZ1 row cy=206, gap/main line y=366, AZ2 row cy=526. -->
@@ -148,6 +148,15 @@
   <circle cx="929" cy="192" r="10" fill="#232F3E"/><text x="929" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
   <circle cx="1059" cy="192" r="10" fill="#232F3E"/><text x="1059" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
 
-  <!-- note: below the diagram, outside the AWS Cloud, left-aligned with it -->
-  <text x="16" y="708" font-size="12" fill="#545B64">① VPC → TGW  ② Spoke RT 0.0.0.0/0 → 검사 VPC attachment (appliance mode)  ③ 같은 AZ 방화벽 엔드포인트에서 검사 (VPC 간은 TGW로 반환)  ④ 방화벽 → NAT (인터넷행)  ⑤ NAT → IGW</text>
+  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with it -->
+  <circle cx="26" cy="704" r="10" fill="#232F3E"/><text x="26" y="708" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
+  <text x="44" y="708" font-size="12" fill="#545B64">VPC → TGW</text>
+  <circle cx="26" cy="728" r="10" fill="#232F3E"/><text x="26" y="732" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
+  <text x="44" y="732" font-size="12" fill="#545B64">Spoke RT 0.0.0.0/0 → 검사 VPC attachment (appliance mode)</text>
+  <circle cx="26" cy="752" r="10" fill="#232F3E"/><text x="26" y="756" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">3</text>
+  <text x="44" y="756" font-size="12" fill="#545B64">같은 AZ 방화벽 엔드포인트에서 검사 (VPC 간은 TGW로 반환)</text>
+  <circle cx="26" cy="776" r="10" fill="#232F3E"/><text x="26" y="780" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
+  <text x="44" y="780" font-size="12" fill="#545B64">방화벽 → NAT (인터넷행)</text>
+  <circle cx="26" cy="800" r="10" fill="#232F3E"/><text x="26" y="804" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
+  <text x="44" y="804" font-size="12" fill="#545B64">NAT → IGW</text>
 </svg>

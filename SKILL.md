@@ -253,8 +253,9 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       AZ rows, on one line with the load balancer.
 - [ ] Each ALB/NLB/GWLB is one node in the AZ gap; zonal resources (NAT gateway,
       GWLBe, instances, RDS primary/standby) appear once per AZ.
-- [ ] A path that leaves the main line and comes back has numbered step badges and a
-      one-line legend.
+- [ ] A path that leaves the main line and comes back has numbered step badges, and
+      the note's legend repeats those same badges (not ①), left-aligned — one step
+      per row in a document, flowed in one or two rows on a slide.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes); a slide is filled without crowding the title.

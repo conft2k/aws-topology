@@ -136,7 +136,16 @@
   <circle cx="708" cy="170" r="10" fill="#232F3E"/><text x="708" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
   <circle cx="863" cy="170" r="10" fill="#232F3E"/><text x="863" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
 
-  <!-- note: below the diagram, outside the AWS Cloud, left-aligned with it; line 2 lists the subnet routes -->
-  <text x="8" y="521" font-size="12" fill="#545B64">① VPC → TGW  ② Spoke RT 0.0.0.0/0 → 검사 VPC (appliance mode)  ③ 같은 AZ 방화벽에서 검사 (VPC 간은 TGW로 반환)  ④ 방화벽 → NAT (인터넷행)  ⑤ NAT → IGW</text>
+  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with it; line 2 lists the subnet routes -->
+  <circle cx="18" cy="517" r="10" fill="#232F3E"/><text x="18" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
+  <text x="36" y="521" font-size="12" fill="#545B64">VPC → TGW</text>
+  <circle cx="133" cy="517" r="10" fill="#232F3E"/><text x="133" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
+  <text x="151" y="521" font-size="12" fill="#545B64">Spoke RT 0.0.0.0/0 → 검사 VPC (appliance mode)</text>
+  <circle cx="473.6" cy="517" r="10" fill="#232F3E"/><text x="473.6" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">3</text>
+  <text x="491.6" y="521" font-size="12" fill="#545B64">같은 AZ 방화벽에서 검사 (VPC 간은 TGW로 반환)</text>
+  <circle cx="787.8" cy="517" r="10" fill="#232F3E"/><text x="787.8" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
+  <text x="805.8" y="521" font-size="12" fill="#545B64">방화벽 → NAT (인터넷행)</text>
+  <circle cx="970.6" cy="517" r="10" fill="#232F3E"/><text x="970.6" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
+  <text x="988.6" y="521" font-size="12" fill="#545B64">NAT → IGW</text>
   <text x="8" y="537" font-size="12" fill="#545B64">라우팅(같은 AZ): App 0.0.0.0/0 → TGW · TGW 서브넷 0.0.0.0/0 → 방화벽 · 방화벽 서브넷 0.0.0.0/0 → NAT, 10.0.0.0/8 → TGW · 퍼블릭 0.0.0.0/0 → IGW, 10.0.0.0/8 → 방화벽</text>
 </svg>

@@ -127,7 +127,8 @@ separate load balancers.
   get one number between them, and on a slide the "keep it clear of the AZ boxes" rule
   wins over the middle-of-the-line rule); when the hop also has a protocol
   label, put the label below the line. The legend in the note names exactly the hop
-  each number sits on. Don't move nodes to separate lanes to avoid the
+  each number sits on, and draws each number as the same badge (see **Step legend**),
+  never as a circled-digit glyph (①). Don't move nodes to separate lanes to avoid the
   ambiguity; the numbers resolve it and the alignment stays consistent across the set.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
@@ -532,6 +533,29 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   routes may be said once ("방화벽 · NAT 경로는 같은 AZ"). On a slide the note counts
   toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
   make room.
+- **Step legend.** A diagram with step badges explains them in the note with the
+  **same badge** the diagram uses — a 10px-radius squid-ink `#232F3E` circle with the
+  white bold 12px number — never a circled-digit glyph (①) or a bare "1.". Each item
+  is the badge followed by its text: 12px, `#545B64`, `text-anchor="start"`, starting
+  8px right of the badge (`x = cx + 18`), baseline at `cy + 4`. Everything is
+  left-aligned on the note's left edge (badge `cx = left + 10`); never center the
+  legend or put it in a frame.
+  - **Document:** one step per row, rows 24px apart, in step order. Lines that aren't
+    steps (summary, routes, security groups, test inputs) follow as plain 12px
+    lines, 16px apart, starting at the same left edge, 8px below the last badge.
+    The note's two-line limit doesn't count the step rows.
+  - **Slide** (canvas height ≤ 540): when one row per step doesn't fit, flow the items
+    in one row, 20px between an item's text end and the next badge; wrap to a second
+    row 24px below at the same left edge rather than shrinking the text.
+
+  ```svg
+  <!-- step legend: same badges as the diagram, one row per step, left-aligned -->
+  <circle cx="26" cy="660" r="10" fill="#232F3E"/><text x="26" y="664" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
+  <text x="44" y="664" font-size="12" fill="#545B64">IGW → GWLBe (인그레스 라우팅)</text>
+  <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
+  <text x="44" y="688" font-size="12" fill="#545B64">GWLBe ⇄ GWLB</text>
+  <text x="16" y="714" font-size="12" fill="#545B64">라우팅 (같은 AZ): ...</text>
+  ```
 - **When routes must be shown.** A diagram whose point is the routing — inspection
   (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
   VPCs or Regions — lists every route its flows need (sub-captions or the note). Other

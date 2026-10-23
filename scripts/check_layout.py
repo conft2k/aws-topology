@@ -21,6 +21,8 @@ Reports, and exits with status 1 on any of them:
   SERVICE AS TEXT  a connector label names an AWS service or resource that has an
                    official icon in the bundle — draw it as an icon node instead
                    (labels centered under an icon are node labels and are skipped)
+  GLYPH STEP       a label numbers steps with circled digits (①) — draw the legend's
+                   numbers as the diagram's step badges instead
 
 Anything covered by a white mask rect drawn later (the IGW/VGW on the VPC border)
 is not reported, nor is a small junction dot (circle, r ≤ 6) sitting on its own line. Text widths are estimated (0.55 × font-size per Latin character,
@@ -175,6 +177,8 @@ HEADER_ICON_CLEAR = 6
 TEXT_GAP = 4
 # A header label (bold) needs this much room above the next box below it.
 HEADER_CLEAR = 8
+# Circled digits (①–⑳, ❶–➓): a step legend repeats the diagram's badges instead.
+CIRCLED = re.compile("[\u2460-\u2473\u2776-\u2793]")
 ICON_SETS = ("service", "resource")
 
 
@@ -223,6 +227,8 @@ def check(path):
     texts, segs, masks, icons, (cw, ch) = collect(ET.parse(path).getroot())
     issues = []
     for t in texts:
+        if CIRCLED.search(t["s"]):
+            issues.append(f"GLYPH STEP      {t['s']!r} uses circled digits; draw step badges instead")
         x0, y0, x1, y1 = t["box"]
         if cw and ch and (x0 < 0 or y0 < 0 or x1 > cw or y1 > ch):
             issues.append(f"OFF CANVAS      {t['s']!r} runs past the {cw:g} × {ch:g} canvas")
