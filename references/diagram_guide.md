@@ -552,7 +552,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   a square rect, `fill="#F8F9F9"`, `stroke="#D5DBDB"` 1px, with no badge and no header
   label (it must not read as an AWS group), 12px padding inside, so every row starts
   at x = 28 and the step badges sit at `cx = 38`. Rows are 24px apart.
-  - A note that isn't a step legend uses the same row layout with a label column —
+  - A note that isn't a step legend (a diagram without steps) uses the same row layout with a label column —
     bold 12px `#232F3E` ("Hub & spoke", "TGW A RT") — in place of the badge and hop,
     and a text column, 12px `#545B64`, starting at one x for every row (16px right of
     the widest label).
@@ -578,10 +578,14 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
     돌아갑니다"). Use the diagram's own names; keep each row inside the canvas
     (≈ 100 Korean characters at most on a 1200px canvas). The step descriptions
     carry the routes, so a document drops the "라우팅: ..." line once every route it
-    would list is in a description; keep it only for routes no step mentions, and
-    never repeat a route there. Lines that aren't steps (summary, leftover routes,
-    security groups, test inputs) follow as plain 12px lines, 16px apart, starting
-    at the same left edge, 8px below the last badge.
+    would list is in a description, and never repeats a route there.
+  - **A step legend holds only the numbered steps.** Don't append unnumbered rows
+    (server certificate, security group rules, routes, test inputs) below the steps —
+    mixing numbered and unnumbered rows reads as one confusing list. Put each such
+    fact where it belongs: on the diagram as a node caption or container header, or in
+    the document that embeds the diagram (the test plan, the README). If a fact is
+    already in either place, drop it. A diagram without steps may still use the panel
+    for labeled rows (the TGW example); a diagram with steps doesn't mix the two.
     The note's two-line limit doesn't count the step rows.
   - **Slide** (canvas height ≤ 540): items stay short — the hop and at most a few
     words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest,
@@ -595,7 +599,6 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   <text x="44" y="664" font-size="12" font-weight="600" fill="#232F3E">IGW → GWLBe</text><text x="168" y="664" font-size="12" fill="#545B64">IGW 엣지 RT가 App 서브넷 CIDR을 같은 AZ의 GWLBe로 보내, 들어오는 트래픽이 EC2보다 먼저 검사 경로로 갑니다.</text>
   <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
   <text x="44" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="168" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
-  <text x="16" y="714" font-size="12" fill="#545B64">SG: ... (a line that isn't a step)</text>
   ```
 - **A container's CIDR lives in its header, top-left.** VPC and subnet CIDRs are part
   of the header label ("Private subnet 10.100.10.0/24"), never a caption moved into the

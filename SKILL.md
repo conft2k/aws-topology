@@ -260,7 +260,8 @@ and balance, whitespace and readability still need eyes. Go through this checkli
 - [ ] A path that leaves the main line and comes back has numbered step badges, and
       the note's legend repeats those same badges (not ①), left-aligned — in a
       document one step per row with a bold hop and a sentence on the route and what
-      happens there; on a slide short items flowed in one or two rows.
+      happens there; on a slide short items flowed in one or two rows. The legend
+      holds only the steps — no unnumbered rows mixed in.
 - [ ] Every VPC and subnet CIDR is in its container's header (top-left), not a caption
       inside the box; a spanning box that would cross a header moves instead.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
