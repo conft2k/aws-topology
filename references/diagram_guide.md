@@ -446,11 +446,14 @@ far as their contents need.
   to what rather than how traffic flows (TGW hub and spoke, VPC peering mesh) draws its
   attachment lines solid, without arrowheads, in any direction; the left → right and
   "other directions are dashed" rules apply to traffic-flow diagrams only.
-- **Several connectors into one node enter it separately.** When the same hop from
-  each AZ ends at one node (spokes → TGW, NAT gateways → IGW), give each its own
-  arrowhead, entering the node's side 8px above and below its center (10px left and
-  right of center when they come in from above or below; topology lines without
-  arrowheads too) — don't merge them into one trunk with a single arrowhead.
+- **Several connectors into one node: separate when they are separate things, one
+  trunk when they are the same route.** When each line is its own attachment, ENI or
+  endpoint (spoke VPCs → TGW, GWLBe ⇄ GWLB per AZ), give each its own arrowhead, entering
+  the node's side 8px above and below its center (10px left and right of center when
+  they come in from above or below; topology lines without arrowheads too). When every
+  line is the same route to the same target (each AZ's NAT gateway → the IGW), join them
+  in a corridor outside the AZ boxes and enter the node as one line with one arrowhead
+  on its center line — two arrowheads a few px apart only add noise.
 - **Outbound through a NAT gateway** is the dashed private-node → NAT gateway hop; the
   NAT gateway → IGW hop may be left implied when the IGW is already on the diagram
   for inbound traffic. Draw it when egress is the point of the diagram (centralized
@@ -623,7 +626,8 @@ check every hop and caption against how the services actually behave:
   AWS RAM; a VPC that hosts common services is a "Shared services VPC" (or "Services
   VPC"). Likewise "Transit VPC" is the legacy appliance-based hub, not a TGW.
 - **Identical hops look identical.** The same hop repeated per AZ (IGW → GWLBe,
-  GWLB ⇄ GWLBe, NAT → IGW) gets the same arrow ends, label and dash style in every AZ.
+  GWLB ⇄ GWLBe) gets the same arrow ends, label and dash style in every AZ; when the
+  per-AZ lines join into one trunk (NAT → IGW), they share its single arrowhead.
 - **Captions say what the service does here, accurately.** Health checks are done by
   the load balancer (or Route 53 health checks), not CloudWatch — CloudWatch is
   "지표 · 경보" / "로그". An NLB access log needs a TLS listener; RDS Multi-AZ standby
