@@ -64,12 +64,15 @@ settle the slide titles (one line each, or none) and the list of slides.
 ### 1b. Start from the closest reference example
 `docs/examples/` holds finished, checked reference layouts — NLB, ALB (3-tier with
 WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
-spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Cloud WAN
-(segments and an edge per Region inside the core network container, VPCs outside) —
-as drafts (`*.svg`), their PNGs, the deck made from them (`reference-architectures.pptx`)
-and a render of each slide (`slides/`). When the request resembles one of them, open
-its SVG and reuse its layout and coordinates (canvas, AZ rows, tier columns, gap, IGW,
-regional-services row, note line) instead of laying out from scratch.
+spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Network
+Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
+route tables and NAT egress) — as document-size drafts (`*.svg`) with their PNGs.
+`slides/` holds a slide-size version of each (`slides/*.svg`, ≤ 1100 × 540, all text
+≥ 10pt on a titled slide), the deck made from them (`reference-architectures.pptx`)
+and a render of each slide (`slides/*.png`). When the request resembles one of them,
+open its SVG — the `slides/` one for a deck — and reuse its layout and coordinates
+(canvas, AZ rows, tier columns, gap, IGW, regional services, note line) instead of
+laying out from scratch.
 `docs/example.svg` is the minimal skeleton.
 
 ### 2. Read the guide
@@ -187,8 +190,8 @@ and no text halos — mask a label with a white rect instead.
   - When the same diagram is wanted as a document image *and* a slide, use one draft if
     it fits the slide limits; otherwise draw a compact slide draft next to the document
     one (same grammar and icons, fewer rows or a split) and tell the user.
-  - The reference layouts come out at 7–8pt on a titled slide — reuse their grammar and
-    grid for slides, not their canvas size.
+  - The document-size reference layouts come out at 8pt or less on a titled slide; for
+    a slide start from their `docs/examples/slides/` versions instead.
 - Root `font-family` starts with a Korean font that is **installed on this machine** —
   check with `fc-list | grep -iE 'CJK KR|Pretendard'` (see the guide's "Font"). cairosvg
   uses only the first family and drops every Hangul label from the PNG if that one is
@@ -331,8 +334,9 @@ All 857 icons are packed into one JSON bundle (keeps the skill's file count low)
   (`--force` rebuilds, `--zip` builds from a zip downloaded by hand).
 - `scripts/build_bundle.py` — pack an extracted package into `icons.json` (called by
   `fetch_icons.py`).
-- `docs/examples/` — checked NLB, ALB, GWLB, TGW and Cloud WAN reference layouts
-  (drafts + PNG), the deck made from them and a render of each slide (`slides/`).
+- `docs/examples/` — checked NLB, ALB, GWLB, TGW and Network Firewall reference layouts
+  (drafts + PNG); `slides/` has their slide-size versions, the deck made from those and
+  a render of each slide.
 
 ## Updating the icon set
 
