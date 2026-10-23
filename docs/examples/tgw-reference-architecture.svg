@@ -1,5 +1,5 @@
-<svg viewBox="0 0 1108 498" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
-  <rect width="1108" height="498" fill="#FFFFFF"/>
+<svg viewBox="0 0 1108 630" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+  <rect width="1108" height="630" fill="#FFFFFF"/>
 
   <!-- Document layout: same compact grid as slide.draft.svg (the slide draft fits the
        slide limits, so both use one layout). Reference level: each VPC is one node,
@@ -85,16 +85,14 @@
   <text x="788" y="296" font-size="14" text-anchor="middle" fill="#232F3E">TGW peering</text>
   <text x="788" y="312" font-size="12" text-anchor="middle" fill="#545B64">AWS 백본</text>
 
-  <!-- note panel: the empty area under On-premises, bottom aligned with the AWS Cloud, label column + aligned text -->
-  <rect x="16" y="348" width="396" height="134" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
-  <text x="28" y="370" font-size="12" font-weight="600" fill="#232F3E">Hub &amp; spoke</text>
-  <text x="126.2" y="370" font-size="12" fill="#545B64">VPC·VPN은 리전 TGW에 attachment로 연결</text>
-  <text x="126.2" y="386" font-size="12" fill="#545B64">VPC CIDR·VPN(BGP) 경로는 TGW RT에 전파</text>
-  <text x="28" y="408" font-size="12" font-weight="600" fill="#232F3E">VPC 서브넷 RT</text>
-  <text x="126.2" y="408" font-size="12" fill="#545B64">10.0.0.0/8 · 192.168.0.0/16 → TGW</text>
-  <text x="28" y="430" font-size="12" font-weight="600" fill="#232F3E">TGW A RT</text>
-  <text x="126.2" y="430" font-size="12" fill="#545B64">10.16.0.0/13 → peering (정적)</text>
-  <text x="28" y="452" font-size="12" font-weight="600" fill="#232F3E">TGW B RT</text>
-  <text x="126.2" y="452" font-size="12" fill="#545B64">10.0.0.0/13 · 192.168.0.0/16</text>
-  <text x="126.2" y="468" font-size="12" fill="#545B64">→ peering (정적)</text>
+  <!-- note panel (canvas width minus 16px each side, 16px below the diagram): label column + aligned text -->
+  <rect x="16" y="498" width="1076" height="116" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
+  <text x="28" y="524" font-size="12" font-weight="600" fill="#232F3E">Hub &amp; spoke</text>
+  <text x="126.2" y="524" font-size="12" fill="#545B64">VPC·VPN은 리전 TGW에 attachment로 연결되고, VPC CIDR과 VPN(BGP) 경로는 TGW 라우팅 테이블에 전파됩니다.</text>
+  <text x="28" y="548" font-size="12" font-weight="600" fill="#232F3E">VPC 서브넷 RT</text>
+  <text x="126.2" y="548" font-size="12" fill="#545B64">10.0.0.0/8 · 192.168.0.0/16 → TGW</text>
+  <text x="28" y="572" font-size="12" font-weight="600" fill="#232F3E">TGW A RT</text>
+  <text x="126.2" y="572" font-size="12" fill="#545B64">10.16.0.0/13 → peering (정적)</text>
+  <text x="28" y="596" font-size="12" font-weight="600" fill="#232F3E">TGW B RT</text>
+  <text x="126.2" y="596" font-size="12" fill="#545B64">10.0.0.0/13 · 192.168.0.0/16 → peering (정적)</text>
 </svg>

@@ -127,7 +127,7 @@
   <line x1="976" y1="376" x2="976" y2="598" stroke="#232F3E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
   <text x="966" y="465" font-size="12" text-anchor="end" fill="#545B64">동기식 복제</text>
 
-  <!-- note panel (same width as the AWS Cloud, 16px below it): below the diagram, outside the AWS Cloud box, left-aligned with the Users icon -->
-  <rect x="150" y="770" width="944" height="38" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
-  <text x="162" y="792" font-size="12" fill="#545B64">Internet-facing ALB · 두 AZ에 걸친 단일 관리형 로드 밸런서 · AWS WAF 연결 · RDS Multi-AZ</text>
+  <!-- note panel (canvas width minus 16px each side, 16px below the diagram): below the diagram, outside the AWS Cloud box, left-aligned with the Users icon -->
+  <rect x="16" y="770" width="1070" height="38" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
+  <text x="28" y="792" font-size="12" fill="#545B64">Internet-facing ALB · 두 AZ에 걸친 단일 관리형 로드 밸런서 · AWS WAF 연결 · RDS Multi-AZ</text>
 </svg>

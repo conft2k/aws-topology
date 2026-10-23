@@ -524,10 +524,10 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   enough space between them and the Cloud border (≈80px at 12px) for the connector's
   protocol label to sit clear of the Cloud and Region borders.
 - **Note line.** The note goes **below the diagram, outside the AWS Cloud box** — in a
-  document always inside a note panel (see below) —
-  left-aligned with the **AWS Cloud box's left edge** (its bottom-left corner) — the
-  same x in every diagram, even when Users or an on-premises box sit left of the
-  Cloud — 8px or more below the Cloud's bottom border, 12px, never inside a
+  document always inside the full-width note panel (see below). On a slide without a
+  panel it is left-aligned with the **AWS Cloud box's left edge** (its bottom-left
+  corner) — the same x in every slide, even when Users or an on-premises box sit
+  left of the Cloud — 8px or more below the Cloud's bottom border, 12px, never inside a
   container. At most two lines, 16px apart, each no wider than the canvas (a line
   that would run past the canvas from the Cloud's edge wraps to one more line): what the
   diagram is ("Internet-facing NLB · ...") or the step legend, and — when the routes
@@ -536,19 +536,18 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
   make room.
 - **Note panel.** In a document every note — step legend, summary, routes — sits in
-  one note panel: a square rect, `fill="#F8F9F9"`, `stroke="#D5DBDB"` 1px, with no
-  badge and no header label (it must not read as an AWS group), 12px padding inside.
-  - **Below the Cloud** (the default): the panel has the AWS Cloud box's x and width
-    and starts 16px below its bottom border; the canvas ends 16px below the panel.
-    Every row starts at `cloud.x + 12`, so the step badges sit at `cx = cloud.x + 22`.
-  - **In an empty corner:** when an area outside the Cloud can hold the note —
-    typically under Users or an on-premises box left of it — put the panel there
-    instead, so the canvas doesn't grow: left edge on the box above it (or the canvas
-    margin), bottom edge on the Cloud's bottom border, ≥16px from any other element.
-    Such a note uses a label column — bold 12px `#232F3E` ("Hub & spoke", "TGW A RT")
-    — and a text column, 12px `#545B64`, starting at one x for every row (16px right of
-    the widest label); a long row wraps in the text column, 16px line pitch, 22px
-    between rows. Step legends need the full width and stay below the Cloud.
+  one note panel, always in the same place: **at the bottom, across the full canvas
+  width with a 16px margin on each side** (`x = 16`, `width = canvas width − 32`),
+  starting 16px below the lowest part of the diagram (normally the AWS Cloud's bottom
+  border); the canvas ends 16px below the panel. Never move it into an empty corner —
+  the same position in every diagram matters more than saving height. The panel is
+  a square rect, `fill="#F8F9F9"`, `stroke="#D5DBDB"` 1px, with no badge and no header
+  label (it must not read as an AWS group), 12px padding inside, so every row starts
+  at x = 28 and the step badges sit at `cx = 38`. Rows are 24px apart.
+  - A note that isn't a step legend uses the same row layout with a label column —
+    bold 12px `#232F3E` ("Hub & spoke", "TGW A RT") — in place of the badge and hop,
+    and a text column, 12px `#545B64`, starting at one x for every row (16px right of
+    the widest label).
   - **Slide:** use the panel only if the canvas still fits in 540; otherwise the note
     is the plain, frameless lines below the Cloud described above.
 
@@ -557,9 +556,9 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   white bold 12px number — never a circled-digit glyph (①) or a bare "1.". Each item
   is the badge followed by its text: 12px, `#545B64`, `text-anchor="start"`, starting
   8px right of the badge (`x = cx + 18`), baseline at `cy + 4`. Everything is
-  left-aligned on the note's left edge — the AWS Cloud's x, plus the panel's 12px
-  padding in a document (badge `cx = left + 10`, hop text at `left + 28`, plain lines
-  at `left`); never center the legend.
+  left-aligned on the note's left edge — the panel's x + 12 in a document (28), the
+  AWS Cloud's x on a slide (badge `cx = left + 10`, hop text at `left + 28`, plain
+  lines at `left`); never center the legend.
   - **Document:** one step per row, rows 24px apart, in step order. Each row is the
     badge, the hop in bold (`font-weight="600"`, `#232F3E`, e.g. "TGW ENI → 방화벽"),
     and a description column that starts at one x for every row (16px right of the

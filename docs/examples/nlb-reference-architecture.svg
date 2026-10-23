@@ -107,7 +107,7 @@
   <line x1="708" y1="620" x2="476" y2="620" stroke="#232F3E" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
   <text x="632" y="612" font-size="12" text-anchor="middle" fill="#545B64">아웃바운드</text>
 
-  <!-- note panel (same width as the AWS Cloud, 16px below it): below the diagram, outside the AWS Cloud, left-aligned with the Users icon -->
-  <rect x="160" y="774" width="844" height="38" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
-  <text x="172" y="796" font-size="12" fill="#545B64">Internet-facing NLB · TLS 종료 · 라우팅: Public subnet 0.0.0.0/0 → IGW, App subnet 0.0.0.0/0 → NAT gateway (같은 AZ)</text>
+  <!-- note panel (canvas width minus 16px each side, 16px below the diagram): below the diagram, outside the AWS Cloud, left-aligned with the Users icon -->
+  <rect x="16" y="774" width="994" height="38" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
+  <text x="28" y="796" font-size="12" fill="#545B64">Internet-facing NLB · TLS 종료 · 라우팅: Public subnet 0.0.0.0/0 → IGW, App subnet 0.0.0.0/0 → NAT gateway (같은 AZ)</text>
 </svg>

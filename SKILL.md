@@ -273,9 +273,9 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       are outside the Region; captions don't credit a service with another's job;
       identical per-AZ hops are drawn identically.
 - [ ] The note (legend / routes) is outside the AWS Cloud box. In a document it is in
-      a note panel — below the Cloud with the Cloud's x and width, or in an empty
-      corner outside the Cloud that can hold it; on a slide, a panel only if the canvas
-      stays ≤ 540, else plain lines left-aligned with the Cloud.
+      the note panel at the bottom, full canvas width with 16px each side; on a slide,
+      a panel only if the canvas stays ≤ 540, else plain lines left-aligned with the
+      Cloud.
 - [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
 
 Save the outputs where the user asked (in a repo, usually next to the docs that
