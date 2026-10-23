@@ -25,8 +25,11 @@ Reports, and exits with status 1 on any of them:
                    stuck on a bend or trunk junction)
   LINE HUGS BORDER a connector runs alongside a container border less than 12px
                    from it for more than 20px
-  CIDR OFF HEADER  a bare CIDR label that isn't a node's sub-caption (a container's CIDR
-                   goes in its header)
+  TITLE OFFSET     a container title not on its box's header row (baseline box.y + 18)
+  CIDR IN TITLE    a container title that carries its CIDR (the CIDR is its own line)
+  CIDR OFF HEADER  a bare CIDR label neither right under a container title nor a
+                   node's sub-caption
+  CIDR COLOR       a CIDR line under a title that isn't squid ink #232F3E
   GLYPH STEP       a label numbers steps with circled digits (①) — draw the legend's
                    numbers as the diagram's step badges instead
 
@@ -130,6 +133,7 @@ def collect(svg_root):
                 anchor = el.get("text-anchor", "start")
                 x0 = x - w / 2 if anchor == "middle" else x - w if anchor == "end" else x
                 texts.append({"s": s, "fs": fs, "box": (x0, y - 0.75 * fs, x0 + w, y + 0.25 * fs), "o": order,
+                              "fill": el.get("fill", "").lower(),
                               "cx": x0 + w / 2, "y": y,
                               "header": el.get("font-weight", "") in ("600", "700", "bold")})
         elif tag in ("line", "polyline"):
@@ -197,9 +201,12 @@ MIN_ARROW = 20
 HUG_CLEAR = 12
 # Circled digits (①–⑳, ❶–➓): a step legend repeats the diagram's badges instead.
 CIRCLED = re.compile("[\u2460-\u2473\u2776-\u2793]")
-# A label that is nothing but a CIDR. A container's CIDR belongs in its header; a bare one
-# is allowed only as the sub-caption of a node (single-icon VPC, customer gateway).
+# A label that is nothing but a CIDR. A container's CIDR is its own line right under the
+# container's title (same x, 16px lower); a bare one elsewhere is allowed only as the
+# sub-caption of a node (single-icon VPC, customer gateway).
 BARE_CIDR = re.compile(r"^\d{1,3}(\.\d{1,3}){3}/\d{1,2}$")
+CIDR_IN = re.compile(r"\d{1,3}(\.\d{1,3}){3}/\d{1,2}")
+CIDR_COLOR = "#232f3e"
 ICON_SETS = ("service", "resource")
 
 
@@ -244,9 +251,38 @@ def masked(box, after, masks):
     return any(m["o"] > after and contains(m["box"], box) for m in masks)
 
 
+def container_rects(root):
+    """Bordered rects (containers) with translate offsets applied."""
+    out = []
+    def walk(el, ox, oy):
+        dx, dy = translate(el)
+        ox, oy = ox + dx, oy + dy
+        if el.tag.replace(NS, "") == "rect" and el.get("stroke", "none").lower() != "none":
+            out.append((num(el.get("x")) + ox, num(el.get("y")) + oy, num(el.get("width")), num(el.get("height"))))
+        for c in el:
+            walk(c, ox, oy)
+    walk(root, 0, 0)
+    return out
+
+
 def check(path):
-    texts, segs, masks, icons, (cw, ch) = collect(ET.parse(path).getroot())
+    root = ET.parse(path).getroot()
+    texts, segs, masks, icons, (cw, ch) = collect(root)
     issues = []
+    # A container title sits in its box's header row: x = box.x + 32 (with a badge) or
+    # + 12 (label only), baseline box.y + 18. A title that drifted when content was moved
+    # reads as belonging to nothing.
+    rects = container_rects(root)
+    for t in texts:
+        if not (t["header"] and t["fs"] == 14):
+            continue
+        owners = [r for r in rects if any(abs(t["box"][0] - (r[0] + off)) <= 1 for off in (32, 12))
+                  and r[1] < t["y"] < r[1] + r[3]]
+        if owners:
+            r = max(owners, key=lambda r: r[1])
+            if abs(t["y"] - (r[1] + 18)) > 1:
+                issues.append(f"TITLE OFFSET    {t['s']!r} sits {t['y'] - r[1]:g}px below its box top "
+                              "— a container title's baseline is box.y + 18")
     for s in segs:
         if s.get("head"):
             (x1, y1), (x2, y2) = s["p"], s["q"]
@@ -272,9 +308,17 @@ def check(path):
                               f"keep {HUG_CLEAR}px or more")
                 break
     for t in texts:
+        if t["header"] and t["fs"] >= 14 and CIDR_IN.search(t["s"]):
+            issues.append(f"CIDR IN TITLE   {t['s']!r} — put the CIDR on its own 12px {CIDR_COLOR.upper()} line "
+                          "under the title (same x, baseline 16px lower)")
         if BARE_CIDR.match(t["s"]) and not is_node_label(t, icons):
-            issues.append(f"CIDR OFF HEADER {t['s']!r} floats inside a box — put it in that container's "
-                          "header label and move whatever crosses the header instead")
+            under = any(h["header"] and h["fs"] >= 14 and abs(h["box"][0] - t["box"][0]) <= 1
+                        and 14 <= t["y"] - h["y"] <= 18 for h in texts)
+            if not under:
+                issues.append(f"CIDR OFF HEADER {t['s']!r} floats inside a box — put it right under its "
+                              "container's title and move whatever crosses the header instead")
+            elif t.get("fill", CIDR_COLOR) != CIDR_COLOR:
+                issues.append(f"CIDR COLOR      {t['s']!r} under a title is {CIDR_COLOR.upper()} (squid ink)")
         if CIRCLED.search(t["s"]):
             issues.append(f"GLYPH STEP      {t['s']!r} uses circled digits; draw step badges instead")
         x0, y0, x1, y1 = t["box"]

@@ -214,7 +214,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/check_layout.py name.draft.svg
 
 It flags a connector or container border crossing a label, icon or badge, labels
 overlapping each other or an icon, text under 12px, an arrowhead on a stub under
-20px, a trunk squeezed against a container border, a container CIDR outside its header, and circled-digit step legends — the defects that otherwise
+20px, a trunk squeezed against a container border, a container CIDR not on its own line under the title, and circled-digit step legends — the defects that otherwise
 only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allowed.
 
 Then export the formats you need — any combination, from the same drafts:
@@ -262,8 +262,8 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       document one step per row with a bold hop and a sentence on the route and what
       happens there; on a slide short items flowed in one or two rows. The legend
       holds only the steps — no unnumbered rows mixed in.
-- [ ] Every VPC and subnet CIDR is in its container's header (top-left), not a caption
-      inside the box; a spanning box that would cross a header moves instead.
+- [ ] Every VPC and subnet CIDR is its own 12px #232F3E line right under the container
+      title — not on the title line and not a caption inside the box.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes); a slide is filled without crowding the title.
@@ -280,7 +280,8 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       are outside the Region; captions don't credit a service with another's job;
       identical per-AZ hops are drawn identically.
 - [ ] The note (legend / routes) is outside the AWS Cloud box. In a document it is in
-      the note panel at the bottom, full canvas width with 16px each side; on a slide,
+      the note panel at the bottom, full canvas width with 16px each side (or, for a tall
+      diagram, the step legend in a left pane above the client, landscape); on a slide,
       a panel only if the canvas stays ≤ 540, else plain lines left-aligned with the
       Cloud.
 - [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
@@ -312,6 +313,10 @@ file.
 
 ## What NOT to do
 
+- Don't lay a diagram out from scratch when a reference example is close — start from
+  its coordinates; ad-hoc layouts are where empty columns and drifting labels come from.
+- Don't fill an empty container with filler captions; narrow it. Keep the figure
+  compact — no empty columns or rows — while the text stays at 14px/12px.
 - Don't hand-draw or approximate AWS icons — use the bundled ones, and don't swap in
   PowerPoint's built-in icons or clip art.
 - Don't build a slide with python-pptx by hand or with the generic pptx skill — lay it

@@ -132,7 +132,12 @@ separate load balancers.
   ambiguity; the numbers resolve it and the alignment stays consistent across the set.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
-  at that box, instead of one arrow per AZ or per instance.
+  at that box, instead of one arrow per AZ or per instance. Exception: when that box
+  would have to start right of a long subnet header and leave an empty column in every
+  subnet it crosses, fork the connector instead — a trunk in the gap between the tier
+  columns (≥ 12px from both subnet borders) with one short arrow into each AZ's target
+  — and name the target group in the legend. The fork also shows that each NLB node
+  serves its own AZ when cross-zone load balancing is off.
 - **Zonal resources stay per AZ**: NAT gateways, subnets, EC2 instances, interface
   endpoint ENIs and RDS primary/standby are drawn in each AZ they live in.
 - **Per-AZ nodes only on request**: draw one LB node per AZ only when the diagram is
@@ -347,7 +352,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
 `docs/example.svg`). Grow containers only as far as their contents need.
 
 ```svg
-<svg viewBox="0 0 670 574" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+<svg viewBox="0 0 670 590" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
   <!-- one arrowhead marker, reused by every connector; arrowStart is its mirror for
        two-way links (marker-start), since cairosvg ignores orient="auto-start-reverse" -->
   <defs>
@@ -358,73 +363,74 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
       <path d="M8,0 L0,3 L8,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
-  <rect width="670" height="574" fill="#FFFFFF"/>
+  <rect width="670" height="590" fill="#FFFFFF"/>
 
   <!-- AWS Cloud boundary -->
-  <rect x="16" y="16" width="638" height="542" fill="none" stroke="#232F3E" stroke-width="2"/>
+  <rect x="16" y="16" width="638" height="558" fill="none" stroke="#232F3E" stroke-width="2"/>
   <image href="bundle:group/AWS-Cloud-logo_32" x="16" y="16" width="32" height="32"/>
   <text x="58" y="38" font-size="15" fill="#232F3E" font-weight="600">AWS Cloud</text>
 
   <!-- Region: 20px inside the Cloud, below its header -->
-  <rect x="36" y="56" width="598" height="482" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
+  <rect x="36" y="56" width="598" height="498" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
   <image href="bundle:group/Region_32" x="36" y="56" width="24" height="24"/>
   <text x="68" y="74" font-size="14" fill="#00A4A6" font-weight="600">Region ap-northeast-2</text>
 
   <!-- VPC: left edge at x=96 leaves room for the IGW mask (72–120) inside the Region -->
-  <rect x="96" y="88" width="518" height="430" fill="none" stroke="#8C4FFF" stroke-width="2"/>
+  <rect x="96" y="88" width="518" height="446" fill="none" stroke="#8C4FFF" stroke-width="2"/>
   <image href="bundle:group/Virtual-private-cloud-VPC_32" x="96" y="88" width="24" height="24"/>
-  <text x="128" y="106" font-size="14" fill="#8C4FFF" font-weight="600">VPC 10.0.0.0/16</text>
+  <text x="128" y="106" font-size="14" fill="#8C4FFF" font-weight="600">VPC</text>
+  <text x="128" y="122" font-size="12" fill="#232F3E">10.0.0.0/16</text>
 
-  <!-- AZs as rows (label only, long dashes); the 86px gap between them (270–356) holds
-       the main line y=302: IGW → ALB → target group -->
-  <rect x="106" y="118" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
-  <text x="118" y="136" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 1</text>
-  <rect x="106" y="356" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
-  <text x="118" y="374" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 2</text>
+  <!-- AZs as rows (label only, long dashes); the 86px gap between them (286–372) holds
+       the main line y=318: IGW → ALB → target group -->
+  <rect x="106" y="134" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="118" y="152" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 1</text>
+  <rect x="106" y="372" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="118" y="390" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 2</text>
 
   <!-- tiers as columns: public subnet (118–264) → app subnet (276–592), one of each per AZ.
        The public subnets hold the ALB's per-AZ nodes, which are not drawn: the ALB is one node. -->
-  <rect x="118" y="148" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
-  <image href="bundle:group/Public-subnet_32" x="118" y="148" width="24" height="24"/>
-  <text x="150" y="166" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="276" y="148" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
-  <image href="bundle:group/Private-subnet_32" x="276" y="148" width="24" height="24"/>
-  <text x="308" y="166" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
+  <rect x="118" y="164" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <image href="bundle:group/Public-subnet_32" x="118" y="164" width="24" height="24"/>
+  <text x="150" y="182" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
+  <rect x="276" y="164" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <image href="bundle:group/Private-subnet_32" x="276" y="164" width="24" height="24"/>
+  <text x="308" y="182" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
 
-  <rect x="118" y="386" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
-  <image href="bundle:group/Public-subnet_32" x="118" y="386" width="24" height="24"/>
-  <text x="150" y="404" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="276" y="386" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
-  <image href="bundle:group/Private-subnet_32" x="276" y="386" width="24" height="24"/>
-  <text x="308" y="404" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
+  <rect x="118" y="402" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <image href="bundle:group/Public-subnet_32" x="118" y="402" width="24" height="24"/>
+  <text x="150" y="420" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
+  <rect x="276" y="402" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <image href="bundle:group/Private-subnet_32" x="276" y="402" width="24" height="24"/>
+  <text x="308" y="420" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
 
   <!-- one Auto Scaling group / target group spanning both AZs, 8px inside the app subnets and
        right of their headers (so its border crosses no header); zonal EC2 instances stay per AZ -->
-  <rect x="400" y="156" width="184" height="336" fill="none" stroke="#ED7100" stroke-width="1.5" stroke-dasharray="6,3"/>
-  <image href="bundle:group/Auto-Scaling-group_32" x="400" y="156" width="24" height="24"/>
-  <text x="432" y="174" font-size="14" fill="#ED7100" font-weight="600">ASG · target group</text>
+  <rect x="400" y="172" width="184" height="336" fill="none" stroke="#ED7100" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <image href="bundle:group/Auto-Scaling-group_32" x="400" y="172" width="24" height="24"/>
+  <text x="432" y="190" font-size="14" fill="#ED7100" font-weight="600">ASG · target group</text>
 
   <!-- nodes: every node icon uses the same S=48; 14px labels, baseline 16px below the icon -->
-  <image href="bundle:service/Amazon-EC2" x="468" y="186" width="48" height="48"/>
-  <text x="492" y="250" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
-  <image href="bundle:service/Amazon-EC2" x="468" y="416" width="48" height="48"/>
-  <text x="492" y="480" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
+  <image href="bundle:service/Amazon-EC2" x="468" y="202" width="48" height="48"/>
+  <text x="492" y="266" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
+  <image href="bundle:service/Amazon-EC2" x="468" y="432" width="48" height="48"/>
+  <text x="492" y="496" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
 
   <!-- one ALB (a managed multi-AZ service), in the gap between the AZ rows, in the public column -->
-  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="167" y="278" width="48" height="48"/>
-  <text x="191" y="342" font-size="14" text-anchor="middle" fill="#232F3E">ALB</text>
+  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="167" y="294" width="48" height="48"/>
+  <text x="191" y="358" font-size="14" text-anchor="middle" fill="#232F3E">ALB</text>
 
   <!-- Internet gateway centered on the VPC left border (96 - 48/2 = 72), on the main line.
        Label "IGW" (≈ 25px) is narrower than the icon → mask_w = 48, mask_h = S + 22 = 70,
        8px clear of both AZ rows and 36px clear of the Region border at x=36. -->
-  <rect x="72" y="278" width="48" height="70" fill="#FFFFFF"/>
-  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="72" y="278" width="48" height="48"/>
-  <text x="96" y="342" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
+  <rect x="72" y="294" width="48" height="70" fill="#FFFFFF"/>
+  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="72" y="294" width="48" height="48"/>
+  <text x="96" y="358" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
 
   <!-- connectors on the main line, all pointing right; the first starts at the IGW's inner half,
        the second ends at the target group box (one arrow to the group, not one per instance) -->
-  <line x1="124" y1="302" x2="163" y2="302" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="219" y1="302" x2="396" y2="302" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="124" y1="318" x2="163" y2="318" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="219" y1="318" x2="396" y2="318" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
 </svg>
 ```
 
@@ -444,8 +450,11 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   Even spacing. Misaligned icons look amateurish.
 - **Label everything.** Every icon gets a product-name label. Every connector that
   isn't obvious gets a verb/protocol label ("HTTPS", "invoke", "read/write").
+- **No filler text.** Never write a caption into an empty container to make it look
+  used ("NLB 노드 (대상 없음)", "reserved"). An empty public subnet is accurate when
+  nothing of its own lives there; narrow the column instead.
 - **Compact, not empty.** Size every container to what it holds: 16–24px between a
-  container's border and its children (the header row — badge + label — takes ~28px
+  container's border and its children (the header row — badge + label — takes ~28px, ~46px with a CIDR line under the title,
   at the top), and node centers about 2–2.5 × S apart (100–120px at S=48). Don't leave
   empty quadrants or a subnet much larger than its contents; shrink the box or the
   canvas instead. The diagram should fill its canvas with ≤24px outer margin. Only the
@@ -544,7 +553,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
   make room.
 - **Note panel.** In a document every note — step legend, summary, routes — sits in
-  one note panel, always in the same place: **at the bottom, across the full canvas
+  one note panel. Its default place is **at the bottom, across the full canvas
   width with a 16px margin on each side** (`x = 16`, `width = canvas width − 32`),
   starting 16px below the lowest part of the diagram (normally the AWS Cloud's bottom
   border); the canvas ends 16px below the panel. Never move it into an empty corner —
@@ -556,6 +565,14 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
     bold 12px `#232F3E` ("Hub & spoke", "TGW A RT") — in place of the badge and hop,
     and a text column, 12px `#545B64`, starting at one x for every row (16px right of
     the widest label).
+  - **Left legend pane** (for a tall diagram whose bottom panel would leave the canvas
+    tall and empty, or one meant for slides): put the step legend in a pane at the
+    top-left, `x = 16`, `y` = the AWS Cloud's top, with the client/Users on the main
+    line below it in the same column, so the figure comes out landscape. Each step is
+    the badge and bold hop on one line and the description wrapped under the hop
+    (16px line pitch, 12px between steps); size the pane width so its bottom stays
+    ≥ 16px above the client icon. Regional services move to a column right of the VPC
+    to cut the height. Use one place per diagram — never a bottom panel and a pane.
   - **Slide:** use the panel only if the canvas still fits in 540; otherwise the note
     is the plain, frameless lines below the Cloud described above.
 
@@ -588,8 +605,9 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
     for labeled rows (the TGW example); a diagram with steps doesn't mix the two.
     The note's two-line limit doesn't count the step rows.
   - **Slide** (canvas height ≤ 540): items stay short — the hop and at most a few
-    words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest,
-    and the routes stay on the note's route line.
+    words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest.
+    A route line stays only if the canvas still fits in 540 — the document version's
+    step descriptions carry every route.
     When one row per step doesn't fit, flow the items in one row, 20px between an item's text end and the next badge; wrap to a second
     row 24px below at the same left edge rather than shrinking the text.
 
@@ -600,17 +618,23 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
   <text x="44" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="168" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
   ```
-- **A container's CIDR lives in its header, top-left.** VPC and subnet CIDRs are part
-  of the header label ("Private subnet 10.100.10.0/24"), never a caption moved into the
-  box's body. When a box that spans rows (a target group or ASG box) would cross a
-  longer header, move or narrow that box — start it 8px right of the header text — or
-  widen the column; don't shorten the header. check_layout.py reports CIDR OFF HEADER.
+- **A container's CIDR goes on its own line right under the title.** The title stays
+  the name ("VPC mtls-beta-vpc", "Private subnet"); the CIDR is the next line, same x,
+  baseline 16px lower, 12px regular in squid ink `#232F3E` (not the container color).
+  Nested boxes then start at container.y + 46 instead of + 30. Never move the CIDR into
+  the box's body or onto the title line. check_layout.py reports CIDR IN TITLE,
+  CIDR OFF HEADER and CIDR COLOR.
+
+  ```svg
+  <text x="312" y="86" font-size="14" fill="#8C4FFF" font-weight="600">VPC</text>
+  <text x="312" y="102" font-size="12" fill="#232F3E">10.0.0.0/16</text>
+  ```
 - **When routes must be shown.** A diagram whose point is the routing — inspection
   (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
   VPCs or Regions — lists every route its flows need (sub-captions, a document's step
   descriptions, or the note's route line). Other
   diagrams may leave routes out. When routes are shown, every VPC (and on-premises
-  network) carries its CIDR — in its container header, or as a 12px sub-caption under a
+  network) carries its CIDR — on the line under its container title, or as a 12px sub-caption under a
   single-icon VPC node or the customer gateway — and the routes use those CIDRs, not
   placeholders like "app subnet CIDR". A route to a subnet CIDR names the subnet in
   parentheses: "10.0.1.0/24 (AZ1 App) → GWLBe". TGW propagation captions ("VPC A · B
