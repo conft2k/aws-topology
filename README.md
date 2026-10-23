@@ -47,7 +47,7 @@ AWS가 만들거나 보증한 도구가 아닙니다. 아이콘은 AWS 소유이
 | GWLB | Transit Gateway |
 |---|---|
 | ![GWLB 참조 아키텍처](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway 참조 아키텍처](docs/examples/tgw-reference-architecture.png) |
-| 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering(peering connection 아이콘)으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결 |
+| 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering(peering connection 아이콘)으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결. attachment 종류 라벨, TGW별 라우팅 테이블 노드, 온프레미스 → DR VPC 흐름을 attachment 선 위 번호로 표시 |
 
 | AWS Network Firewall | NLB mTLS |
 |---|---|

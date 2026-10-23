@@ -51,7 +51,7 @@ their SVGs and a render of each slide are in [`docs/examples/slides/`](docs/exam
 | GWLB | Transit Gateway |
 |---|---|
 | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
-| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering (the peering connection icon), on-premises over Site-to-Site VPN across the Internet |
+| Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering (the peering connection icon), on-premises over Site-to-Site VPN across the Internet; attachment-type labels, a route-table node per TGW, and the on-premises → DR VPC flow numbered on the attachment lines |
 
 | AWS Network Firewall | NLB mTLS |
 |---|---|

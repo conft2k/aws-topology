@@ -69,7 +69,8 @@ settle the slide titles (one line each, or none) and the list of slides.
 `docs/examples/` holds finished, checked reference layouts — NLB, ALB (3-tier with
 WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
 spoke in two Regions joined by TGW peering drawn as the peering connection icon between
-the Regions, VPCs as single icons) and AWS Network
+the Regions, VPCs as single icons, attachment types labeled, a route-table node per TGW and
+one flow numbered on the attachment lines) and AWS Network
 Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
 route tables and NAT egress) and NLB mTLS (client-certificate verification with an ELB
 trust store fed from S3; the landscape layout with the step legend in a left pane and
@@ -279,6 +280,9 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       unavoidable and the user is told; never under 8pt.
 - [ ] Every AWS service/resource with an official icon is an icon node, not a label or
       text box.
+- [ ] A TGW / peering topology labels each attachment type once, draws each TGW route
+      table as a node with its routes, and numbers one representative flow on the
+      attachment lines — no separate flow lines.
 - [ ] A Site-to-Site VPN path is CGW → Internet → Site-to-Site VPN → TGW/VGW, with the
       Internet and VPN icons outside the AWS Cloud; a Direct Connect path does not pass
       the Internet icon.

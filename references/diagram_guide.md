@@ -121,7 +121,9 @@ separate load balancers.
   white bold 12px number on **every** hop from where the path leaves the main line until
   it rejoins it (① IGW → GWLBe,
   ② GWLBe → GWLB, ...), its bottom 4px above that hop's own line, at the middle of the
-  longest horizontal part of the line between container borders (a connector's protocol or name
+  longest horizontal part of the line between container borders — except a hop whose
+  point is crossing between two containers (a TGW peering between Regions), whose
+  number sits in the gap between them (a connector's protocol or name
   label goes near the middle of that same part) (a hop drawn inside an AZ row gets its number
   inside that row, above its line — never on another hop's line; hops that share or run side by side through the AZ gap
   get one number between them, and on a slide the "keep it clear of the AZ boxes" rule
@@ -486,6 +488,23 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   to what rather than how traffic flows (TGW hub and spoke, VPC peering mesh) draws its
   attachment lines solid, without arrowheads, in any direction; the left → right and
   "other directions are dashed" rules apply to traffic-flow diagrams only.
+- **A reference topology shows its connections and one flow — on the same lines.** In a
+  TGW / peering diagram the attachment lines are the only lines; never draw a second,
+  parallel "data flow" line next to them. Make the connections explicit and the flow
+  visible with what the grammar already has:
+  - **Label each attachment type once** with a 12px `#545B64` connector label on one of
+    its lines — "VPC attachment" on one spoke, "VPN attachment" on the VPN line (below
+    it when a step badge sits above). A peering attachment is named by the peering
+    connection icon's sub-caption ("peering attachment"): as a connector label
+    check_layout.py reads it as the peering service written as text.
+  - **Draw each TGW route table as a node** (`resource/Amazon-Route-53_Route-Table`,
+    "TGW A RT") next to its TGW, with no line (a route table is a property of the TGW),
+    its propagations and static routes as 12px sub-captions ("VPC·VPN 경로 전파",
+    "10.16.0.0/13 → peering").
+  - **Show one representative flow** — the path that crosses the most attachment types
+    (e.g. on-premises → a VPC in the remote Region) — as step badges on the attachment
+    lines it uses, explained in the step legend with the route that sends it each way
+    and the return path. One flow, not every pair: the route-table nodes cover the rest.
 - **Several connectors into one node: separate when they are separate things, one
   trunk when they are the same route.** When each line is its own attachment, ENI or
   endpoint (spoke VPCs → TGW, GWLBe ⇄ GWLB per AZ), give each its own arrowhead, entering
