@@ -591,7 +591,9 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   or one plain 12px `#545B64` summary row when there is a single line to say (the NLB
   and ALB examples).
 - **Left legend pane.** Same style as the panel. `x = 16`, `y` = the AWS Cloud's y,
-  fixed width 300 (320 only if a description would otherwise exceed four lines); the
+  width 300 (320 only if a description would otherwise exceed four lines) — or, when
+  the left column below it is wider (an on-premises group plus a Direct Connect
+  column), that column's width, so no empty column opens beside the pane; the
   AWS Cloud starts at the pane's right edge + 24; the client/Users node is centered on
   the pane's center x, on the main line, and the pane's bottom stays ≥ 16px above its
   icon. Inside the pane: first badge `cy = pane.y + 22` (`cx = 38`), the hop in bold at

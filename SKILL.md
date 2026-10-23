@@ -74,7 +74,10 @@ one flow numbered on the attachment lines) and AWS Network
 Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
 route tables and NAT egress) and NLB mTLS (client-certificate verification with an ELB
 trust store fed from S3; the landscape layout with the step legend in a left pane and
-the NLB forking to one instance per AZ) — as document-size drafts (`*.svg`) with their
+the NLB forking to one instance per AZ) and Bedrock over Direct Connect (Claude Code
+on-premises → private VIF → Direct Connect gateway → interface endpoints for
+bedrock-runtime, bedrock and sts with Route 53 Resolver inbound DNS, global
+cross-Region inference from Seoul and a second-Region endpoint) — as document-size drafts (`*.svg`) with their
 PNGs. `slides/` holds a slide-size version of the first five (`slides/*.svg`, ≤ 1108 × 544, text
 ≥ 10pt on a titled slide except 9.9pt on the GWLB slide), the deck made from them (`reference-architectures.pptx`)
 and a render of each slide (`slides/*.png`). When the request resembles one of them,
@@ -379,7 +382,7 @@ All 857 icons are packed into one JSON bundle (keeps the skill's file count low)
   `fetch_icons.py`).
 - `scripts/macos_cairo.py` — imported before cairosvg so it finds Homebrew's cairo on
   Apple Silicon without shell setup.
-- `docs/examples/` — checked NLB, ALB, GWLB, TGW, Network Firewall and NLB mTLS reference layouts
+- `docs/examples/` — checked NLB, ALB, GWLB, TGW, Network Firewall, NLB mTLS and Bedrock-over-DX reference layouts
   (drafts + PNG); `slides/` has their slide-size versions, the deck made from those and
   a render of each slide.
 

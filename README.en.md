@@ -58,6 +58,11 @@ their SVGs and a render of each slide are in [`docs/examples/slides/`](docs/exam
 | ![AWS Network Firewall centralized reference architecture](docs/examples/nfw-reference-architecture.png) | ![NLB mTLS reference architecture](docs/examples/nlb-mtls-reference-architecture.png) |
 | Centralized inspection: spoke and firewall route tables on a Transit Gateway, one inspection VPC with a firewall endpoint per AZ inspecting both VPC-to-VPC traffic and Internet egress through NAT | Client-certificate verification: an ELB trust store built from a CA bundle and CRL in S3 on the :443 listener, forking to one EC2 per AZ; the landscape layout with the step legend in a left pane |
 
+| Bedrock over Direct Connect |
+|---|
+| ![Private Amazon Bedrock access over a Direct Connect private VIF](docs/examples/bedrock-dx-reference-architecture.png) |
+| Claude Code on premises calls Bedrock privately: DX private VIF → Direct Connect gateway → VGW → interface endpoints for bedrock-runtime, bedrock and sts, names resolved through a Route 53 Resolver inbound endpoint; global cross-Region inference from Seoul, a second-Region endpoint behind the same DX gateway, and the internet-bound aws sso login sign-in, each as a numbered step |
+
 ## Install
 
 macOS and Linux are supported.
