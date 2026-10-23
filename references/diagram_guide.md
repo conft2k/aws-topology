@@ -132,12 +132,15 @@ separate load balancers.
   ambiguity; the numbers resolve it and the alignment stays consistent across the set.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
-  at that box, instead of one arrow per AZ or per instance. Exception: when that box
-  would have to start right of a long subnet header and leave an empty column in every
-  subnet it crosses, fork the connector instead — a trunk in the gap between the tier
-  columns (≥ 12px from both subnet borders) with one short arrow into each AZ's target
-  — and name the target group in the legend. The fork also shows that each NLB node
-  serves its own AZ when cross-zone load balancing is off.
+  at that box, instead of one arrow per AZ or per instance. **Exception — fork
+  instead of boxing** when the box can't be placed without an empty column: the box
+  must start 8px right of every header it crosses (see "ASG and target group boxes"),
+  and if that leaves ≥ 48px (one icon) of empty subnet between the subnet's left
+  padding and the box in every row it crosses — after shortening the headers per
+  "Short container labels" — draw a trunk in the gap between the tier columns (≥ 12px
+  from both subnet borders, ~28px in a document) with one arrow (≥ 20px, ~48px in a
+  document) into each AZ's target, and name the target group in the step description
+  or in a 12px sub-caption under the first target (the nlb-mtls example).
 - **Zonal resources stay per AZ**: NAT gateways, subnets, EC2 instances, interface
   endpoint ENIs and RDS primary/standby are drawn in each AZ they live in.
 - **Per-AZ nodes only on request**: draw one LB node per AZ only when the diagram is
@@ -226,7 +229,7 @@ and the border.
     Hangul character (14px: "IGW" ≈ 25px, so the mask is just the icon width; a
     spelled-out "Internet gateway" ≈ 135px needs a 143px mask);
   - `mask_w = max(S, tw + 8)`, `mask_x = cx - mask_w/2`;
-  - `mask_y = icon_y`, `mask_h = S + 22` (icon plus one label line; add 16 per extra line).
+  - `mask_y = icon_y`, `mask_h = S + 24` in a document (icon plus the label line at +18 and its glyph box), `S + 22` on a slide whose 86px AZ gap leaves no more room (the glyph box ends at +21.5, so it is still covered); add 16 per extra line.
 
   No line may cross the label: besides the VPC border, check that no connector, subnet
   border or other container border passes through the mask area. Move the label
@@ -352,7 +355,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
 `docs/example.svg`). Grow containers only as far as their contents need.
 
 ```svg
-<svg viewBox="0 0 670 590" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+<svg viewBox="0 0 670 594" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
   <!-- one arrowhead marker, reused by every connector; arrowStart is its mirror for
        two-way links (marker-start), since cairosvg ignores orient="auto-start-reverse" -->
   <defs>
@@ -363,74 +366,74 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
       <path d="M8,0 L0,3 L8,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
-  <rect width="670" height="590" fill="#FFFFFF"/>
+  <rect width="670" height="594" fill="#FFFFFF"/>
 
   <!-- AWS Cloud boundary -->
-  <rect x="16" y="16" width="638" height="558" fill="none" stroke="#232F3E" stroke-width="2"/>
+  <rect x="16" y="16" width="638" height="562" fill="none" stroke="#232F3E" stroke-width="2"/>
   <image href="bundle:group/AWS-Cloud-logo_32" x="16" y="16" width="32" height="32"/>
   <text x="58" y="38" font-size="15" fill="#232F3E" font-weight="600">AWS Cloud</text>
 
   <!-- Region: 20px inside the Cloud, below its header -->
-  <rect x="36" y="56" width="598" height="498" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
+  <rect x="36" y="56" width="598" height="502" fill="none" stroke="#00A4A6" stroke-width="2" stroke-dasharray="3,3"/>
   <image href="bundle:group/Region_32" x="36" y="56" width="24" height="24"/>
   <text x="68" y="74" font-size="14" fill="#00A4A6" font-weight="600">Region ap-northeast-2</text>
 
   <!-- VPC: left edge at x=96 leaves room for the IGW mask (72–120) inside the Region -->
-  <rect x="96" y="88" width="518" height="446" fill="none" stroke="#8C4FFF" stroke-width="2"/>
+  <rect x="96" y="88" width="518" height="450" fill="none" stroke="#8C4FFF" stroke-width="2"/>
   <image href="bundle:group/Virtual-private-cloud-VPC_32" x="96" y="88" width="24" height="24"/>
   <text x="128" y="106" font-size="14" fill="#8C4FFF" font-weight="600">VPC</text>
   <text x="128" y="122" font-size="12" fill="#232F3E">10.0.0.0/16</text>
 
-  <!-- AZs as rows (label only, long dashes); the 86px gap between them (286–372) holds
-       the main line y=318: IGW → ALB → target group -->
-  <rect x="106" y="134" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <!-- AZs as rows (label only, long dashes); the 86px gap between them (288–374) — the slide minimum; a document uses ≥110 — holds
+       the main line y=320: IGW → ALB → target group -->
+  <rect x="106" y="134" width="498" height="154" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
   <text x="118" y="152" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 1</text>
-  <rect x="106" y="372" width="498" height="152" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
-  <text x="118" y="390" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 2</text>
+  <rect x="106" y="374" width="498" height="154" fill="none" stroke="#00A4A6" stroke-width="1.5" stroke-dasharray="8,4"/>
+  <text x="118" y="392" font-size="14" fill="#00A4A6" font-weight="600">Availability Zone 2</text>
 
   <!-- tiers as columns: public subnet (118–264) → app subnet (276–592), one of each per AZ.
        The public subnets hold the ALB's per-AZ nodes, which are not drawn: the ALB is one node. -->
-  <rect x="118" y="164" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <rect x="118" y="164" width="146" height="116" fill="none" stroke="#7AA116" stroke-width="1.5"/>
   <image href="bundle:group/Public-subnet_32" x="118" y="164" width="24" height="24"/>
   <text x="150" y="182" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="276" y="164" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <rect x="276" y="164" width="316" height="116" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
   <image href="bundle:group/Private-subnet_32" x="276" y="164" width="24" height="24"/>
   <text x="308" y="182" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
 
-  <rect x="118" y="402" width="146" height="114" fill="none" stroke="#7AA116" stroke-width="1.5"/>
-  <image href="bundle:group/Public-subnet_32" x="118" y="402" width="24" height="24"/>
-  <text x="150" y="420" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
-  <rect x="276" y="402" width="316" height="114" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
-  <image href="bundle:group/Private-subnet_32" x="276" y="402" width="24" height="24"/>
-  <text x="308" y="420" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
+  <rect x="118" y="404" width="146" height="116" fill="none" stroke="#7AA116" stroke-width="1.5"/>
+  <image href="bundle:group/Public-subnet_32" x="118" y="404" width="24" height="24"/>
+  <text x="150" y="422" font-size="14" fill="#7AA116" font-weight="600">Public subnet</text>
+  <rect x="276" y="404" width="316" height="116" fill="none" stroke="#00A4A6" stroke-width="1.5"/>
+  <image href="bundle:group/Private-subnet_32" x="276" y="404" width="24" height="24"/>
+  <text x="308" y="422" font-size="14" fill="#00A4A6" font-weight="600">App subnet</text>
 
   <!-- one Auto Scaling group / target group spanning both AZs, 8px inside the app subnets and
        right of their headers (so its border crosses no header); zonal EC2 instances stay per AZ -->
-  <rect x="400" y="172" width="184" height="336" fill="none" stroke="#ED7100" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <rect x="400" y="172" width="184" height="340" fill="none" stroke="#ED7100" stroke-width="1.5" stroke-dasharray="6,3"/>
   <image href="bundle:group/Auto-Scaling-group_32" x="400" y="172" width="24" height="24"/>
   <text x="432" y="190" font-size="14" fill="#ED7100" font-weight="600">ASG · target group</text>
 
-  <!-- nodes: every node icon uses the same S=48; 14px labels, baseline 16px below the icon -->
+  <!-- nodes: every node icon uses the same S=48; 14px labels, baseline 18px below the icon (icon.y + 66) -->
   <image href="bundle:service/Amazon-EC2" x="468" y="202" width="48" height="48"/>
-  <text x="492" y="266" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
-  <image href="bundle:service/Amazon-EC2" x="468" y="432" width="48" height="48"/>
-  <text x="492" y="496" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
+  <text x="492" y="268" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
+  <image href="bundle:service/Amazon-EC2" x="468" y="434" width="48" height="48"/>
+  <text x="492" y="500" font-size="14" text-anchor="middle" fill="#232F3E">EC2</text>
 
   <!-- one ALB (a managed multi-AZ service), in the gap between the AZ rows, in the public column -->
-  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="167" y="294" width="48" height="48"/>
-  <text x="191" y="358" font-size="14" text-anchor="middle" fill="#232F3E">ALB</text>
+  <image href="bundle:resource/Elastic-Load-Balancing_Application-Load-Balancer" x="167" y="296" width="48" height="48"/>
+  <text x="191" y="362" font-size="14" text-anchor="middle" fill="#232F3E">ALB</text>
 
   <!-- Internet gateway centered on the VPC left border (96 - 48/2 = 72), on the main line.
-       Label "IGW" (≈ 25px) is narrower than the icon → mask_w = 48, mask_h = S + 22 = 70,
+       Label "IGW" (≈ 25px) is narrower than the icon → mask_w = 48, mask_h = S + 24 = 72 (70 on a slide),
        8px clear of both AZ rows and 36px clear of the Region border at x=36. -->
-  <rect x="72" y="294" width="48" height="70" fill="#FFFFFF"/>
-  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="72" y="294" width="48" height="48"/>
-  <text x="96" y="358" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
+  <rect x="72" y="296" width="48" height="72" fill="#FFFFFF"/>
+  <image href="bundle:resource/Amazon-VPC_Internet-Gateway" x="72" y="296" width="48" height="48"/>
+  <text x="96" y="362" font-size="14" text-anchor="middle" fill="#232F3E">IGW</text>
 
   <!-- connectors on the main line, all pointing right; the first starts at the IGW's inner half,
        the second ends at the target group box (one arrow to the group, not one per instance) -->
-  <line x1="124" y1="318" x2="163" y2="318" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <line x1="219" y1="318" x2="396" y2="318" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="124" y1="320" x2="163" y2="320" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="219" y1="320" x2="396" y2="320" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
 </svg>
 ```
 
@@ -454,7 +457,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   used ("NLB 노드 (대상 없음)", "reserved"). An empty public subnet is accurate when
   nothing of its own lives there; narrow the column instead.
 - **Compact, not empty.** Size every container to what it holds: 16–24px between a
-  container's border and its children (the header row — badge + label — takes ~28px, ~46px with a CIDR line under the title,
+  container's border and its children (the header row — badge + label — takes 30px, 46px with a CIDR line under the title,
   at the top), and node centers about 2–2.5 × S apart (100–120px at S=48). Don't leave
   empty quadrants or a subnet much larger than its contents; shrink the box or the
   canvas instead. The diagram should fill its canvas with ≤24px outer margin. Only the
@@ -540,90 +543,95 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
 - **Room outside the AWS Cloud.** Users/clients sit outside the AWS Cloud box; leave
   enough space between them and the Cloud border (≈80px at 12px) for the connector's
   protocol label to sit clear of the Cloud and Region borders.
-- **Note line.** The note goes **below the diagram, outside the AWS Cloud box** — in a
-  document always inside the full-width note panel (see below). On a slide without a
-  panel it is left-aligned with the **AWS Cloud box's left edge** (its bottom-left
-  corner) — the same x in every slide, even when Users or an on-premises box sit
-  left of the Cloud — 8px or more below the Cloud's bottom border, 12px, never inside a
-  container. At most two lines, 16px apart, each no wider than the canvas (a line
-  that would run past the canvas from the Cloud's edge wraps to one more line): what the
-  diagram is ("Internet-facing NLB · ...") or the step legend, and — when the routes
-  don't fit as sub-captions — the routes ("라우팅: ..."). A qualifier shared by several
-  routes may be said once ("방화벽 · NAT 경로는 같은 AZ"). On a slide the note counts
-  toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
-  make room.
-- **Note panel.** In a document every note — step legend, summary, routes — sits in
-  one note panel. Its default place is **at the bottom, across the full canvas
-  width with a 16px margin on each side** (`x = 16`, `width = canvas width − 32`),
-  starting 16px below the lowest part of the diagram (normally the AWS Cloud's bottom
-  border); the canvas ends 16px below the panel. Never move it into an empty corner —
-  the same position in every diagram matters more than saving height. The panel is
-  a square rect, `fill="#F8F9F9"`, `stroke="#D5DBDB"` 1px, with no badge and no header
-  label (it must not read as an AWS group), 12px padding inside, so every row starts
-  at x = 28 and the step badges sit at `cx = 38`. Rows are 24px apart.
-  - A note that isn't a step legend (a diagram without steps) uses the same row layout with a label column —
-    bold 12px `#232F3E` ("Hub & spoke", "TGW A RT") — in place of the badge and hop,
-    and a text column, 12px `#545B64`, starting at one x for every row (16px right of
-    the widest label).
-  - **Left legend pane** (for a tall diagram whose bottom panel would leave the canvas
-    tall and empty, or one meant for slides): put the step legend in a pane at the
-    top-left, `x = 16`, `y` = the AWS Cloud's top, with the client/Users on the main
-    line below it in the same column, so the figure comes out landscape. Each step is
-    the badge and bold hop on one line and the description wrapped under the hop
-    (16px line pitch, 12px between steps); size the pane width so its bottom stays
-    ≥ 16px above the client icon. Regional services move to a column right of the VPC
-    to cut the height. Use one place per diagram — never a bottom panel and a pane.
-  - **Slide:** use the panel only if the canvas still fits in 540; otherwise the note
-    is the plain, frameless lines below the Cloud described above.
-
+- **The note — one place per diagram.** Everything that explains the drawing without
+  being a node label or caption — the step legend, a one-line summary, routes that
+  don't fit as sub-captions — is the note. It is 12px text (`#545B64`; hops and row
+  labels bold `#232F3E`), sits outside the AWS Cloud box, and goes in exactly one of
+  three places, decided in this order:
+  1. **Left legend pane** — when the diagram has a step legend and either (document)
+     the drawing without its note is taller than 0.7 × its width, or (slide) the pane
+     plus the drawing fit in the 1108px slide width. The pane makes the figure
+     landscape, which suits slides.
+  2. **Bottom note panel** — every other document note.
+  3. **Plain lines below the Cloud** — every other slide note. A slide never gets a
+     bottom panel.
+  Never two of them in one diagram, and never a note inside a container.
+- **Bottom note panel.** A square rect, `x = 16`, `width = canvas width − 32`,
+  `fill="#F8F9F9"`, `stroke="#D5DBDB"` 1px, with no badge and no header label (it must
+  not read as an AWS group); its top is the AWS Cloud's bottom border + 16 (or the
+  lowest element's), and the canvas ends 16px below it. Rows start at x = 28: first
+  baseline at panel.y + 26, 24px apart, panel height = 26 + 24 × (rows − 1) + 18 (one
+  row: 44). Three row kinds, never mixed in one panel: step rows (see **Step legend**);
+  label rows — a bold 12px `#232F3E` label at x = 28 and a 12px `#545B64` text column
+  starting at one x for every row, 16px right of the widest label (the TGW example);
+  or one plain 12px `#545B64` summary row when there is a single line to say (the NLB
+  and ALB examples).
+- **Left legend pane.** Same style as the panel. `x = 16`, `y` = the AWS Cloud's y,
+  fixed width 300 (320 only if a description would otherwise exceed four lines); the
+  AWS Cloud starts at the pane's right edge + 24; the client/Users node is centered on
+  the pane's center x, on the main line, and the pane's bottom stays ≥ 16px above its
+  icon. Inside the pane: first badge `cy = pane.y + 22` (`cx = 38`), the hop in bold at
+  x = 56, baseline cy + 4; the description in 12px `#545B64` at x = 56 from 20px below
+  the hop, 16px line pitch, wrapped to pane width − 52; the next hop's baseline is the
+  last description baseline + 28; the pane ends 14px below the last baseline. Only
+  step rows go in the pane. Regional services move to a column right of the VPC (one
+  per AZ row and one on the main line) so the drawing stays short. Reference layout:
+  `docs/examples/nlb-mtls-reference-architecture.svg`.
+- **Plain lines on a slide.** Left-aligned with the **AWS Cloud box's left edge** (badge
+  `cx = cloud.x + 10`, its text at `cloud.x + 28`, text-only lines at `cloud.x`) — the
+  same x on every slide, even when Users or an on-premises box sit left of the Cloud.
+  The first line's badge top is ≥ 8px below the Cloud's bottom border (badge
+  `cy ≥ bottom + 18`, baseline cy + 4; a text-only first line: baseline ≥ bottom + 17).
+  At most three 12px lines, 16px apart; a flowed legend row counts as one line. The
+  canvas ends 3–4px below the last baseline and must stay ≤ 540 with every label
+  ≥ 10pt — the Region's bottom padding may shrink to 8px to make room; if it still
+  doesn't fit, drop the route line (the document version's step descriptions carry the
+  routes) before shrinking anything. A qualifier shared by several routes may be said
+  once ("방화벽 · NAT 경로는 같은 AZ").
 - **Step legend.** A diagram with step badges explains them in the note with the
   **same badge** the diagram uses — a 10px-radius squid-ink `#232F3E` circle with the
-  white bold 12px number — never a circled-digit glyph (①) or a bare "1.". Each item
-  is the badge followed by its text: 12px, `#545B64`, `text-anchor="start"`, starting
-  8px right of the badge (`x = cx + 18`), baseline at `cy + 4`. Everything is
-  left-aligned on the note's left edge — the panel's x + 12 in a document (28), the
-  AWS Cloud's x on a slide (badge `cx = left + 10`, hop text at `left + 28`, plain
-  lines at `left`); never center the legend.
-  - **Document:** one step per row, rows 24px apart, in step order. Each row is the
-    badge, the hop in bold (`font-weight="600"`, `#232F3E`, e.g. "TGW ENI → 방화벽"),
-    and a description column that starts at one x for every row (16px right of the
-    widest hop). A document has room, so the description explains the step instead
-    of repeating the hop — one or two sentences on one line: what sends the traffic
-    there (the route table and entry, with the diagram's CIDRs), what the service
-    does at that hop (inspects, translates, encapsulates, load-balances), and the
-    return path or the exception where it matters ("VPC 간 트래픽은 ... TGW로
-    돌아갑니다"). Use the diagram's own names; keep each row inside the canvas
-    (≈ 100 Korean characters at most on a 1200px canvas). The step descriptions
-    carry the routes, so a document drops the "라우팅: ..." line once every route it
-    would list is in a description, and never repeats a route there.
-  - **A step legend holds only the numbered steps.** Don't append unnumbered rows
-    (server certificate, security group rules, routes, test inputs) below the steps —
-    mixing numbered and unnumbered rows reads as one confusing list. Put each such
-    fact where it belongs: on the diagram as a node caption or container header, or in
-    the document that embeds the diagram (the test plan, the README). If a fact is
-    already in either place, drop it. A diagram without steps may still use the panel
-    for labeled rows (the TGW example); a diagram with steps doesn't mix the two.
-    The note's two-line limit doesn't count the step rows.
-  - **Slide** (canvas height ≤ 540): items stay short — the hop and at most a few
-    words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest.
-    A route line stays only if the canvas still fits in 540 — the document version's
-    step descriptions carry every route.
-    When one row per step doesn't fit, flow the items in one row, 20px between an item's text end and the next badge; wrap to a second
-    row 24px below at the same left edge rather than shrinking the text.
+  white bold 12px number (baseline cy + 4) — never a circled-digit glyph (①) or a bare
+  "1.". Each item is the badge, then the hop in bold 12px `#232F3E`
+  (`font-weight="600"`, e.g. "TGW ENI → 방화벽") starting 8px right of the badge
+  (`x = cx + 18`, baseline cy + 4), then the description in 12px `#545B64`. Everything
+  is left-aligned; never center the legend.
+  - **Document (panel or pane):** one step per row, in step order; in a panel the
+    description is a column starting at one x for every row (16px right of the widest
+    hop), in a pane it wraps under the hop. A document has room, so the description
+    explains the step instead of repeating the hop — one or two sentences: what sends
+    the traffic there (the route table and entry, with the diagram's CIDRs), what the
+    service does at that hop (inspects, translates, encapsulates, load-balances), and
+    the return path or the exception where it matters ("VPC 간 트래픽은 ... TGW로
+    돌아갑니다"). Use the diagram's own names. The descriptions carry the routes, so a
+    document has no separate "라우팅: ..." line and never repeats a route.
+  - **Steps only.** Don't append unnumbered rows (server certificate, security group
+    rules, routes, test inputs) below the steps — mixing numbered and unnumbered rows
+    reads as one confusing list. Put each such fact where it belongs: on the diagram
+    as a node caption or container header, or in the document that embeds the diagram
+    (the README, the test plan). If it is already in either place, drop it. A target
+    group or ASG that the drawing doesn't box is named inside a step's description.
+  - **Slide:** items stay short — the hop and at most a few words ("같은 AZ 방화벽에서
+    검사"); the speaker or the document carries the rest. Flow the items in one row,
+    20px between an item's text end (as check_layout.py estimates it) and the next
+    badge's edge; when the row would run past the
+    canvas, continue on a second row 24px below at the same left edge rather than
+    shrinking the text.
 
   ```svg
-  <!-- step legend inside a note panel whose rows start at x=16: same badges as the diagram, bold hop, aligned description column -->
-  <circle cx="26" cy="660" r="10" fill="#232F3E"/><text x="26" y="664" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
-  <text x="44" y="664" font-size="12" font-weight="600" fill="#232F3E">IGW → GWLBe</text><text x="168" y="664" font-size="12" fill="#545B64">IGW 엣지 RT가 App 서브넷 CIDR을 같은 AZ의 GWLBe로 보내, 들어오는 트래픽이 EC2보다 먼저 검사 경로로 갑니다.</text>
-  <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
-  <text x="44" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="168" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
+  <!-- step rows in a bottom panel (panel x=16): rows start at x=28, badge cx=38, bold hop at x=56,
+       one description column (x=172 here = 56 + widest hop + 16) -->
+  <circle cx="38" cy="660" r="10" fill="#232F3E"/><text x="38" y="664" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
+  <text x="56" y="664" font-size="12" font-weight="600" fill="#232F3E">IGW → GWLBe</text><text x="172" y="664" font-size="12" fill="#545B64">IGW 엣지 RT가 App 서브넷 CIDR을 같은 AZ의 GWLBe로 보내, 들어오는 트래픽이 EC2보다 먼저 검사 경로로 갑니다.</text>
+  <circle cx="38" cy="684" r="10" fill="#232F3E"/><text x="38" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
+  <text x="56" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="172" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
   ```
 - **A container's CIDR goes on its own line right under the title.** The title stays
   the name ("VPC mtls-beta-vpc", "Private subnet"); the CIDR is the next line, same x,
   baseline 16px lower, 12px regular in squid ink `#232F3E` (not the container color).
-  Nested boxes then start at container.y + 46 instead of + 30. Never move the CIDR into
-  the box's body or onto the title line. check_layout.py reports CIDR IN TITLE,
-  CIDR OFF HEADER and CIDR COLOR.
+  Nested boxes and the first node icon then start at container.y + 46 instead of + 30 /
+  + 28 (see **Fixed header geometry**). Never move the CIDR into the box's body or
+  onto the title line. Show a CIDR only where "When routes must be shown" asks for it.
+  check_layout.py reports CIDR IN TITLE, CIDR OFF HEADER and CIDR COLOR.
 
   ```svg
   <text x="312" y="86" font-size="14" fill="#8C4FFF" font-weight="600">VPC</text>
@@ -632,7 +640,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
 - **When routes must be shown.** A diagram whose point is the routing — inspection
   (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
   VPCs or Regions — lists every route its flows need (sub-captions, a document's step
-  descriptions, or the note's route line). Other
+  descriptions, or a slide's route line). Other
   diagrams may leave routes out. When routes are shown, every VPC (and on-premises
   network) carries its CIDR — on the line under its container title, or as a 12px sub-caption under a
   single-icon VPC node or the customer gateway — and the routes use those CIDRs, not
@@ -651,20 +659,24 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   part of their line between container borders, 4–8px above it (below it when a step
   number takes the space above).
 - **Fixed header geometry.** A container's header label sits at baseline container.y +
-  18; any box nested inside starts at container.y + 30 or lower (VPC → AZ, AZ → subnet).
-  The AWS Cloud's 15px label sits at baseline Cloud.y + 22, so the Region starts at
-  Cloud.y + 34 or lower.
-  The first node icon inside a subnet starts at subnet.y + 28 or lower (6px under the
-  header label).
+  18 (x + 32 with a badge, x + 12 without); any box nested inside starts at container.y
+  + 30 or lower (VPC → AZ, AZ → subnet) — **+ 46 when the container shows its CIDR**
+  (the CIDR line at y + 34 needs 8px under it). The AWS Cloud's 15px label sits at
+  baseline Cloud.y + 22 (x + 42), so the Region starts at Cloud.y + 34 or lower. The
+  first node icon inside a subnet starts at subnet.y + 28 or lower (6px under the
+  header label) — + 46 when the subnet shows its CIDR. check_layout.py reports TITLE
+  OFFSET and HEADER CLEARANCE.
 - **Side-by-side Regions** (or VPCs drawn as boxes) sit 24–40px apart.
 - **Slide vertical budget.** On a titled slide (540px) a two-AZ diagram fits with: Cloud
-  header 34, Region / VPC headers 30 each, AZ rows of 144 (AZ header 30 + a 106px
-  subnet: icon at +28, 48px icon, label baseline 18 below it, 8px under the label —
-  + 8px padding; ≈152 when an ASG header sits in the row), an 86px AZ gap, 8px paddings and a two-line note (≈30). When split
-  connectors (±8) and a step badge share the gap and there is no room for 90px, keep
-  the badge horizontally clear of the AZ boxes instead. Budget these
-  before placing nodes; if they don't add up, split the diagram rather than shrinking
-  icons or fonts.
+  header 34, Region / VPC headers 30 each (VPC 46 when it shows its CIDR), AZ rows of
+  144 (AZ header 30 + a 106px subnet: icon at +28, 48px icon, label baseline 18 below
+  it, 8px under the label — + 8px padding; ≈152 when an ASG header sits in the row,
+  +18 when the subnets show their CIDR), an 86px AZ gap, 8px paddings and the note
+  (one legend row ≈ 30, three lines ≈ 60). When split connectors (±8) and a step badge
+  share the gap and there is no room beyond the 86px minimum, keep the badge
+  horizontally clear of the AZ boxes instead. Budget these before placing nodes; if
+  they don't add up, drop the route line, then split the diagram — never shrink icons
+  or fonts.
 - **Padding between nested containers:** 16–24px in a document; on a slide it may
   shrink to 8px to fit the 540px height. One draft shared by the document
   and the slide follows the slide values. Wider gaps are expected
@@ -676,7 +688,8 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   design; put its badge and label inside the first subnet it covers, either to the
   right of that subnet's header label (8px clear of it, any height) or 8px below it,
   and 8px clear of every icon.
-- **Legend** only if the diagram has non-obvious symbols.
+- **Symbol legend** (line styles, junction dots) only if the diagram has non-obvious
+  symbols; it is one label row of the note. A step legend is covered above.
 
 ## Font
 

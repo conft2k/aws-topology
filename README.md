@@ -36,7 +36,7 @@ AWS가 만들거나 보증한 도구가 아닙니다. 아이콘은 AWS 소유이
 
 [`docs/examples/`](docs/examples/)에 이 skill로 그린 완성 구성도(SVG + PNG)가 있고, 새 구성도의
 시작 레이아웃으로 씁니다. [`reference-architectures.pptx`](docs/examples/reference-architectures.pptx)에는
-같은 다섯 개가 슬라이드로 들어 있습니다. 슬라이드에는 16:9에 맞게 다시 배치한 판을 썼고(모든 글자 10pt 이상),
+앞의 다섯 개가 슬라이드로 들어 있습니다. 슬라이드에는 16:9에 맞게 다시 배치한 판을 썼고(글자는 10pt 이상, GWLB 슬라이드만 9.9pt),
 그 SVG와 슬라이드별 렌더는 [`docs/examples/slides/`](docs/examples/slides/)에 있습니다.
 
 | NLB | ALB |
@@ -49,10 +49,10 @@ AWS가 만들거나 보증한 도구가 아닙니다. 아이콘은 AWS 소유이
 | ![GWLB 참조 아키텍처](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway 참조 아키텍처](docs/examples/tgw-reference-architecture.png) |
 | 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering(peering connection 아이콘)으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결 |
 
-| AWS Network Firewall |
-|---|
-| ![AWS Network Firewall 중앙 집중형 참조 아키텍처](docs/examples/nfw-reference-architecture.png) |
-| 중앙 검사: Transit Gateway의 Spoke RT · Firewall RT, AZ별 방화벽 엔드포인트를 둔 검사 VPC 하나에서 VPC 간 트래픽과 NAT를 거친 인터넷 이그레스를 함께 검사 |
+| AWS Network Firewall | NLB mTLS |
+|---|---|
+| ![AWS Network Firewall 중앙 집중형 참조 아키텍처](docs/examples/nfw-reference-architecture.png) | ![NLB mTLS 참조 아키텍처](docs/examples/nlb-mtls-reference-architecture.png) |
+| 중앙 검사: Transit Gateway의 Spoke RT · Firewall RT, AZ별 방화벽 엔드포인트를 둔 검사 VPC 하나에서 VPC 간 트래픽과 NAT를 거친 인터넷 이그레스를 함께 검사 | 클라이언트 인증서 검증: S3의 CA 번들·CRL로 만든 ELB 신뢰 저장소를 :443 리스너에 연결하고, AZ별 EC2로 포크. 단계 범례를 왼쪽 패널에 둔 가로형 레이아웃 |
 
 ## 설치
 

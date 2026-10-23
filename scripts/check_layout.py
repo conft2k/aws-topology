@@ -16,16 +16,18 @@ Reports, and exits with status 1 on any of them:
   BADGE NEAR ICON  a group badge (e.g. an ASG's) is within 8px of a node icon
   TEXT NEAR ICON   a label is within 8px of a node icon it doesn't label (a header
                    label: 6px, so nodes start at subnet.y + 28 or lower)
-  HEADER CLEARANCE a bold header label has a nested box's top border < 8px below it
+  HEADER CLEARANCE a container title (or its CIDR line) has a nested box's top border
+                   < 8px below it (nested boxes start at container.y + 30, + 46 with a CIDR)
   SMALL TEXT       a label is smaller than 12px
   SERVICE AS TEXT  a connector label names an AWS service or resource that has an
                    official icon in the bundle — draw it as an icon node instead
                    (labels centered under an icon are node labels and are skipped)
   SHORT ARROW      the segment carrying an arrowhead is shorter than 20px (a head
                    stuck on a bend or trunk junction)
-  LINE HUGS BORDER a connector runs alongside a container border less than 12px
-                   from it for more than 20px
-  TITLE OFFSET     a container title not on its box's header row (baseline box.y + 18)
+  LINE HUGS BORDER a connector runs alongside (or on top of) a container border less
+                   than 12px from it for more than 20px
+  TITLE OFFSET     a container title not on its box's header row (baseline box.y + 18;
+                   the 15px AWS Cloud title + 22)
   CIDR IN TITLE    a container title that carries its CIDR (the CIDR is its own line)
   CIDR OFF HEADER  a bare CIDR label neither right under a container title nor a
                    node's sub-caption
@@ -136,6 +138,7 @@ def collect(svg_root):
                               "fill": el.get("fill", "").lower(),
                               "cx": x0 + w / 2, "y": y,
                               "header": el.get("font-weight", "") in ("600", "700", "bold")})
+                texts[-1]["title"] = texts[-1]["header"] and fs >= 14
         elif tag in ("line", "polyline"):
             if tag == "line":
                 pts = [(num(el.get("x1")) + ox, num(el.get("y1")) + oy),
@@ -257,7 +260,8 @@ def container_rects(root):
     def walk(el, ox, oy):
         dx, dy = translate(el)
         ox, oy = ox + dx, oy + dy
-        if el.tag.replace(NS, "") == "rect" and el.get("stroke", "none").lower() != "none":
+        if (el.tag.replace(NS, "") == "rect" and el.get("stroke", "none").lower() != "none"
+                and el.get("fill", "none").lower() == "none"):
             out.append((num(el.get("x")) + ox, num(el.get("y")) + oy, num(el.get("width")), num(el.get("height"))))
         for c in el:
             walk(c, ox, oy)
@@ -274,15 +278,16 @@ def check(path):
     # reads as belonging to nothing.
     rects = container_rects(root)
     for t in texts:
-        if not (t["header"] and t["fs"] == 14):
+        if not (t["title"] and t["fs"] in (14, 15)):
             continue
-        owners = [r for r in rects if any(abs(t["box"][0] - (r[0] + off)) <= 1 for off in (32, 12))
+        base = 22 if t["fs"] == 15 else 18
+        owners = [r for r in rects if any(abs(t["box"][0] - (r[0] + off)) <= 1 for off in (42, 32, 12))
                   and r[1] < t["y"] < r[1] + r[3]]
         if owners:
             r = max(owners, key=lambda r: r[1])
-            if abs(t["y"] - (r[1] + 18)) > 1:
+            if abs(t["y"] - (r[1] + base)) > 1:
                 issues.append(f"TITLE OFFSET    {t['s']!r} sits {t['y'] - r[1]:g}px below its box top "
-                              "— a container title's baseline is box.y + 18")
+                              f"— a container title's baseline is box.y + {base}")
     for s in segs:
         if s.get("head"):
             (x1, y1), (x2, y2) = s["p"], s["q"]
@@ -297,28 +302,40 @@ def check(path):
             if b["kind"] != "border":
                 continue
             (bx1, by1), (bx2, by2) = b["p"], b["q"]
-            if x1 == x2 and bx1 == bx2:      # both vertical
+            if abs(x1 - x2) < 0.5 and abs(bx1 - bx2) < 0.5:      # both vertical
                 d, lo, hi = abs(x1 - bx1), max(min(y1, y2), min(by1, by2)), min(max(y1, y2), max(by1, by2))
-            elif y1 == y2 and by1 == by2:    # both horizontal
+            elif abs(y1 - y2) < 0.5 and abs(by1 - by2) < 0.5:    # both horizontal
                 d, lo, hi = abs(y1 - by1), max(min(x1, x2), min(bx1, bx2)), min(max(x1, x2), max(bx1, bx2))
             else:
                 continue
-            if 0 < d < HUG_CLEAR and hi - lo > 20:
-                issues.append(f"LINE HUGS BORDER {fmt(s)} runs {d:g}px from the border {fmt(b)} — "
+            if d < HUG_CLEAR and hi - lo > 20 and not masked((min(x1, bx1), lo, max(x1, bx1) + 0.1, hi), s["o"], masks):
+                where = "on top of" if d == 0 else f"{d:g}px from"
+                issues.append(f"LINE HUGS BORDER {fmt(s)} runs {where} the border {fmt(b)} — "
                               f"keep {HUG_CLEAR}px or more")
                 break
     for t in texts:
-        if t["header"] and t["fs"] >= 14 and CIDR_IN.search(t["s"]):
+        if t["title"] and CIDR_IN.search(t["s"]):
             issues.append(f"CIDR IN TITLE   {t['s']!r} — put the CIDR on its own 12px {CIDR_COLOR.upper()} line "
                           "under the title (same x, baseline 16px lower)")
         if BARE_CIDR.match(t["s"]) and not is_node_label(t, icons):
-            under = any(h["header"] and h["fs"] >= 14 and abs(h["box"][0] - t["box"][0]) <= 1
-                        and 14 <= t["y"] - h["y"] <= 18 for h in texts)
+            titles = [h for h in texts if h["title"] and h is not t]
+            under = any(abs(h["box"][0] - t["box"][0]) <= 1 and 14 <= t["y"] - h["y"] <= 18 for h in titles)
             if not under:
-                issues.append(f"CIDR OFF HEADER {t['s']!r} floats inside a box — put it right under its "
-                              "container's title and move whatever crosses the header instead")
-            elif t.get("fill", CIDR_COLOR) != CIDR_COLOR:
-                issues.append(f"CIDR COLOR      {t['s']!r} under a title is {CIDR_COLOR.upper()} (squid ink)")
+                near = min(titles, key=lambda h: abs(h["box"][0] - t["box"][0]) + abs(t["y"] - h["y"] - 16),
+                           default=None)
+                if near and abs(near["box"][0] - t["box"][0]) <= 8 and 8 <= t["y"] - near["y"] <= 24:
+                    issues.append(f"CIDR OFF HEADER {t['s']!r} is {t['box'][0] - near['box'][0]:+g}px off "
+                                  f"the x of {near['s']!r} and {t['y'] - near['y']:g}px below it — "
+                                  "same x as the title, baseline 16px lower")
+                else:
+                    issues.append(f"CIDR OFF HEADER {t['s']!r} floats inside a box — put it right under its "
+                                  "container's title and move whatever crosses the header instead")
+            elif not t["fill"]:
+                issues.append(f"CIDR COLOR      {t['s']!r} has no fill attribute (inherits) — set "
+                              f'fill="{CIDR_COLOR.upper()}"')
+            elif t["fill"] != CIDR_COLOR:
+                issues.append(f"CIDR COLOR      {t['s']!r} under a title is {CIDR_COLOR.upper()} (squid ink), "
+                              f"not {t['fill'].upper()}")
         if CIRCLED.search(t["s"]):
             issues.append(f"GLYPH STEP      {t['s']!r} uses circled digits; draw step badges instead")
         x0, y0, x1, y1 = t["box"]
@@ -332,18 +349,24 @@ def check(path):
                 issues.append(f"LINE OVER TEXT  {s['kind']} {fmt(s)} crosses {t['s']!r}")
                 break
         else:
-            if t["header"]:
+            if t["title"]:
                 x0, _, x1, y1 = t["box"]
+                cidr = next((c for c in texts if BARE_CIDR.match(c["s"]) and abs(c["box"][0] - x0) <= 1
+                             and 14 <= c["y"] - t["y"] <= 18), None)
+                if cidr:
+                    y1 = cidr["box"][3]
                 below = (x0, y1, x1, y1 + HEADER_CLEAR)
                 hit = next((s for s in segs if s["kind"] == "border" and s["p"][1] == s["q"][1]
                             and seg_hits_box(s["p"], s["q"], below)), None)
                 if hit:
+                    start = 46 if cidr else 30
                     issues.append(f"HEADER CLEARANCE {t['s']!r} has a box border {fmt(hit)} less than "
-                                  f"{HEADER_CLEAR}px below it — start nested boxes at container.y + 30")
+                                  f"{HEADER_CLEAR}px below it{' (under its CIDR line)' if cidr else ''} — "
+                                  f"start nested boxes at container.y + {start}")
                     continue
-            # A header sits at a fixed distance from its own container's border; every
-            # other label (node, caption, connector label) keeps the full 8px.
-            clear = BORDER_CLEAR if t["header"] else LABEL_CLEAR
+            # A title sits at a fixed distance from its own container's border; every
+            # other label (node, caption, connector label, legend row) keeps the full 8px.
+            clear = BORDER_CLEAR if t["title"] else LABEL_CLEAR
             near = expand(t["box"], clear)
             for s in segs:
                 if (s["kind"] == "border" and seg_hits_box(s["p"], s["q"], near)
@@ -390,7 +413,7 @@ def check(path):
         # A header sits in its container's header row, so the first icon below it only
         # needs HEADER_ICON_CLEAR; every other label keeps ICON_CLEAR from icons it
         # doesn't label.
-        clear = HEADER_ICON_CLEAR if t["header"] else ICON_CLEAR
+        clear = HEADER_ICON_CLEAR if t["title"] else ICON_CLEAR
         for n in nodes:
             x0, y0, x1, y1 = n["box"]
             own = abs(t["cx"] - (x0 + x1) / 2) <= 3 and y1 < t["y"] <= y1 + 44

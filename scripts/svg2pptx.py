@@ -101,10 +101,10 @@ def color(v):
 
 
 def text_width(s, fs):
-    """Same estimate as check_layout.py: 0.55 em Latin, 1 em CJK."""
+    """Same estimate as check_layout.py: 0.55 em Latin, 1 em CJK / arrows / circled digits."""
     w = 0.0
     for c in s:
-        wide = "ᄀ" <= c <= "ᇿ" or "　" <= c <= "鿿" or "가" <= c <= "힣"
+        wide = "ᄀ" <= c <= "ᇿ" or "　" <= c <= "鿿" or "가" <= c <= "힣" or "\u2190" <= c <= "\u2bff"
         w += fs * (1.0 if wide else 0.55)
     return w
 
@@ -180,6 +180,20 @@ def collect(svg_root):
         if g("style") or g("class"):
             problems.append(f"<{tag}> uses style=/class= — write presentation attributes "
                             "(fill=, stroke=, font-size=, ...) instead")
+        if tag == "g":
+            extra = sorted(k for k in el.keys() if k not in ("transform", "id"))
+            if extra:
+                problems.append(f"<g> carries {', '.join(extra)} — inherited attributes are not applied; "
+                                "put fill/font-size/stroke on each element")
+        if tag == "text":
+            for sp in el.iter(f"{NS}tspan"):
+                if any(sp.get(a) for a in ("x", "y", "dx", "dy")):
+                    problems.append(f"<tspan> positions text ({''.join(el.itertext()).strip()!r}) — "
+                                    "one <text> per line instead")
+                    break
+            fsz = g("font-size", "")
+            if fsz and not re.fullmatch(r"[0-9.]+", fsz):
+                problems.append(f"<text> font-size={fsz!r} — a bare number of px, no unit")
         try:
             if tag == "rect":
                 x, y, w, h = num(g("x")) + ox, num(g("y")) + oy, num(g("width")), num(g("height"))

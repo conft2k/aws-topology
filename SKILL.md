@@ -71,12 +71,14 @@ WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
 spoke in two Regions joined by TGW peering drawn as the peering connection icon between
 the Regions, VPCs as single icons) and AWS Network
 Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
-route tables and NAT egress) — as document-size drafts (`*.svg`) with their PNGs.
-`slides/` holds a slide-size version of each (`slides/*.svg`, ≤ 1108 × 540, all text
-≥ 10pt on a titled slide), the deck made from them (`reference-architectures.pptx`)
+route tables and NAT egress) and NLB mTLS (client-certificate verification with an ELB
+trust store fed from S3; the landscape layout with the step legend in a left pane and
+the NLB forking to one instance per AZ) — as document-size drafts (`*.svg`) with their
+PNGs. `slides/` holds a slide-size version of the first five (`slides/*.svg`, ≤ 1108 × 544, text
+≥ 10pt on a titled slide except 9.9pt on the GWLB slide), the deck made from them (`reference-architectures.pptx`)
 and a render of each slide (`slides/*.png`). When the request resembles one of them,
 open its SVG — the `slides/` one for a deck — and reuse its layout and coordinates
-(canvas, AZ rows, tier columns, gap, IGW, regional services, note line) instead of
+(canvas, AZ rows, tier columns, gap, IGW, regional services, note panel or pane) instead of
 laying out from scratch.
 `docs/example.svg` is the minimal skeleton.
 
@@ -156,14 +158,17 @@ and no text halos — mask a label with a white rect instead.
   Availability Zones and security groups have no badge icon — label-only rects in the
   guide's group colors.
   Only container corner badges (22–32px) and legend icons differ. If space is tight,
-  change the size for the whole diagram, never for a few icons. **Exception:** when
+  change the size for the whole diagram, never for a few icons — and only after
+  enlarging the canvas or shortening labels hasn't made room. **Exception:** when
   specific services are meant to be highlighted, enlarge just those to one emphasis
   size (~1.33×, 64px) on the same grid centers — see the guide's "Emphasis is the one
   exception".
 - Draw a **fully managed multi-AZ service (ALB, NLB, GWLB) as one node**, not one per
   AZ: a single icon in the gap between the AZ rows, in its tier's column, with one arrow to a
-  target group / Auto Scaling group box that spans the AZs. Zonal resources (NAT
-  gateways, instances, subnets) stay per AZ. Per-AZ LB nodes only when the user asks
+  target group / Auto Scaling group box that spans the AZs (or, when that box would
+  leave an empty column, a trunk forking into each AZ's target — guide: "One connector
+  from the load balancer to its targets"). Zonal resources (NAT gateways, instances,
+  subnets) stay per AZ. Per-AZ LB nodes only when the user asks
   about per-AZ behavior — see the guide's "Fully managed multi-AZ services are one node".
 - Put every Internet gateway and VGW (virtual private gateway) **on the VPC border**:
   icon centered on the border line (e.g. `x = vpcX + vpcW - S/2` for the right edge),
@@ -183,12 +188,13 @@ and no text halos — mask a label with a white rect instead.
   container labels, 12px for connector/secondary labels, never smaller — see the
   guide's "Compact, not empty" and "Text size".
 - **Size the canvas for the format.** A document SVG/PNG can be as large as its content
-  needs (the reference layouts are up to 1180 × 768). A slide is scaled to fit 16:9
+  needs (the reference layouts are up to 1372 × 876). A slide is scaled to fit 16:9
   (below the title band if there is one), so the canvas decides the slide's text size:
   - **Slide text is 10pt or larger.** Every label on the slide — the 12px connector and
     secondary labels included — must land at **≥ 10pt**: with a title a canvas of at
     most **1108 × 540** (1108 × 600 without a title), close to 16:8 (16:9 without)
-    so it fills the slide. Get there by tightening the layout, shortening labels or
+    so it fills the slide — but the canvas still hugs its contents; never pad toward
+    the ratio. Get there by tightening the layout, shortening labels or
     splitting the diagram over two slides.
   - Only when that is genuinely impossible — the diagram can't be split or tightened
     without losing what it shows — may the smallest text go down to **8pt**, never below
@@ -197,7 +203,7 @@ and no text halos — mask a label with a white rect instead.
   - When the same diagram is wanted as a document image *and* a slide, use one draft if
     it fits the slide limits; otherwise draw a compact slide draft next to the document
     one (same grammar and icons, fewer rows or a split) and tell the user.
-  - The document-size reference layouts come out at 8pt or less on a titled slide; for
+  - The document-size reference layouts come out under 10pt on a titled slide; for
     a slide start from their `docs/examples/slides/` versions instead.
 - Root `font-family` starts with a Korean font that is **installed on this machine** —
   check with `fc-list | grep -iE 'CJK KR|Pretendard'` (see the guide's "Font"). cairosvg
@@ -252,18 +258,20 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       go another way, and those are dashed.
 - [ ] Tiers are columns, AZs are rows; Users and the IGW sit in the gap between the
       AZ rows, on one line with the load balancer.
-- [ ] Every arrowhead sits on a segment ≥ 20px long, and a trunk that joins per-AZ
-      lines keeps ≥ 12px from the AZ boxes (widen the corridor, not the canvas on a
-      slide).
+- [ ] Every arrowhead sits on a segment ≥ 20px long (~48px in a document), and a trunk
+      that joins or forks per-AZ lines keeps ≥ 12px (~28px in a document) from the
+      boxes it passes (widen the corridor, not the canvas on a slide).
 - [ ] Each ALB/NLB/GWLB is one node in the AZ gap; zonal resources (NAT gateway,
       GWLBe, instances, RDS primary/standby) appear once per AZ.
 - [ ] A path that leaves the main line and comes back has numbered step badges, and
       the note's legend repeats those same badges (not ①), left-aligned — in a
       document one step per row with a bold hop and a sentence on the route and what
-      happens there; on a slide short items flowed in one or two rows. The legend
-      holds only the steps — no unnumbered rows mixed in.
-- [ ] Every VPC and subnet CIDR is its own 12px #232F3E line right under the container
-      title — not on the title line and not a caption inside the box.
+      happens there; on a slide short items flowed in one row (a second row only when
+      the first runs past the canvas). The legend holds only the steps — no
+      unnumbered rows mixed in.
+- [ ] Every CIDR that is shown is its own 12px #232F3E line right under its container
+      title — not on the title line and not a caption inside the box — and nested
+      boxes start 46px below that container's top.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes); a slide is filled without crowding the title.
@@ -279,11 +287,11 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       route captions include return routes; global services (Route 53, CloudFront)
       are outside the Region; captions don't credit a service with another's job;
       identical per-AZ hops are drawn identically.
-- [ ] The note (legend / routes) is outside the AWS Cloud box. In a document it is in
-      the note panel at the bottom, full canvas width with 16px each side (or, for a tall
-      diagram, the step legend in a left pane above the client, landscape); on a slide,
-      a panel only if the canvas stays ≤ 540, else plain lines left-aligned with the
-      Cloud.
+- [ ] The note is outside the AWS Cloud box, in exactly one place (guide, "The note —
+      one place per diagram"): a left legend pane when there is a step legend and the
+      drawing is taller than 0.7 × its width (document) or the pane fits the 1108px
+      width (slide); otherwise a document gets the full-width bottom panel and a slide
+      gets plain lines left-aligned with the Cloud, ≤ 3 lines. Never a panel on a slide.
 - [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
 
 Save the outputs where the user asked (in a repo, usually next to the docs that
@@ -355,7 +363,7 @@ All 857 icons are packed into one JSON bundle (keeps the skill's file count low)
   Sets: `service`, `resource`, `group`, `category`. SVGs stored as text.
 - `references/diagram_guide.md` — conventions, colors, VPC resources, the draft subset and skeleton (read this).
 - `scripts/find_icon.py` — fuzzy lookup → `set/name` reference (with AWS abbreviation aliases).
-- `scripts/check_layout.py` — flag lines over labels/icons, overlapping labels, text under 12px.
+- `scripts/check_layout.py` — flag lines over labels/icons, overlapping or too-close labels, text under 12px, short arrowheads, trunks hugging a border, titles off their header row, CIDRs off their line, circled-digit legends, services written as connector labels.
 - `scripts/export.py` — check drafts and write any of SVG, PNG and PPTX in one step.
 - `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable SVG.
 - `scripts/svg2pptx.py` — convert drafts into a deck of native PowerPoint shapes.
@@ -366,7 +374,7 @@ All 857 icons are packed into one JSON bundle (keeps the skill's file count low)
   `fetch_icons.py`).
 - `scripts/macos_cairo.py` — imported before cairosvg so it finds Homebrew's cairo on
   Apple Silicon without shell setup.
-- `docs/examples/` — checked NLB, ALB, GWLB, TGW and Network Firewall reference layouts
+- `docs/examples/` — checked NLB, ALB, GWLB, TGW, Network Firewall and NLB mTLS reference layouts
   (drafts + PNG); `slides/` has their slide-size versions, the deck made from those and
   a render of each slide.
 

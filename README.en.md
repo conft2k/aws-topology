@@ -40,7 +40,7 @@ What it enforces:
 
 Finished diagrams in [`docs/examples/`](docs/examples/) (SVG + PNG), drawn with the skill
 and used as its starting layouts. [`reference-architectures.pptx`](docs/examples/reference-architectures.pptx)
-holds the same five as slides, re-laid out to fit 16:9 with all text at 10pt or larger;
+holds the first five as slides, re-laid out to fit 16:9 with text at 10pt or larger (9.9pt on the GWLB slide);
 their SVGs and a render of each slide are in [`docs/examples/slides/`](docs/examples/slides/).
 
 | NLB | ALB |
@@ -53,10 +53,10 @@ their SVGs and a render of each slide are in [`docs/examples/slides/`](docs/exam
 | ![GWLB reference architecture](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway reference architecture](docs/examples/tgw-reference-architecture.png) |
 | Distributed inspection: GWLBe per AZ, one GWLB and a firewall ASG in a security VPC | Hub and spoke in two Regions joined by inter-Region TGW peering (the peering connection icon), on-premises over Site-to-Site VPN across the Internet |
 
-| AWS Network Firewall |
-|---|
-| ![AWS Network Firewall centralized reference architecture](docs/examples/nfw-reference-architecture.png) |
-| Centralized inspection: spoke and firewall route tables on a Transit Gateway, one inspection VPC with a firewall endpoint per AZ inspecting both VPC-to-VPC traffic and Internet egress through NAT |
+| AWS Network Firewall | NLB mTLS |
+|---|---|
+| ![AWS Network Firewall centralized reference architecture](docs/examples/nfw-reference-architecture.png) | ![NLB mTLS reference architecture](docs/examples/nlb-mtls-reference-architecture.png) |
+| Centralized inspection: spoke and firewall route tables on a Transit Gateway, one inspection VPC with a firewall endpoint per AZ inspecting both VPC-to-VPC traffic and Internet egress through NAT | Client-certificate verification: an ELB trust store built from a CA bundle and CRL in S3 on the :443 listener, forking to one EC2 per AZ; the landscape layout with the step legend in a left pane |
 
 ## Install
 
