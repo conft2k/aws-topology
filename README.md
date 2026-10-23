@@ -53,29 +53,61 @@
 
 ## 설치
 
+### 요구 사항
+
+- git, Python 3.9 이상, [uv](https://docs.astral.sh/uv/)(내보내기를 `uv run --with python-pptx --with cairosvg`로
+  실행하므로 Python 패키지를 전역 설치하지 않습니다). `find_icon.py`, `check_layout.py`,
+  `embed.py`는 외부 패키지가 필요 없습니다.
+- **cairo 라이브러리**: `cairosvg`가 PNG와 슬라이드 미리보기를 그릴 때 운영체제의 cairo를
+  씁니다. uv가 설치해 주지 않으므로 따로 설치합니다.
+  - Amazon Linux / Fedora: `sudo dnf install cairo`
+  - Debian / Ubuntu: `sudo apt install libcairo2`
+  - macOS: `brew install cairo`. Apple Silicon에서 `no library called "cairo-2" was found`가
+    나면 `export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib`를 셸 설정에 넣습니다.
+  - Windows: [CairoSVG 설치 안내](https://cairosvg.org/documentation/#installation)를 따라
+    GTK 런타임을 설치합니다.
+- **한국어 글꼴**: PNG에 한국어 라벨을 그리려면 Noto Sans CJK KR 또는 Pretendard가 있어야
+  합니다(없으면 한국어 라벨이 빠집니다).
+  - Amazon Linux / Fedora: `sudo dnf install google-noto-sans-cjk-ttc-fonts`
+  - Debian / Ubuntu: `sudo apt install fonts-noto-cjk`
+  - macOS / Windows: [Noto Sans CJK](https://github.com/notofonts/noto-cjk/releases)의 KR
+    글꼴이나 [Pretendard](https://github.com/orioncactus/pretendard)를 설치합니다.
+
+### 설치 순서
+
 ```bash
 git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py
 ```
 
-다른 곳에 clone한 뒤 `~/.claude/skills/skill-aws-arch-diagram`으로 심볼릭 링크를 걸어도
-됩니다. Claude Code를 다시 시작하면 "AWS 아키텍처 그려줘", "이 VPC 구성도 그려줘",
-"이 구성도를 PPT 장표로 만들어줘", "draw the AWS architecture for …" 같은 요청에서
-skill이 동작합니다.
+1. clone은 개인 skill 폴더(`~/.claude/skills/`)에 합니다. 한 프로젝트에서만 쓰려면 그
+   프로젝트의 `.claude/skills/skill-aws-arch-diagram`에 clone해도 됩니다. 다른 곳에 clone하고
+   심볼릭 링크를 걸어도 됩니다.
+2. `fetch_icons.py`가 AWS에서 공식 아이콘 패키지(약 14MB, URL과 SHA-256 고정)를 받아
+   `assets/icons.json`을 만듭니다. 아이콘은 이 저장소에 들어 있지 않습니다. 이 단계를 건너뛰면
+   Claude가 처음 그릴 때 받는데, 샌드박스가 네트워크나 skill 폴더 쓰기를 막으면 실패하므로
+   설치할 때 한 번 실행해 두는 편이 안전합니다.
+3. Claude Code는 skill 폴더를 실시간으로 감시하므로 재시작할 필요가 없습니다. 단 세션을
+   시작할 때 `~/.claude/skills/` 폴더 자체가 없었다면 `/reload-skills`를 한 번 실행합니다.
 
-AWS 아이콘은 이 저장소에 들어 있지 않습니다. 스크립트가 아이콘을 처음 쓸 때 AWS에서 공식
-패키지(약 14MB, URL과 SHA-256 고정)를 받아 `assets/icons.json`을 만듭니다. 미리 받아 두거나,
-네트워크가 없는 환경에서 직접 받은 zip으로 만들려면:
+이제 "AWS 아키텍처 그려줘", "이 VPC 구성도 그려줘", "이 구성도를 PPT 장표로 만들어줘",
+"draw the AWS architecture for …" 같은 요청에서 skill이 동작합니다.
+
+**네트워크가 없는 환경**: 아래 고정 URL에서 zip을 받아 옮긴 뒤 `--zip`으로 만듭니다. AWS 아이콘
+페이지의 최신 패키지는 SHA-256이 달라 쓸 수 없습니다.
 
 ```bash
-python3 scripts/fetch_icons.py               # 또는: --zip Icon-package_07312026.zip
+# https://d1.awsstatic.com/onedam/marketing-channels/website/public/shared/architecture-icon-release/Icon-package_07312026.5846e92413caa21490223536cc97f1269e44fa92.zip
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py --zip Icon-package_07312026.zip
 ```
 
-요구 사항: Python 3.9 이상. `find_icon.py`, `check_layout.py`, `embed.py`는 외부 패키지가
-필요 없습니다. 내보내기는 `uv run --with python-pptx --with cairosvg`([uv](https://docs.astral.sh/uv/))로
-실행하므로 전역 설치가 없습니다. PNG에 한국어 라벨을 그리려면 CJK 글꼴(예: Noto Sans CJK KR)이
-설치되어 있어야 합니다. 덱은 PowerPoint 2016 이상 / Microsoft 365에서 SVG 아이콘을 벡터로
-그리고, 그보다 오래된 뷰어는 함께 넣은 PNG를 보여 줍니다. 슬라이드 글꼴은 기본이 Arial과
-맑은 고딕이며 `--font` / `--ea-font`로 바꿀 수 있습니다.
+**업데이트**: `git -C ~/.claude/skills/skill-aws-arch-diagram pull`. `icons.json`은 git이 추적하지
+않아 그대로 남고, 고정 패키지가 바뀐 버전이면 다음 실행 때 자동으로 다시 만듭니다.
+**제거**: `rm -rf ~/.claude/skills/skill-aws-arch-diagram`.
+
+덱은 PowerPoint 2016 이상 / Microsoft 365에서 SVG 아이콘을 벡터로 그리고, 그보다 오래된 뷰어는
+함께 넣은 PNG를 보여 줍니다. 슬라이드 글꼴은 기본이 Arial과 맑은 고딕이며 `--font` /
+`--ea-font`로 바꿀 수 있습니다.
 
 ## 구성
 

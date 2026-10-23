@@ -19,8 +19,10 @@ How it works: you lay the diagram out once as an SVG **draft** in a restricted s
 draft: the SVG with every icon inlined, the PNG rendered from it, and the deck with
 one slide per draft.
 
-The skill is installed at `~/.claude/skills/skill-aws-arch-diagram/`. Run its scripts by
-that path from wherever you are working. `find_icon.py` and `check_layout.py` need only
+The skill's directory is `${CLAUDE_SKILL_DIR}` (wherever it is installed — personal,
+project or symlinked); the guide writes it as `<skill-dir>`. Run its scripts by that path
+from wherever you are working; relative paths in this file (`scripts/`, `references/`,
+`docs/examples/`) are inside it. `find_icon.py` and `check_layout.py` need only
 Python; the export needs python-pptx and cairosvg — run it with
 `uv run --with python-pptx --with cairosvg python ...` (no install needed).
 
@@ -28,7 +30,9 @@ The AWS icons are not shipped with the skill. The first script that needs them
 downloads the pinned official package from AWS (~14 MB, SHA-256 checked) and builds
 `assets/icons.json`; this takes a few seconds once. If the download fails (no network),
 tell the user to download the zip from the URL in the error and run
-`scripts/fetch_icons.py --zip <zip>`.
+`python3 ${CLAUDE_SKILL_DIR}/scripts/fetch_icons.py --zip <zip>`. If it fails only
+inside the session (sandboxed network or writes), ask the user to run
+`python3 ${CLAUDE_SKILL_DIR}/scripts/fetch_icons.py` once in their own shell.
 
 ## When to use
 
@@ -89,7 +93,7 @@ For every service, resource and container, look up its exact reference — do no
 it from memory:
 
 ```bash
-python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
+python3 ${CLAUDE_SKILL_DIR}/scripts/find_icon.py ec2 "api gateway" s3 igw "s3 gateway endpoint"
 ```
 
 It prints ranked `set/name` references (e.g. `service/AWS-Lambda`, `group/AWS-Cloud-logo_32`,
@@ -205,7 +209,7 @@ Run the layout check on each draft and fix everything it reports until it prints
 "Layout OK":
 
 ```bash
-python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/check_layout.py name.draft.svg
+python3 ${CLAUDE_SKILL_DIR}/scripts/check_layout.py name.draft.svg
 ```
 
 It flags a connector or container border crossing a label, icon or badge, labels
@@ -215,7 +219,7 @@ only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allow
 Then export the formats you need — any combination, from the same drafts:
 
 ```bash
-uv run --with python-pptx --with cairosvg python ~/.claude/skills/skill-aws-arch-diagram/scripts/export.py \
+uv run --with python-pptx --with cairosvg python ${CLAUDE_SKILL_DIR}/scripts/export.py \
   a.draft.svg b.draft.svg --svg --png --out-dir docs \
   --pptx docs/architecture.pptx --title "Slide A" --title "Slide B" --preview
 ```
@@ -355,7 +359,7 @@ https://aws.amazon.com/architecture/icons/. To pick it up:
 1. Copy the new "Icon package" zip link from the page, download it, and take its
    `sha256sum`.
 2. Set `PACKAGE`, `URL` and `SHA256` in `scripts/fetch_icons.py`, then run
-   `python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py`.
+   `python3 ${CLAUDE_SKILL_DIR}/scripts/fetch_icons.py`.
 3. Check the printed set counts, re-check the group colors in the guide against the
    new group SVGs and the "Groups" slide of the PPTx toolkit (download it from the same
    page; unzip the .pptx and grep `srgbClr`/`prstDash` in `ppt/slides/slide*.xml` —

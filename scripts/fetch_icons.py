@@ -54,6 +54,8 @@ def download(dest: Path):
 
 
 def build_from_zip(zip_path: Path):
+    if not zip_path.is_file():
+        sys.exit(f"No such zip: {zip_path}\nDownload the pinned package from {URL}")
     digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
     if digest != SHA256:
         sys.exit(f"SHA-256 mismatch for {zip_path.name}\n  expected {SHA256} ({PACKAGE})\n  got      {digest}\n"

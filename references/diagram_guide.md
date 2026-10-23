@@ -298,14 +298,15 @@ a new release lands — once a `Res_Amazon-Bedrock-AgentCore_*` resource icon ap
 ## Finding the right icon
 
 Do not guess names — they're specific (`Amazon-EC2`, `AWS-Lambda`, `Amazon-API-Gateway`,
-`Amazon-Simple-Storage-Service`, `Amazon-VPC_Internet-Gateway`). Run:
+`Amazon-Simple-Storage-Service`, `Amazon-VPC_Internet-Gateway`). Run (`<skill-dir>` is the
+skill's directory, `${CLAUDE_SKILL_DIR}` in SKILL.md):
 
 ```bash
-python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py "s3" "step functions" "cloudfront"
+python3 <skill-dir>/scripts/find_icon.py "s3" "step functions" "cloudfront"
 ```
 
 It prints ranked `set/name` references. List a whole set with
-`python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/find_icon.py --list service`.
+`python3 <skill-dir>/scripts/find_icon.py --list service`.
 
 ## Composing the layout SVG
 
