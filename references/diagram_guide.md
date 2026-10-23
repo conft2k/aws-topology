@@ -435,10 +435,10 @@ far as their contents need.
 - **Color discipline.** Icons carry their own colors; keep containers, text, and
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
-- **One arrowhead style, one stroke width** (1.5px) for all connectors. The only
-  exception is an inter-Region backbone link (TGW peering — both segments either side of
-  its icon —, the Cloud WAN "AWS 백본"
-  line), drawn 2.5px so it reads as the backbone. A genuinely two-way link
+- **One arrowhead style, one stroke width** (1.5px) for all connectors, inter-Region
+  links included: a TGW peering is marked by its icon and label, a Cloud WAN backbone by
+  its "AWS 백본" label, not by a thicker line (the AWS docs draw every line alike). A
+  genuinely two-way link
   (GWLBe ⇄ GWLB, GWLB ⇄ appliances over GENEVE, TGW ⇄ an inspection attachment) gets
   the mirrored `arrowStart` marker on its other end; ordinary request/response flows
   stay one-way.
@@ -645,7 +645,7 @@ check every hop and caption against how the services actually behave:
   `service/AWS-Cloud-WAN` icon as its 24px corner badge and the label "Core network"
   (no group icon exists for it; keep the label short so the Region borders don't cross
   it). Inside it, top to bottom: one segment row, the edge row on the main line (one
-  `resource/AWS-Cloud-WAN_Core-Network-Edge` per Region, joined by a thick "AWS 백본"
+  `resource/AWS-Cloud-WAN_Core-Network-Edge` per Region, joined by an "AWS 백본"
   line), another segment row. Each segment row is a grey dashed box across every
   Region, led by a `resource/AWS-Cloud-WAN_Segment-Network` icon with the segment
   name. **VPCs stay outside the core network** (above and below it, in their Region

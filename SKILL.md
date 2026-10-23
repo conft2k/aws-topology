@@ -172,7 +172,7 @@ and no text halos — mask a label with a white rect instead.
   one white rect behind the icon and its label first so the border (and any other line)
   never crosses the text. See the guide's "Internet gateway and VGW sit on the VPC
   border" for the mask sizing.
-- Connect with consistent 1.5–2px squid-ink (`#232F3E`) arrows using one shared
+- Connect with consistent 1.5px squid-ink (`#232F3E`) arrows using one shared
   arrowhead marker. Label non-obvious connectors (protocol / verb).
 - **Traffic flows left → right**: users and entry points on the left, data stores on the
   right, every main-path arrow pointing right. In a VPC that means tiers as columns
