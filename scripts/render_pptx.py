@@ -17,7 +17,9 @@ import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-import cairosvg
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import macos_cairo  # noqa: E402,F401  (before cairosvg: finds Homebrew cairo on Apple Silicon)
+import cairosvg  # noqa: E402
 from pptx import Presentation
 from pptx.oxml.ns import qn
 

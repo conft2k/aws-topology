@@ -54,63 +54,69 @@ their SVGs and a render of each slide are in [`docs/examples/slides/`](docs/exam
 
 ## Install
 
-### Requirements
+macOS and Linux are supported.
 
-- git, Python 3.9+, and [uv](https://docs.astral.sh/uv/) (the export runs with
-  `uv run --with python-pptx --with cairosvg`, so no Python packages are installed
-  globally). `find_icon.py`, `check_layout.py` and `embed.py` need no third-party packages.
-- **The cairo library**: `cairosvg` renders PNGs and slide previews through the system
-  cairo, which uv does not install.
-  - Amazon Linux / Fedora: `sudo dnf install cairo`
-  - Debian / Ubuntu: `sudo apt install libcairo2`
-  - macOS: `brew install cairo`. If Apple Silicon reports `no library called "cairo-2" was
-    found`, add `export DYLD_FALLBACK_LIBRARY_PATH=/opt/homebrew/lib` to your shell profile.
-  - Windows: install the GTK runtime as described in the
-    [CairoSVG installation notes](https://cairosvg.org/documentation/#installation).
-- **A Korean font**: Korean labels in PNGs need Noto Sans CJK KR or Pretendard installed
-  (without one they are dropped).
-  - Amazon Linux / Fedora: `sudo dnf install google-noto-sans-cjk-ttc-fonts`
-  - Debian / Ubuntu: `sudo apt install fonts-noto-cjk`
-  - macOS / Windows: install the KR font from
-    [Noto Sans CJK](https://github.com/notofonts/noto-cjk/releases) or
-    [Pretendard](https://github.com/orioncactus/pretendard).
+### macOS
 
-### Steps
+With [Homebrew](https://brew.sh) it is three commands:
 
 ```bash
+brew install uv cairo && brew install --cask font-noto-sans-cjk-kr
 git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
 python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py
 ```
 
-1. Clone into your personal skills folder (`~/.claude/skills/`). For one project only,
-   clone into that project's `.claude/skills/skill-aws-arch-diagram` instead; cloning
-   elsewhere and symlinking also works.
-2. `fetch_icons.py` downloads the official AWS icon package (~14 MB, pinned by URL and
-   SHA-256) and builds `assets/icons.json`; the icons are not in this repository. If you
-   skip it, Claude downloads them the first time it draws, which fails when a sandbox
-   blocks the network or writes to the skill folder — so run it once at install time.
-3. Claude Code watches skill folders live, so no restart is needed — except when
-   `~/.claude/skills/` itself did not exist when the session started: then run
-   `/reload-skills` once.
+The first installs uv, cairo and a Korean font; the other two install the skill and
+downloads the icons. git and python3 come with Homebrew's install. The scripts find
+cairo in Apple Silicon's `/opt/homebrew/lib` themselves, so no shell setup is needed.
 
-The skill then triggers on requests like "draw the AWS architecture for …",
-"diagram this VPC", "AWS 아키텍처 그려줘" or "이 구성도를 PPT 장표로 만들어줘".
-
-**Offline**: download the zip from the pinned URL below, copy it over and build with
-`--zip`. The latest package on the AWS icons page has a different SHA-256 and is rejected.
+### Linux
 
 ```bash
-# https://d1.awsstatic.com/onedam/marketing-channels/website/public/shared/architecture-icon-release/Icon-package_07312026.5846e92413caa21490223536cc97f1269e44fa92.zip
-python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py --zip Icon-package_07312026.zip
+# Amazon Linux / Fedora
+sudo dnf install -y git python3 cairo google-noto-sans-cjk-ttc-fonts
+# Debian / Ubuntu
+sudo apt install -y git python3 libcairo2 fonts-noto-cjk
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
+python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py
 ```
 
-**Update**: `git -C ~/.claude/skills/skill-aws-arch-diagram pull`. `icons.json` is not
-tracked, so it survives the pull, and it is rebuilt on the next run if the pinned package
-changed. **Uninstall**: `rm -rf ~/.claude/skills/skill-aws-arch-diagram`.
+### After installing
 
-Decks: PowerPoint 2016 or later / Microsoft 365 draws the SVG icons as vectors; older
-viewers fall back to the embedded PNGs. Slides use Arial and Malgun Gothic (맑은 고딕) by
-default; change them with `--font` / `--ea-font`.
+- Claude Code watches skill folders live, so no restart is needed — except when
+  `~/.claude/skills/` itself did not exist when the session started: then run
+  `/reload-skills` once. The skill then triggers on requests like "draw the AWS
+  architecture for …", "AWS 아키텍처 그려줘" or "이 구성도를 PPT 장표로 만들어줘".
+- For one project only, clone into that project's `.claude/skills/skill-aws-arch-diagram`
+  instead; cloning elsewhere and symlinking also works.
+- **Update**: `git -C ~/.claude/skills/skill-aws-arch-diagram pull`
+- **Uninstall**: `rm -rf ~/.claude/skills/skill-aws-arch-diagram`
+
+### Details
+
+- **Requirements**: git, Python 3.9+, [uv](https://docs.astral.sh/uv/), cairo and a Korean
+  font (Noto Sans CJK KR or Pretendard). The export runs with
+  `uv run --with python-pptx --with cairosvg`, so no Python packages are installed
+  globally. cairo renders PNGs and slide previews; the font draws Korean labels in PNGs
+  (without it they are dropped).
+- **Icons**: the AWS icons are not in this repository. `fetch_icons.py` downloads the
+  official package (~14 MB, pinned by URL and SHA-256) and builds `assets/icons.json`. If
+  you skip it, Claude downloads them the first time it draws, which fails when a sandbox
+  blocks the network or writes to the skill folder — so run it at install time.
+  `icons.json` is not tracked, so it survives updates, and it is rebuilt on the next run
+  if the pinned package changed.
+- **Offline**: download the zip from the pinned URL below, copy it over and build with
+  `--zip`. The latest package on the AWS icons page has a different SHA-256 and is rejected.
+
+  ```bash
+  # https://d1.awsstatic.com/onedam/marketing-channels/website/public/shared/architecture-icon-release/Icon-package_07312026.5846e92413caa21490223536cc97f1269e44fa92.zip
+  python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py --zip Icon-package_07312026.zip
+  ```
+- **Decks**: PowerPoint 2016 or later / Microsoft 365 draws the SVG icons as vectors;
+  older viewers fall back to the embedded PNGs. Slides use Arial and Malgun Gothic
+  (맑은 고딕) by default; change them with `--font` / `--ea-font`.
 
 ## Layout
 
@@ -131,6 +137,7 @@ scripts/render_pptx.py       render each slide of a deck to PNG
 scripts/check_layout.py      flag lines over labels/icons, overlapping labels, text < 12px
 scripts/fetch_icons.py       download the pinned AWS icon package and build icons.json
 scripts/build_bundle.py      pack an extracted icon package into icons.json
+scripts/macos_cairo.py       let cairosvg find Homebrew's cairo on Apple Silicon
 ```
 
 ### Using the scripts directly

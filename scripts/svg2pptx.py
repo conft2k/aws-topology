@@ -33,7 +33,9 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
 
-import cairosvg
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import macos_cairo  # noqa: E402,F401  (before cairosvg: finds Homebrew cairo on Apple Silicon)
+import cairosvg  # noqa: E402
 from lxml import etree
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -44,7 +46,6 @@ from pptx.opc.package import Part
 from pptx.oxml.ns import qn
 from pptx.util import Emu, Pt
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fetch_icons import load_sets  # noqa: E402
 
 SETS = load_sets()  # downloads the official AWS icons on first use

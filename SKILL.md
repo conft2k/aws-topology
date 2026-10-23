@@ -347,6 +347,8 @@ All 857 icons are packed into one JSON bundle (keeps the skill's file count low)
   (`--force` rebuilds, `--zip` builds from a zip downloaded by hand).
 - `scripts/build_bundle.py` — pack an extracted package into `icons.json` (called by
   `fetch_icons.py`).
+- `scripts/macos_cairo.py` — imported before cairosvg so it finds Homebrew's cairo on
+  Apple Silicon without shell setup.
 - `docs/examples/` — checked NLB, ALB, GWLB, TGW and Network Firewall reference layouts
   (drafts + PNG); `slides/` has their slide-size versions, the deck made from those and
   a render of each slide.

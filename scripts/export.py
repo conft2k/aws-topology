@@ -22,6 +22,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import macos_cairo  # noqa: E402,F401  (before cairosvg: finds Homebrew cairo on Apple Silicon)
 import cairosvg  # noqa: E402
 import embed  # noqa: E402
 import render_pptx  # noqa: E402
