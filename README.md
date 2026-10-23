@@ -2,19 +2,22 @@
 
 > English: [README.en.md](README.en.md)
 
-**공식 AWS Architecture Icons**로 AWS 아키텍처 구성도를 그리는
-[Claude Code](https://claude.com/claude-code) skill입니다. 손으로 흉내 낸 아이콘이나
-텍스트 박스 대신 실제 서비스·리소스·그룹 아이콘을 쓰고, 하나의 레이아웃에서
-독립 실행되는 **SVG**, **PNG**, 편집 가능한 도형으로 된 **PowerPoint 덱**을 원하는 조합으로
-만듭니다.
+개인이 만든 비공식 [Claude Code](https://claude.com/claude-code) skill입니다. AWS가 공개하는
+[AWS Architecture Icons](https://aws.amazon.com/architecture/icons/)를 써서 AWS 아키텍처 구성도를
+그립니다. 손으로 흉내 낸 아이콘이나 텍스트 박스 대신 실제 서비스·리소스·그룹 아이콘을 쓰고,
+레이아웃 하나로 **SVG**, **PNG**, 편집 가능한 **PowerPoint 덱**을 원하는 조합으로 만듭니다.
 
-![출력 예: AWS Cloud > Region > VPC, VPC 경계 위의 Internet gateway, 퍼블릭 서브넷의 ALB와 프라이빗 서브넷의 EC2](docs/example.png)
+AWS가 만들거나 보증한 도구가 아닙니다. 아이콘은 AWS 소유이며 설치할 때 AWS에서 직접
+받습니다([라이선스](#라이선스) 참고).
+
+![출력 예: AWS Cloud > Region > VPC > 두 AZ, VPC 경계 위의 IGW, AZ 사이의 ALB 하나, 두 AZ에 걸친 ASG · target group과 AZ별 EC2](docs/example.png)
 
 지키는 규칙:
 
 - 모든 서비스와 **모든 네트워킹 리소스**(Internet gateway, NAT gateway, VPC 엔드포인트,
-  라우팅 테이블, 로드 밸런서)를 공식 아이콘으로 그립니다. 아이콘은 기억에 의존하지 않고
-  번들로 포함한 아이콘 패키지에서 이름으로 찾습니다.
+  라우팅 테이블, 로드 밸런서)를 공식 아이콘으로 그립니다. Site-to-Site VPN, TGW peering 같은
+  연결도 아이콘으로 그리고, 연결선 라벨에는 프로토콜만 씁니다. 아이콘은 기억에 의존하지 않고
+  설치할 때 AWS에서 받은 공식 아이콘 패키지에서 이름으로 찾습니다.
 - AWS의 중첩 규칙(AWS Cloud > Region > VPC > 서브넷)을 따르고, 그룹 테두리 색과 점선
   모양은 공식 패키지와 PowerPoint 툴킷에서 가져옵니다. 아이콘이 없는 그룹(Availability
   Zone, 보안 그룹)도 포함합니다.
@@ -77,7 +80,7 @@ sudo dnf install -y git python3 cairo google-noto-sans-cjk-ttc-fonts
 # Debian / Ubuntu
 sudo apt install -y git python3 libcairo2 fonts-noto-cjk
 
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env
 git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/skill-aws-arch-diagram
 python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py
 ```
@@ -122,7 +125,8 @@ SKILL.md                     skill 본문: 작업 순서, 규칙, 하지 말 것
 references/diagram_guide.md  AWS 시각 문법, 그룹 색, VPC 리소스 표, 초안 문법과 골격,
                              레이아웃·글자 크기·글꼴 규칙
 assets/icons.json            아이콘 857개를 담은 JSON 번들 (세트: service, resource,
-                             group, category); 처음 쓸 때 만들며 커밋하지 않음
+                             group, category); 설치할 때(건너뛰면 처음 쓸 때) 만들며
+                             커밋하지 않음
 scripts/find_icon.py         이름으로 아이콘 찾기: `find_icon.py alb igw "s3 gateway endpoint"`
 scripts/export.py            초안 -> SVG / PNG / PPTX 중 원하는 형식 (+ 슬라이드 미리보기);
                              모든 초안을 먼저 검사하고 하나라도 실패하면 아무것도 쓰지 않음
@@ -130,13 +134,16 @@ scripts/embed.py             bundle: 참조를 base64로 넣음; 모르는 참�
                              모서리가 둥근 그룹 컨테이너에서 실패
 scripts/svg2pptx.py          초안 -> 기본 도형으로 된 .pptx; 정확히 바꿀 수 없는 요소에서 실패
 scripts/render_pptx.py       덱의 슬라이드마다 PNG로 렌더
-scripts/check_layout.py      라벨·아이콘 위를 지나는 선, 겹친 라벨, 12px 미만 글자 검사
+scripts/check_layout.py      선이 라벨·아이콘을 지나는지, 라벨 겹침·간격, 캔버스 밖 글자,
+                             12px 미만 글자, 연결선 라벨로만 쓴 서비스 검사
 scripts/fetch_icons.py       고정한 AWS 아이콘 패키지를 받아 icons.json 만들기
 scripts/build_bundle.py      압축을 푼 아이콘 패키지를 icons.json으로 묶기
 scripts/macos_cairo.py       macOS(Apple Silicon)에서 Homebrew의 cairo를 찾게 함
 ```
 
 ### 스크립트 직접 쓰기
+
+skill 폴더(`~/.claude/skills/skill-aws-arch-diagram`)에서 실행합니다.
 
 ```bash
 # 아이콘의 정확한 참조 이름 찾기
@@ -148,7 +155,7 @@ python3 scripts/find_icon.py ec2 "api gateway" igw nat "s3 gateway endpoint"
 # SVG 초안에서는 bundle: 방식으로 아이콘을 참조
 #   <image href="bundle:service/AWS-Lambda" x="200" y="200" width="48" height="48"/>
 
-# 레이아웃 검사 (문제가 있으면 exit 1과 함께 라벨·아이콘을 지나는 선, 겹침, 작은 글자를 출력)
+# 레이아웃 검사 (문제가 있으면 exit 1과 함께 위반 항목을 출력)
 python3 scripts/check_layout.py draft.svg
 
 # 원하는 형식을 조합해 내보내기 (렌더·변환할 수 없는 요소가 있으면 exit 1과 함께 목록 출력)
@@ -164,8 +171,8 @@ uv run --with python-pptx --with cairosvg python scripts/render_pptx.py deck.ppt
 
 ## 아이콘 세트 업데이트
 
-AWS는 대략 분기마다(1월, 4월, 7월 말) <https://aws.amazon.com/architecture/icons/>에 새
-아이콘 패키지를 냅니다. 이 skill은 `Icon-package_07312026`에 고정되어 있습니다. 새 패키지로
+AWS는 1년에 몇 차례 <https://aws.amazon.com/architecture/icons/>에 새 아이콘 패키지를
+냅니다. 이 skill은 `Icon-package_07312026`에 고정되어 있습니다. 새 패키지로
 옮기려면 `scripts/fetch_icons.py`의 `PACKAGE`, `URL`, `SHA256`을 고치고 다시 만듭니다.
 
 ```bash
