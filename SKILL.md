@@ -214,7 +214,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/check_layout.py name.draft.svg
 
 It flags a connector or container border crossing a label, icon or badge, labels
 overlapping each other or an icon, text under 12px, an arrowhead on a stub under
-20px, a trunk squeezed against a container border, and circled-digit step legends — the defects that otherwise
+20px, a trunk squeezed against a container border, a container CIDR outside its header, and circled-digit step legends — the defects that otherwise
 only show up in a render. Masked crossings (IGW/VGW on the VPC border) are allowed.
 
 Then export the formats you need — any combination, from the same drafts:
@@ -261,6 +261,8 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       the note's legend repeats those same badges (not ①), left-aligned — in a
       document one step per row with a bold hop and a sentence on the route and what
       happens there; on a slide short items flowed in one or two rows.
+- [ ] Every VPC and subnet CIDR is in its container's header (top-left), not a caption
+      inside the box; a spanning box that would cross a header moves instead.
 - [ ] Group containers are square-cornered, in the official colors and dash styles.
 - [ ] Containers hug their contents; no empty areas; text 14px (nodes, containers) /
       12px (connectors, notes); a slide is filled without crowding the title.

@@ -25,6 +25,8 @@ Reports, and exits with status 1 on any of them:
                    stuck on a bend or trunk junction)
   LINE HUGS BORDER a connector runs alongside a container border less than 12px
                    from it for more than 20px
+  CIDR OFF HEADER  a bare CIDR label that isn't a node's sub-caption (a container's CIDR
+                   goes in its header)
   GLYPH STEP       a label numbers steps with circled digits (①) — draw the legend's
                    numbers as the diagram's step badges instead
 
@@ -195,6 +197,9 @@ MIN_ARROW = 20
 HUG_CLEAR = 12
 # Circled digits (①–⑳, ❶–➓): a step legend repeats the diagram's badges instead.
 CIRCLED = re.compile("[\u2460-\u2473\u2776-\u2793]")
+# A label that is nothing but a CIDR. A container's CIDR belongs in its header; a bare one
+# is allowed only as the sub-caption of a node (single-icon VPC, customer gateway).
+BARE_CIDR = re.compile(r"^\d{1,3}(\.\d{1,3}){3}/\d{1,2}$")
 ICON_SETS = ("service", "resource")
 
 
@@ -267,6 +272,9 @@ def check(path):
                               f"keep {HUG_CLEAR}px or more")
                 break
     for t in texts:
+        if BARE_CIDR.match(t["s"]) and not is_node_label(t, icons):
+            issues.append(f"CIDR OFF HEADER {t['s']!r} floats inside a box — put it in that container's "
+                          "header label and move whatever crosses the header instead")
         if CIRCLED.search(t["s"]):
             issues.append(f"GLYPH STEP      {t['s']!r} uses circled digits; draw step badges instead")
         x0, y0, x1, y1 = t["box"]

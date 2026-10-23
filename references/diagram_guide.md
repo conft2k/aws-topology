@@ -597,6 +597,11 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   <text x="44" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="168" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
   <text x="16" y="714" font-size="12" fill="#545B64">SG: ... (a line that isn't a step)</text>
   ```
+- **A container's CIDR lives in its header, top-left.** VPC and subnet CIDRs are part
+  of the header label ("Private subnet 10.100.10.0/24"), never a caption moved into the
+  box's body. When a box that spans rows (a target group or ASG box) would cross a
+  longer header, move or narrow that box — start it 8px right of the header text — or
+  widen the column; don't shorten the header. check_layout.py reports CIDR OFF HEADER.
 - **When routes must be shown.** A diagram whose point is the routing — inspection
   (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
   VPCs or Regions — lists every route its flows need (sub-captions, a document's step
