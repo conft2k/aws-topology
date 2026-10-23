@@ -7,14 +7,15 @@ are licensed under the Apache License, Version 2.0. See LICENSE.
 Third-party content
 -------------------
 
-assets/icons.json is a repackaging of the AWS Architecture Icons
-(Icon-package_07312026, released 2026-07-31) published by Amazon Web Services at
-https://aws.amazon.com/architecture/icons/. The icons are the property of
-Amazon Web Services, Inc. or its affiliates and are NOT covered by the Apache
-License. They are included here, unmodified, solely so that the skill can draw
-AWS architecture diagrams; AWS permits customers and partners to use these
-assets to create architecture diagrams and related materials. Your use of the
-icons is subject to AWS's terms, including the AWS Site Terms
+This repository does not contain the AWS Architecture Icons. scripts/fetch_icons.py
+downloads the official package (Icon-package_07312026, released 2026-07-31) from
+Amazon Web Services, https://aws.amazon.com/architecture/icons/, on the user's
+machine and packs it, unmodified, into assets/icons.json, which is not
+distributed with this project. The icons are the property of Amazon Web
+Services, Inc. or its affiliates and are NOT covered by the Apache License.
+AWS permits customers and partners to use these assets to create architecture
+diagrams and related materials; the example diagrams under docs/ are such
+diagrams. Your use of the icons is subject to AWS's terms, including the AWS Site Terms
 (https://aws.amazon.com/terms/) and the AWS Trademark Guidelines
 (https://aws.amazon.com/trademark-guidelines/). Do not use them as logos, alter
 them, or imply AWS endorsement.

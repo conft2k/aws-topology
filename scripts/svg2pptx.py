@@ -27,7 +27,6 @@ drop silently.
 import argparse
 import base64
 import io
-import json
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -45,8 +44,10 @@ from pptx.opc.package import Part
 from pptx.oxml.ns import qn
 from pptx.util import Emu, Pt
 
-ROOT = Path(__file__).resolve().parent.parent
-SETS = json.loads((ROOT / "assets" / "icons.json").read_text(encoding="utf-8"))["sets"]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from fetch_icons import load_sets  # noqa: E402
+
+SETS = load_sets()  # downloads the official AWS icons on first use
 # An already-embedded SVG (data: URI from embed.py) maps back to its icon.
 BY_DATA = {e["data"]: f"{setname}/{name}" for setname, icons in SETS.items()
            for name, e in icons.items()}

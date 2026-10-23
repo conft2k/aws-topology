@@ -61,6 +61,14 @@ git clone https://github.com/conft2k/skill-aws-arch-diagram ~/.claude/skills/ski
 "이 구성도를 PPT 장표로 만들어줘", "draw the AWS architecture for …" 같은 요청에서
 skill이 동작합니다.
 
+AWS 아이콘은 이 저장소에 들어 있지 않습니다. 스크립트가 아이콘을 처음 쓸 때 AWS에서 공식
+패키지(약 14MB, URL과 SHA-256 고정)를 받아 `assets/icons.json`을 만듭니다. 미리 받아 두거나,
+네트워크가 없는 환경에서 직접 받은 zip으로 만들려면:
+
+```bash
+python3 scripts/fetch_icons.py               # 또는: --zip Icon-package_07312026.zip
+```
+
 요구 사항: Python 3.9 이상. `find_icon.py`, `check_layout.py`, `embed.py`는 외부 패키지가
 필요 없습니다. 내보내기는 `uv run --with python-pptx --with cairosvg`([uv](https://docs.astral.sh/uv/))로
 실행하므로 전역 설치가 없습니다. PNG에 한국어 라벨을 그리려면 CJK 글꼴(예: Noto Sans CJK KR)이
@@ -74,8 +82,8 @@ skill이 동작합니다.
 SKILL.md                     skill 본문: 작업 순서, 규칙, 하지 말 것
 references/diagram_guide.md  AWS 시각 문법, 그룹 색, VPC 리소스 표, 초안 문법과 골격,
                              레이아웃·글자 크기·글꼴 규칙
-assets/icons.json            아이콘 873개를 담은 JSON 번들 (세트: service, resource,
-                             group, category, legacy)
+assets/icons.json            아이콘 857개를 담은 JSON 번들 (세트: service, resource,
+                             group, category); 처음 쓸 때 만들며 커밋하지 않음
 scripts/find_icon.py         이름으로 아이콘 찾기: `find_icon.py alb igw "s3 gateway endpoint"`
 scripts/export.py            초안 -> SVG / PNG / PPTX 중 원하는 형식 (+ 슬라이드 미리보기);
                              모든 초안을 먼저 검사하고 하나라도 실패하면 아무것도 쓰지 않음
@@ -84,7 +92,8 @@ scripts/embed.py             bundle: 참조를 base64로 넣음; 모르는 참�
 scripts/svg2pptx.py          초안 -> 기본 도형으로 된 .pptx; 정확히 바꿀 수 없는 요소에서 실패
 scripts/render_pptx.py       덱의 슬라이드마다 PNG로 렌더
 scripts/check_layout.py      라벨·아이콘 위를 지나는 선, 겹친 라벨, 12px 미만 글자 검사
-scripts/build_bundle.py      새로 나온 아이콘 패키지로 icons.json 다시 만들기
+scripts/fetch_icons.py       고정한 AWS 아이콘 패키지를 받아 icons.json 만들기
+scripts/build_bundle.py      압축을 푼 아이콘 패키지를 icons.json으로 묶기
 ```
 
 ### 스크립트 직접 쓰기
@@ -116,14 +125,14 @@ uv run --with python-pptx --with cairosvg python scripts/render_pptx.py deck.ppt
 ## 아이콘 세트 업데이트
 
 AWS는 대략 분기마다(1월, 4월, 7월 말) <https://aws.amazon.com/architecture/icons/>에 새
-아이콘 패키지를 냅니다. 지금 번들은 `Icon-package_07312026`과 같습니다.
+아이콘 패키지를 냅니다. 이 skill은 `Icon-package_07312026`에 고정되어 있습니다. 새 패키지로
+옮기려면 `scripts/fetch_icons.py`의 `PACKAGE`, `URL`, `SHA256`을 고치고 다시 만듭니다.
 
 ```bash
-unzip Icon-package_*.zip -d /tmp/aws-icons
-python3 scripts/build_bundle.py /tmp/aws-icons
+python3 scripts/fetch_icons.py --force
 ```
 
-새 패키지에서 빠진 서비스는 자동으로 `legacy` 세트로 옮겨집니다. 다시 만든 뒤에는
+새 패키지에서 빠진 서비스는 번들에서도 빠집니다. 다시 만든 뒤에는
 `SKILL.md`의 패키지 날짜와 세트별 개수를 고치고, `references/diagram_guide.md`의 그룹 색을
 다시 확인하세요(`SKILL.md`의 "Updating the icon set" 참고).
 
@@ -131,8 +140,8 @@ python3 scripts/build_bundle.py /tmp/aws-icons
 
 skill의 코드와 문서는 Apache License 2.0을 따릅니다([LICENSE](LICENSE) 참고).
 
-`assets/icons.json`은 Amazon Web Services 소유의 AWS Architecture Icons를 다시 묶은 것으로,
-위 라이선스의 **대상이 아닙니다**. AWS 구성도를 그리기 위해 수정 없이 포함했으며, 아이콘
-사용에는 AWS 약관이 적용됩니다. 예제 SVG, PNG, 덱에 들어 있는 아이콘도 같은 AWS
-아이콘입니다. [NOTICE](NOTICE)를 참고하세요. 이 프로젝트는 AWS와 제휴 관계가 없고 AWS의
-보증을 받지 않았습니다.
+AWS Architecture Icons는 Amazon Web Services 소유이며, 이 저장소에 들어 있지 않고 위 라이선스의
+**대상도 아닙니다**. `scripts/fetch_icons.py`가 사용자의 컴퓨터에서 AWS로부터 직접 받으며, 아이콘
+사용에는 AWS 약관이 적용됩니다. 예제 SVG, PNG, 덱은 이 아이콘으로 그린 구성도입니다.
+[NOTICE](NOTICE)를 참고하세요. 이 프로젝트는 AWS와 제휴 관계가 없고 AWS의 보증을 받지
+않았습니다.

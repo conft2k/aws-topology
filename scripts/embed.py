@@ -16,14 +16,14 @@ must carry the AWS logo) are reported instead,
 nothing is written, and the script exits with status 1.
 """
 import base64
-import json
 import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-BUNDLE = json.loads((ROOT / "assets" / "icons.json").read_text(encoding="utf-8"))
-SETS = BUNDLE["sets"]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from fetch_icons import load_sets  # noqa: E402
+
+SETS = load_sets()  # downloads the official AWS icons on first use
 
 # Attribute values may be single- or double-quoted; group 1 is the quote.
 REF_RE = re.compile(r'(?:xlink:)?href\s*=\s*(["\'])bundle:([^"\']+)\1')

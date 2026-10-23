@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Find icons in the bundled assets/icons.json.
+"""Find icons in assets/icons.json (the official AWS icons, downloaded on first use).
 
 Usage:
   python scripts/find_icon.py ec2
@@ -11,14 +11,14 @@ Prints ranked matches as `set/name`. Icons live inside assets/icons.json
 inline the actual SVG/PNG when you build a diagram. Matches whole words,
 case/hyphen-insensitive, with common AWS abbreviation aliases.
 """
-import json
 import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-BUNDLE = json.loads((ROOT / "assets" / "icons.json").read_text(encoding="utf-8"))
-SETS = BUNDLE["sets"]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from fetch_icons import load_sets  # noqa: E402
+
+SETS = load_sets()  # downloads the official AWS icons on first use
 
 ALIASES = {
     # alb/nlb/gwlb resolve to their resource icon; the generic service icon is "elb".
@@ -70,7 +70,7 @@ VENDOR = {"amazon", "aws"}
 # Size/theme suffixes on group icons (AWS-Cloud_32_Dark) are not part of the name.
 SUFFIX = {"32", "dark", "light"}
 # Tie-break order: a service icon beats a resource or category icon of the same score.
-SET_ORDER = ["service", "resource", "group", "category", "legacy"]
+SET_ORDER = ["service", "resource", "group", "category"]
 
 
 def norm(s: str) -> str:
@@ -131,8 +131,6 @@ def search(query: str, k: int = 5):
             s = max(score(q, name) for q in queries)
             if f"{setname}/{name}" in NO_LOGO:
                 continue  # embed.py rejects these; the -logo variant is the AWS Cloud badge
-            if setname == "legacy":
-                s -= 20  # retired names only win when nothing current matches
             if s > 0:
                 rank = SET_ORDER.index(setname) if setname in SET_ORDER else len(SET_ORDER)
                 results.append((s, rank, len(name), f"{setname}/{name}"))

@@ -81,7 +81,8 @@ VPC green — that's the public-subnet color, and it will clash with the purple 
 
 ## Service icons
 
-All icons live in one bundle, `assets/icons.json`, organized into sets. Reference them
+All icons live in one bundle, `assets/icons.json` (built from the official AWS package on
+first use), organized into sets. Reference them
 by `set/name` (see "Finding the right icon"). The relevant sets:
 
 - `service` — service product icons (the primary set).
@@ -89,9 +90,6 @@ by `set/name` (see "Finding the right icon"). The relevant sets:
   `Amazon-VPC_Internet-Gateway`, `Amazon-EC2_Instance`, `Amazon-DynamoDB_Table`),
   plus the general icons (`Users`, `User`, `Client`, `Internet`, ...). General icons
   default to the light-background variant; append `_Dark` for dark backgrounds.
-- `legacy` — service icons that AWS dropped from the current package (retired or
-  renamed services such as `Amazon-QuickSight`). Use only when the user's system
-  really still has that service.
 - `category` — category icons (Compute, Storage...), for legends/agendas.
 
 Load balancers: `alb`, `nlb` and `gwlb` resolve to the typed resource icon

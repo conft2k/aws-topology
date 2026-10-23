@@ -61,6 +61,14 @@ Or clone it elsewhere and symlink it to `~/.claude/skills/skill-aws-arch-diagram
 Claude Code; the skill triggers on requests like "draw the AWS architecture for …",
 "diagram this VPC", "AWS 아키텍처 그려줘" or "이 구성도를 PPT 장표로 만들어줘".
 
+The AWS icons are not in this repository. The first time a script needs them it
+downloads the official package from AWS (~14 MB, pinned by URL and SHA-256) and builds
+`assets/icons.json`. To do it up front, or offline from a zip you downloaded:
+
+```bash
+python3 scripts/fetch_icons.py               # or: --zip Icon-package_07312026.zip
+```
+
 Requirements: Python 3.9+. `find_icon.py`, `check_layout.py` and `embed.py` need no
 third-party packages; the export runs with
 `uv run --with python-pptx --with cairosvg` ([uv](https://docs.astral.sh/uv/)), so
@@ -75,8 +83,8 @@ vectors; older viewers fall back to the embedded PNGs. Slides use Arial and Malg
 SKILL.md                     the skill: workflow, rules, what not to do
 references/diagram_guide.md  AWS visual grammar, group colors, VPC resource table,
                              draft subset and skeleton, layout, text-size and font rules
-assets/icons.json            873 icons in one JSON bundle (sets: service, resource,
-                             group, category, legacy)
+assets/icons.json            857 icons in one JSON bundle (sets: service, resource,
+                             group, category); built on first use, not committed
 scripts/find_icon.py         fuzzy lookup: `find_icon.py alb igw "s3 gateway endpoint"`
 scripts/export.py            drafts -> any of SVG / PNG / PPTX (+ slide previews); checks
                              every draft first and writes nothing if one fails
@@ -86,7 +94,8 @@ scripts/svg2pptx.py          drafts -> .pptx of native shapes; fails on anything
                              convert exactly
 scripts/render_pptx.py       render each slide of a deck to PNG
 scripts/check_layout.py      flag lines over labels/icons, overlapping labels, text < 12px
-scripts/build_bundle.py      rebuild icons.json from a newly released icon package
+scripts/fetch_icons.py       download the pinned AWS icon package and build icons.json
+scripts/build_bundle.py      pack an extracted icon package into icons.json
 ```
 
 ### Using the scripts directly
@@ -118,16 +127,16 @@ uv run --with python-pptx --with cairosvg python scripts/render_pptx.py deck.ppt
 ## Updating the icon set
 
 AWS releases a new icon package roughly quarterly (end of January, April and July) at
-<https://aws.amazon.com/architecture/icons/>. The bundle currently matches
-`Icon-package_07312026`.
+<https://aws.amazon.com/architecture/icons/>. The skill is pinned to
+`Icon-package_07312026`. To move to a new package, set `PACKAGE`, `URL` and `SHA256` in
+`scripts/fetch_icons.py` and rebuild:
 
 ```bash
-unzip Icon-package_*.zip -d /tmp/aws-icons
-python3 scripts/build_bundle.py /tmp/aws-icons
+python3 scripts/fetch_icons.py --force
 ```
 
-Services dropped from the new package move to the `legacy` set automatically. After
-rebuilding, update the package date and set counts in `SKILL.md`, and re-check the
+Services dropped from the new package disappear from the bundle. After rebuilding,
+update the package date and set counts in `SKILL.md`, and re-check the
 group colors in `references/diagram_guide.md` (see the "Updating the icon set" section
 of `SKILL.md`).
 
@@ -136,8 +145,8 @@ of `SKILL.md`).
 The skill's code and documentation are licensed under the Apache License 2.0
 (see [LICENSE](LICENSE)).
 
-`assets/icons.json` repackages the AWS Architecture Icons, which belong to Amazon Web
-Services and are **not** covered by that license; they are included unmodified so the
-skill can draw AWS diagrams, and your use of them is subject to AWS's terms. The icons
-embedded in the example SVGs, PNGs and deck are the same AWS icons. See [NOTICE](NOTICE).
+The AWS Architecture Icons belong to Amazon Web Services and are **not** part of this
+repository or covered by that license: `scripts/fetch_icons.py` downloads them from AWS
+on your machine, and your use of them is subject to AWS's terms. The example SVGs, PNGs
+and deck are architecture diagrams drawn with those icons. See [NOTICE](NOTICE).
 This project is not affiliated with or endorsed by AWS.

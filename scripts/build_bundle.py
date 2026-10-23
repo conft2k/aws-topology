@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Rebuild assets/icons.json from the official AWS Architecture Icons package.
+"""Pack an extracted AWS Architecture Icons package into assets/icons.json.
 
-Download the "Icon package" zip from https://aws.amazon.com/architecture/icons/,
-unzip it, and pass the extracted folder:
+fetch_icons.py downloads the pinned package and calls build(); run this directly only
+to pack a package folder you extracted yourself:
 
-    python scripts/build_bundle.py <extracted-package-dir>
+    python scripts/build_bundle.py <extracted-package-dir> <package-name>
 
 Sets built from the package (64px service/category, 48px resource, 32px group):
   service   Arch_<Name>_64.svg              -> service/<Name>
@@ -13,9 +13,6 @@ Sets built from the package (64px service/category, 48px resource, 32px group):
             Res_<Name>_48_Dark.svg          -> resource/<Name>_Dark
   group     <Name>_32[_Dark].svg            -> group/<Name>_32[_Dark]
   category  Arch-Category_<Name>_64.svg     -> category/<Name>
-
-Service names that disappear from a new package release are moved to the `legacy`
-set so older drafts keep resolving.
 """
 import json
 import re
@@ -48,13 +45,8 @@ def resource_name(stem: str):
     return m.group(1) + ("_Dark" if m.group(2) == "Dark" else "")
 
 
-def main():
-    if len(sys.argv) != 2:
-        print(__doc__)
-        sys.exit(1)
-    pkg = Path(sys.argv[1])
-    old = json.loads(OUT.read_text(encoding="utf-8"))["sets"] if OUT.exists() else {}
-
+def build(pkg: Path, package: str):
+    """Pack the extracted package at `pkg` into icons.json, labelled with `package`."""
     sets = {
         "service": collect(pkg, "Architecture-Service-Icons_*/*/64/Arch_*_64.svg",
                            lambda s: s[len("Arch_"):-len("_64")]),
@@ -66,20 +58,24 @@ def main():
     if not sets["service"]:
         sys.exit(f"No service icons found under {pkg} — is it the extracted Icon package?")
 
-    legacy = dict(old.get("legacy", {}))
-    for name, entry in old.get("service", {}).items():
-        if name not in sets["service"]:
-            legacy[name] = entry
-    sets["legacy"] = {k: v for k, v in sorted(legacy.items()) if k not in sets["service"]}
-
     # Write beside the bundle and rename, so a failed run never leaves a half-written one.
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     tmp = OUT.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps({"version": 2, "sets": sets}, ensure_ascii=False), encoding="utf-8")
+    tmp.write_text(json.dumps({"version": 3, "package": package, "sets": sets}, ensure_ascii=False),
+                   encoding="utf-8")
     tmp.replace(OUT)
     for name, entries in sets.items():
-        print(f"  {name}: {len(entries)}")
+        print(f"  {name}: {len(entries)}", file=sys.stderr)
     total = sum(len(v) for v in sets.values())
-    print(f"Wrote {OUT} — {total} icons, {OUT.stat().st_size / 1024 / 1024:.2f} MB")
+    print(f"Wrote {OUT} — {total} icons from {package}, {OUT.stat().st_size / 1024 / 1024:.2f} MB",
+          file=sys.stderr)
+
+
+def main():
+    if len(sys.argv) != 3:
+        print(__doc__)
+        sys.exit(1)
+    build(Path(sys.argv[1]), sys.argv[2])
 
 
 if __name__ == "__main__":

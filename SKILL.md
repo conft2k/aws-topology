@@ -24,6 +24,12 @@ that path from wherever you are working. `find_icon.py` and `check_layout.py` ne
 Python; the export needs python-pptx and cairosvg — run it with
 `uv run --with python-pptx --with cairosvg python ...` (no install needed).
 
+The AWS icons are not shipped with the skill. The first script that needs them
+downloads the pinned official package from AWS (~14 MB, SHA-256 checked) and builds
+`assets/icons.json`; this takes a few seconds once. If the download fails (no network),
+tell the user to download the zip from the URL in the error and run
+`scripts/fetch_icons.py --zip <zip>`.
+
 ## When to use
 
 Any request that pairs a **drawing intent** with an **AWS / cloud-infra topic**. Examples:
@@ -73,7 +79,8 @@ resource icon table, layout rules, the draft subset and the skeleton. The diagra
 look wrong if you skip it.
 
 ### 3. Find the exact icons
-All icons live inside a single bundle, `assets/icons.json` (not a folder of files).
+All icons live inside a single bundle, `assets/icons.json` (not a folder of files; built from
+the official package on first use).
 For every service, resource and container, look up its exact reference — do not type
 it from memory:
 
@@ -85,7 +92,7 @@ It prints ranked `set/name` references (e.g. `service/AWS-Lambda`, `group/AWS-Cl
 `resource/Amazon-VPC_Internet-Gateway`). Common
 abbreviations (alb, ecs, s3, vpc, igw, nat, vpce, eice, rtb, ...) are aliased. List a whole
 set with `--list resource`. Sets available: `service` (303), `resource` (513),
-`group` (15), `category` (26), `legacy` (16 retired service icons).
+`group` (15), `category` (26).
 
 Bedrock is `service/Amazon-Bedrock` and AgentCore is `service/Amazon-Bedrock-AgentCore`.
 AgentCore *components* (Runtime, Gateway, Memory, Identity, ...) have no official icon
@@ -307,12 +314,12 @@ file.
 
 ## Asset inventory
 
-All 873 icons are packed into one JSON bundle (keeps the skill's file count low):
+All 857 icons are packed into one JSON bundle (keeps the skill's file count low):
 
-- `assets/icons.json` — the icon bundle, built from the AWS Architecture Icons package
-  released 2026-07-31 (`Icon-package_07312026`; re-downloaded and found identical on
-  2026-10-19). Sets: `service`, `resource`, `group`, `category`, `legacy`. SVGs stored
-  as text.
+- `assets/icons.json` — the icon bundle, not in the repository: `scripts/fetch_icons.py`
+  downloads the AWS Architecture Icons package released 2026-07-31
+  (`Icon-package_07312026`, pinned by URL and SHA-256) and builds it on first use.
+  Sets: `service`, `resource`, `group`, `category`. SVGs stored as text.
 - `references/diagram_guide.md` — conventions, colors, VPC resources, the draft subset and skeleton (read this).
 - `scripts/find_icon.py` — fuzzy lookup → `set/name` reference (with AWS abbreviation aliases).
 - `scripts/check_layout.py` — flag lines over labels/icons, overlapping labels, text under 12px.
@@ -320,7 +327,10 @@ All 873 icons are packed into one JSON bundle (keeps the skill's file count low)
 - `scripts/embed.py` — inline `bundle:set/name` hrefs as base64 for a portable SVG.
 - `scripts/svg2pptx.py` — convert drafts into a deck of native PowerPoint shapes.
 - `scripts/render_pptx.py` — render each slide of a deck to PNG for the visual check.
-- `scripts/build_bundle.py` — rebuild `icons.json` from a newer official package.
+- `scripts/fetch_icons.py` — download the pinned official package and build `icons.json`
+  (`--force` rebuilds, `--zip` builds from a zip downloaded by hand).
+- `scripts/build_bundle.py` — pack an extracted package into `icons.json` (called by
+  `fetch_icons.py`).
 - `docs/examples/` — checked NLB, ALB, GWLB, TGW and Cloud WAN reference layouts
   (drafts + PNG), the deck made from them and a render of each slide (`slides/`).
 
@@ -329,12 +339,15 @@ All 873 icons are packed into one JSON bundle (keeps the skill's file count low)
 AWS publishes a new package a few times a year at
 https://aws.amazon.com/architecture/icons/. To pick it up:
 
-1. Download the "Icon package" zip and unzip it into an empty scratch directory.
-2. `python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/build_bundle.py <unzipped-dir>`
+1. Copy the new "Icon package" zip link from the page, download it, and take its
+   `sha256sum`.
+2. Set `PACKAGE`, `URL` and `SHA256` in `scripts/fetch_icons.py`, then run
+   `python3 ~/.claude/skills/skill-aws-arch-diagram/scripts/fetch_icons.py`.
 3. Check the printed set counts, re-check the group colors in the guide against the
    new group SVGs and the "Groups" slide of the PPTx toolkit (download it from the same
    page; unzip the .pptx and grep `srgbClr`/`prstDash` in `ppt/slides/slide*.xml` —
    it is the only source for groups without an icon, e.g. Availability Zone), and
    update the package date and counts in this file (the counts live only here).
 
-Services dropped from a new package move to `legacy` automatically.
+Services dropped from a new package disappear from the bundle; drafts that use them stop
+resolving, so redraw those nodes with the successor service's icon.
