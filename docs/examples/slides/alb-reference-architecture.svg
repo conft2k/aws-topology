@@ -133,5 +133,5 @@
   <text x="876" y="295" font-size="12" text-anchor="end" fill="#545B64">동기식 복제</text>
 
   <!-- note: below the diagram, outside the AWS Cloud box, left-aligned with the Users icon -->
-  <text x="16" y="531" font-size="12" fill="#545B64">Internet-facing ALB · 두 AZ에 걸친 단일 관리형 로드 밸런서 · AWS WAF 연결 · RDS Multi-AZ</text>
+  <text x="146" y="531" font-size="12" fill="#545B64">Internet-facing ALB · 두 AZ에 걸친 단일 관리형 로드 밸런서 · AWS WAF 연결 · RDS Multi-AZ</text>
 </svg>

@@ -108,5 +108,5 @@
   <text x="632" y="612" font-size="12" text-anchor="middle" fill="#545B64">아웃바운드</text>
 
   <!-- note: below the diagram, outside the AWS Cloud, left-aligned with the Users icon -->
-  <text x="24" y="778" font-size="12" fill="#545B64">Internet-facing NLB · TLS 종료 · 라우팅: Public subnet 0.0.0.0/0 → IGW, App subnet 0.0.0.0/0 → NAT gateway (같은 AZ)</text>
+  <text x="160" y="778" font-size="12" fill="#545B64">Internet-facing NLB · TLS 종료 · 라우팅: Public subnet 0.0.0.0/0 → IGW, App subnet 0.0.0.0/0 → NAT gateway (같은 AZ)</text>
 </svg>

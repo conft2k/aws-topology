@@ -1,5 +1,5 @@
-<svg viewBox="0 0 1108 530" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
-  <rect width="1108" height="530" fill="#FFFFFF"/>
+<svg viewBox="0 0 1108 540" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+  <rect width="1108" height="540" fill="#FFFFFF"/>
 
   <!-- Slide layout (≤ 1108 × 540 on a titled slide, note included). Reference level:
        each VPC is one node, attachment lines have no arrowheads. Main line y=254:
@@ -84,8 +84,9 @@
   <text x="788" y="296" font-size="14" text-anchor="middle" fill="#232F3E">TGW peering</text>
   <text x="788" y="312" font-size="12" text-anchor="middle" fill="#545B64">AWS 백본</text>
 
-  <!-- note: below the AWS Cloud box, left-aligned at the canvas margin (x of the leftmost box);
+  <!-- note: below the AWS Cloud box, left-aligned with the AWS Cloud's left edge; routes wrap to a third line to stay inside the canvas;
        routes in both directions, incl. on-premises <-> Region B over the peering -->
-  <text x="16" y="502" font-size="12" fill="#545B64">Hub &amp; spoke: VPC·VPN은 리전 TGW에 attachment로 연결 · VPC CIDR과 VPN(BGP) 경로는 TGW 라우팅 테이블에 전파</text>
-  <text x="16" y="518" font-size="12" fill="#545B64">라우팅: VPC 서브넷 10.0.0.0/8 · 192.168.0.0/16 → TGW · TGW A 10.16.0.0/13 → peering · TGW B 10.0.0.0/13 · 192.168.0.0/16 → peering (정적 경로)</text>
+  <text x="428" y="502" font-size="12" fill="#545B64">Hub &amp; spoke: VPC·VPN은 리전 TGW에 attachment로 연결 · VPC CIDR과 VPN(BGP) 경로는 TGW 라우팅 테이블에 전파</text>
+  <text x="428" y="518" font-size="12" fill="#545B64">라우팅: VPC 서브넷 10.0.0.0/8 · 192.168.0.0/16 → TGW</text>
+  <text x="428" y="534" font-size="12" fill="#545B64">TGW RT: A 10.16.0.0/13 → peering · B 10.0.0.0/13 · 192.168.0.0/16 → peering (정적 경로)</text>
 </svg>

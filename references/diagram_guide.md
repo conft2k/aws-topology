@@ -524,10 +524,11 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   enough space between them and the Cloud border (≈80px at 12px) for the connector's
   protocol label to sit clear of the Cloud and Region borders.
 - **Note line.** The note goes **below the diagram, outside the AWS Cloud box**,
-  left-aligned with the leftmost element of the diagram (the Users icon or on-premises
-  box when they sit left of the Cloud, otherwise the Cloud's left edge), 8px or more
-  below the Cloud's bottom border, 12px, never inside a
-  container. At most two lines, 16px apart, each no wider than the canvas: what the
+  left-aligned with the **AWS Cloud box's left edge** (its bottom-left corner) — the
+  same x in every diagram, even when Users or an on-premises box sit left of the
+  Cloud — 8px or more below the Cloud's bottom border, 12px, never inside a
+  container. At most two lines, 16px apart, each no wider than the canvas (a line
+  that would run past the canvas from the Cloud's edge wraps to one more line): what the
   diagram is ("Internet-facing NLB · ...") or the step legend, and — when the routes
   don't fit as sub-captions — the routes ("라우팅: ..."). A qualifier shared by several
   routes may be said once ("방화벽 · NAT 경로는 같은 AZ"). On a slide the note counts
@@ -538,7 +539,8 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   white bold 12px number — never a circled-digit glyph (①) or a bare "1.". Each item
   is the badge followed by its text: 12px, `#545B64`, `text-anchor="start"`, starting
   8px right of the badge (`x = cx + 18`), baseline at `cy + 4`. Everything is
-  left-aligned on the note's left edge (badge `cx = left + 10`); never center the
+  left-aligned on the note's left edge, the AWS Cloud's x (badge `cx = cloud.x + 10`,
+  hop text at `cloud.x + 28`, plain lines at `cloud.x`); never center the
   legend or put it in a frame.
   - **Document:** one step per row, rows 24px apart, in step order. Each row is the
     badge, the hop in bold (`font-weight="600"`, `#232F3E`, e.g. "TGW ENI → 방화벽"),
@@ -563,7 +565,7 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
     row 24px below at the same left edge rather than shrinking the text.
 
   ```svg
-  <!-- step legend (document): same badges as the diagram, bold hop, aligned description column -->
+  <!-- step legend (document), AWS Cloud at x=16: same badges as the diagram, bold hop, aligned description column -->
   <circle cx="26" cy="660" r="10" fill="#232F3E"/><text x="26" y="664" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
   <text x="44" y="664" font-size="12" font-weight="600" fill="#232F3E">IGW → GWLBe</text><text x="168" y="664" font-size="12" fill="#545B64">IGW 엣지 RT가 App 서브넷 CIDR을 같은 AZ의 GWLBe로 보내, 들어오는 트래픽이 EC2보다 먼저 검사 경로로 갑니다.</text>
   <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>

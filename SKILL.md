@@ -272,7 +272,8 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       route captions include return routes; global services (Route 53, CloudFront)
       are outside the Region; captions don't credit a service with another's job;
       identical per-AZ hops are drawn identically.
-- [ ] The note (legend / routes) is below the diagram, outside the AWS Cloud box.
+- [ ] The note (legend / routes) is below the diagram, outside the AWS Cloud box,
+      left-aligned with the Cloud box's left edge.
 - [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
 
 Save the outputs where the user asked (in a repo, usually next to the docs that

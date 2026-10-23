@@ -136,7 +136,7 @@
   <circle cx="708" cy="170" r="10" fill="#232F3E"/><text x="708" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
   <circle cx="863" cy="170" r="10" fill="#232F3E"/><text x="863" y="174" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
 
-  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with it; line 2 lists the subnet routes -->
+  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with the AWS Cloud's left edge; line 2 lists the subnet routes -->
   <circle cx="18" cy="517" r="10" fill="#232F3E"/><text x="18" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
   <text x="36" y="521" font-size="12" fill="#545B64">VPC → TGW</text>
   <circle cx="133" cy="517" r="10" fill="#232F3E"/><text x="133" y="521" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>

@@ -148,7 +148,7 @@
   <circle cx="929" cy="192" r="10" fill="#232F3E"/><text x="929" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
   <circle cx="1059" cy="192" r="10" fill="#232F3E"/><text x="1059" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
 
-  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with it -->
+  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with the AWS Cloud's left edge -->
   <circle cx="26" cy="704" r="10" fill="#232F3E"/><text x="26" y="708" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
   <text x="44" y="708" font-size="12" font-weight="600" fill="#232F3E">VPC → TGW</text><text x="167.4" y="708" font-size="12" fill="#545B64">VPC A·B의 App 서브넷 RT가 0.0.0.0/0을 TGW로 보내, VPC 간 트래픽과 인터넷행 트래픽이 모두 TGW로 들어옵니다.</text>
   <circle cx="26" cy="728" r="10" fill="#232F3E"/><text x="26" y="732" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
