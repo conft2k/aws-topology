@@ -284,8 +284,9 @@ and balance, whitespace and readability still need eyes. Go through this checkli
       table as a node with its routes, and numbers one representative flow on the
       attachment lines — no separate flow lines.
 - [ ] A Site-to-Site VPN path is CGW → Internet → Site-to-Site VPN → TGW/VGW, with the
-      Internet and VPN icons outside the AWS Cloud; a Direct Connect path does not pass
-      the Internet icon.
+      Internet and VPN icons outside the AWS Cloud; a Direct Connect path is customer
+      router → Direct Connect (the DX location, outside the AWS Cloud) → DX gateway
+      (inside the Cloud, outside the Regions) and does not pass the Internet icon.
 - [ ] Technically sound (guide, "Technical correctness"): each hop carries the protocol
       really on it (no "TCP :443" after TLS termination; GENEVE only GWLB ⇄ appliances);
       route captions include return routes; global services (Route 53, CloudFront)

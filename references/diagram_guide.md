@@ -287,8 +287,13 @@ the Cloud border for those two hops (enough for both icons, their labels and the
 "IPsec" label with 8px around each), and pull the Cloud and Region borders in so they
 hug their contents rather than leaving the space empty inside. A Direct
 Connect path is private and never passes the Internet icon: customer router →
-`service/AWS-Direct-Connect` (the DX location, outside the Region) → Direct Connect
-gateway / TGW. When both exist, draw them as two separate paths so the difference is
+`service/AWS-Direct-Connect` — the DX location, a colocation facility that is **not in
+AWS**, so the icon sits **outside the AWS Cloud box**, between the on-premises group and
+the Cloud border, with "private VIF" (or "transit VIF") as its sub-caption → the Direct
+Connect gateway, which is an AWS resource: inside the AWS Cloud, outside every Region (a
+global resource), on the same line → VGW / TGW. Leave 140–180px between the on-premises
+group and the Cloud border for the DX icon and its label. check_layout.py reports
+OUTSIDE CLOUD for a DX, Internet or VPN icon drawn inside the Cloud. When both exist, draw them as two separate paths so the difference is
 visible.
 
 **Never invent or hand-draw a service icon.** If a service isn't in the bundle,

@@ -28,6 +28,8 @@ Reports, and exits with status 1 on any of them:
                    than 12px from it for more than 20px
   TITLE OFFSET     a container title not on its box's header row (baseline box.y + 18;
                    the 15px AWS Cloud title + 22)
+  OUTSIDE CLOUD    a Direct Connect location, Internet or Site-to-Site VPN icon inside the
+                   AWS Cloud box (drafts only: needs bundle: refs)
   CIDR IN TITLE    a container title that carries its CIDR (the CIDR is its own line)
   CIDR OFF HEADER  a bare CIDR label neither right under a container title nor a
                    node's sub-caption
@@ -168,7 +170,8 @@ def collect(svg_root):
             x, y = num(el.get("x")) + ox, num(el.get("y")) + oy
             href = el.get("href") or el.get("{http://www.w3.org/1999/xlink}href") or ""
             icons.append({"box": (x, y, x + num(el.get("width")), y + num(el.get("height"))),
-                          "o": order, "badge": "group/" in href[:40]})
+                          "o": order, "badge": "group/" in href[:40],
+                          "ref": href[len("bundle:"):] if href.startswith("bundle:") else ""})
         elif tag == "circle":
             cx, cy, r = num(el.get("cx")) + ox, num(el.get("cy")) + oy, num(el.get("r"))
             # r <= 6: a junction dot drawn on a connector on purpose (e.g. segment membership)
@@ -210,6 +213,10 @@ CIRCLED = re.compile("[\u2460-\u2473\u2776-\u2793]")
 BARE_CIDR = re.compile(r"^\d{1,3}(\.\d{1,3}){3}/\d{1,2}$")
 CIDR_IN = re.compile(r"\d{1,3}(\.\d{1,3}){3}/\d{1,2}")
 CIDR_COLOR = "#232f3e"
+# Things that are not in AWS: they sit between the on-premises group and the AWS Cloud box,
+# never inside it (a Direct Connect location is a colocation facility, the Internet is the
+# Internet, and a Site-to-Site VPN's IPsec runs over it). Checked on drafts (bundle: refs).
+OUTSIDE_CLOUD = ("service/AWS-Direct-Connect", "resource/Internet", "service/AWS-Site-to-Site-VPN")
 ICON_SETS = ("service", "resource")
 
 
@@ -277,6 +284,17 @@ def check(path):
     # + 12 (label only), baseline box.y + 18. A title that drifted when content was moved
     # reads as belonging to nothing.
     rects = container_rects(root)
+    clouds = [r for r in rects for i in icons
+              if i.get("ref", "").startswith("group/AWS-Cloud-logo") and abs(i["box"][0] - r[0]) <= 1
+              and abs(i["box"][1] - r[1]) <= 1]
+    for i in icons:
+        if i.get("ref") in OUTSIDE_CLOUD:
+            x0, y0, x1, y1 = i["box"]
+            for r in clouds:
+                if r[0] <= x0 and x1 <= r[0] + r[2] and r[1] <= y0 and y1 <= r[1] + r[3]:
+                    issues.append(f"OUTSIDE CLOUD   {i['ref']} at ({x0:g},{y0:g}) is inside the AWS Cloud box — "
+                                  "it isn't in AWS; place it between the on-premises group and the Cloud")
+                    break
     for t in texts:
         if not (t["title"] and t["fs"] in (14, 15)):
             continue
