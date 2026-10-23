@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1324 822" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
+<svg viewBox="0 0 1324 860" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans CJK KR', 'Pretendard', Arial, sans-serif">
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
       <path d="M0,0 L8,3 L0,6 Z" fill="#232F3E"/>
@@ -7,7 +7,7 @@
       <path d="M8,0 L0,3 L8,6 Z" fill="#232F3E"/>
     </marker>
   </defs>
-  <rect width="1324" height="822" fill="#FFFFFF"/>
+  <rect width="1324" height="860" fill="#FFFFFF"/>
 
   <!-- Centralized model: spoke VPCs → TGW → inspection VPC (TGW subnet → firewall subnet
        → public subnet with NAT) → IGW. AZ1 row cy=206, gap/main line y=366, AZ2 row cy=526. -->
@@ -148,15 +148,16 @@
   <circle cx="929" cy="192" r="10" fill="#232F3E"/><text x="929" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
   <circle cx="1059" cy="192" r="10" fill="#232F3E"/><text x="1059" y="196" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
 
-  <!-- note (step legend uses the diagram's badges, left-aligned): below the diagram, outside the AWS Cloud, left-aligned with the AWS Cloud's left edge -->
-  <circle cx="26" cy="704" r="10" fill="#232F3E"/><text x="26" y="708" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
-  <text x="44" y="708" font-size="12" font-weight="600" fill="#232F3E">VPC → TGW</text><text x="167.4" y="708" font-size="12" fill="#545B64">VPC A·B의 App 서브넷 RT가 0.0.0.0/0을 TGW로 보내, VPC 간 트래픽과 인터넷행 트래픽이 모두 TGW로 들어옵니다.</text>
-  <circle cx="26" cy="728" r="10" fill="#232F3E"/><text x="26" y="732" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
-  <text x="44" y="732" font-size="12" font-weight="600" fill="#232F3E">TGW → 검사 VPC</text><text x="167.4" y="732" font-size="12" fill="#545B64">Spoke VPC attachment에 연결된 Spoke RT의 0.0.0.0/0이 검사 VPC attachment를 가리킵니다. appliance mode로 한 흐름의 양방향이 같은 AZ를 지납니다.</text>
-  <circle cx="26" cy="752" r="10" fill="#232F3E"/><text x="26" y="756" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">3</text>
-  <text x="44" y="756" font-size="12" font-weight="600" fill="#232F3E">TGW ENI → 방화벽</text><text x="167.4" y="756" font-size="12" fill="#545B64">TGW 서브넷 RT 0.0.0.0/0 → 같은 AZ 방화벽 엔드포인트. 검사를 통과한 VPC 간 트래픽은 10.0.0.0/8 → TGW로 돌아가고, Firewall RT가 목적지 VPC로 보냅니다.</text>
-  <circle cx="26" cy="776" r="10" fill="#232F3E"/><text x="26" y="780" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
-  <text x="44" y="780" font-size="12" font-weight="600" fill="#232F3E">방화벽 → NAT</text><text x="167.4" y="780" font-size="12" fill="#545B64">인터넷행 트래픽은 방화벽 서브넷 RT 0.0.0.0/0 → 같은 AZ NAT 게이트웨이로 가고, NAT가 출발지 주소를 퍼블릭 IP로 바꿉니다.</text>
-  <circle cx="26" cy="800" r="10" fill="#232F3E"/><text x="26" y="804" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
-  <text x="44" y="804" font-size="12" font-weight="600" fill="#232F3E">NAT → IGW</text><text x="167.4" y="804" font-size="12" fill="#545B64">퍼블릭 서브넷 RT 0.0.0.0/0 → IGW로 인터넷에 나갑니다. 응답은 10.0.0.0/8 → 같은 AZ 방화벽을 거쳐 다시 검사된 뒤 VPC로 돌아옵니다.</text>
+  <!-- note panel (same width as the AWS Cloud, 16px below it): below the diagram, outside the AWS Cloud, left-aligned with the AWS Cloud's left edge -->
+  <rect x="16" y="704" width="1208" height="140" fill="#F8F9F9" stroke="#D5DBDB" stroke-width="1"/>
+  <circle cx="38" cy="726" r="10" fill="#232F3E"/><text x="38" y="730" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">1</text>
+  <text x="56" y="730" font-size="12" font-weight="600" fill="#232F3E">VPC → TGW</text><text x="179.4" y="730" font-size="12" fill="#545B64">VPC A·B의 App 서브넷 RT가 0.0.0.0/0을 TGW로 보내, VPC 간 트래픽과 인터넷행 트래픽이 모두 TGW로 들어옵니다.</text>
+  <circle cx="38" cy="750" r="10" fill="#232F3E"/><text x="38" y="754" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
+  <text x="56" y="754" font-size="12" font-weight="600" fill="#232F3E">TGW → 검사 VPC</text><text x="179.4" y="754" font-size="12" fill="#545B64">Spoke VPC attachment에 연결된 Spoke RT의 0.0.0.0/0이 검사 VPC attachment를 가리킵니다. appliance mode로 한 흐름의 양방향이 같은 AZ를 지납니다.</text>
+  <circle cx="38" cy="774" r="10" fill="#232F3E"/><text x="38" y="778" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">3</text>
+  <text x="56" y="778" font-size="12" font-weight="600" fill="#232F3E">TGW ENI → 방화벽</text><text x="179.4" y="778" font-size="12" fill="#545B64">TGW 서브넷 RT 0.0.0.0/0 → 같은 AZ 방화벽 엔드포인트. 검사를 통과한 VPC 간 트래픽은 10.0.0.0/8 → TGW로 돌아가고, Firewall RT가 목적지 VPC로 보냅니다.</text>
+  <circle cx="38" cy="798" r="10" fill="#232F3E"/><text x="38" y="802" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">4</text>
+  <text x="56" y="802" font-size="12" font-weight="600" fill="#232F3E">방화벽 → NAT</text><text x="179.4" y="802" font-size="12" fill="#545B64">인터넷행 트래픽은 방화벽 서브넷 RT 0.0.0.0/0 → 같은 AZ NAT 게이트웨이로 가고, NAT가 출발지 주소를 퍼블릭 IP로 바꿉니다.</text>
+  <circle cx="38" cy="822" r="10" fill="#232F3E"/><text x="38" y="826" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">5</text>
+  <text x="56" y="826" font-size="12" font-weight="600" fill="#232F3E">NAT → IGW</text><text x="179.4" y="826" font-size="12" fill="#545B64">퍼블릭 서브넷 RT 0.0.0.0/0 → IGW로 인터넷에 나갑니다. 응답은 10.0.0.0/8 → 같은 AZ 방화벽을 거쳐 다시 검사된 뒤 VPC로 돌아옵니다.</text>
 </svg>
