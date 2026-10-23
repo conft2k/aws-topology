@@ -523,7 +523,8 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
 - **Room outside the AWS Cloud.** Users/clients sit outside the AWS Cloud box; leave
   enough space between them and the Cloud border (≈80px at 12px) for the connector's
   protocol label to sit clear of the Cloud and Region borders.
-- **Note line.** The note goes **below the diagram, outside the AWS Cloud box**,
+- **Note line.** The note goes **below the diagram, outside the AWS Cloud box** (or in a
+  note panel, see below),
   left-aligned with the **AWS Cloud box's left edge** (its bottom-left corner) — the
   same x in every diagram, even when Users or an on-premises box sit left of the
   Cloud — 8px or more below the Cloud's bottom border, 12px, never inside a
@@ -534,6 +535,20 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   routes may be said once ("방화벽 · NAT 경로는 같은 AZ"). On a slide the note counts
   toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
   make room.
+- **Note panel.** When the canvas already has an empty area big enough for the note —
+  typically outside the AWS Cloud, under Users or an on-premises box that sit left of
+  it — put the note there in a panel instead of below the Cloud, so the canvas doesn't
+  grow and the empty corner is used. The panel is a square rect, `fill="#F8F9F9"`,
+  `stroke="#D5DBDB"` 1px, with no badge and no header label (it must not read as an
+  AWS group). Line it up with the diagram: left edge on the box above it (or the canvas
+  margin), bottom edge on the AWS Cloud's bottom border, at least 16px from any other
+  element, 12px padding inside. Content is a label column — bold 12px `#232F3E`
+  ("Hub & spoke", "VPC 서브넷 RT", "TGW A RT") — and a text column, 12px `#545B64`, that
+  starts at one x for every row (16px right of the widest label); a row that is too
+  long wraps in the text column, 16px line pitch, 22px between rows. Without such an
+  area, the note goes below the Cloud as above. Step legends stay below the Cloud,
+  where the rows can run the full width.
+
 - **Step legend.** A diagram with step badges explains them in the note with the
   **same badge** the diagram uses — a 10px-radius squid-ink `#232F3E` circle with the
   white bold 12px number — never a circled-digit glyph (①) or a bare "1.". Each item
