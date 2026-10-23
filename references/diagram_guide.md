@@ -549,12 +549,16 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
     does at that hop (inspects, translates, encapsulates, load-balances), and the
     return path or the exception where it matters ("VPC 간 트래픽은 ... TGW로
     돌아갑니다"). Use the diagram's own names; keep each row inside the canvas
-    (≈ 100 Korean characters at most on a 1200px canvas). Lines that aren't
-    steps (summary, routes, security groups, test inputs) follow as plain 12px
-    lines, 16px apart, starting at the same left edge, 8px below the last badge.
+    (≈ 100 Korean characters at most on a 1200px canvas). The step descriptions
+    carry the routes, so a document drops the "라우팅: ..." line once every route it
+    would list is in a description; keep it only for routes no step mentions, and
+    never repeat a route there. Lines that aren't steps (summary, leftover routes,
+    security groups, test inputs) follow as plain 12px lines, 16px apart, starting
+    at the same left edge, 8px below the last badge.
     The note's two-line limit doesn't count the step rows.
   - **Slide** (canvas height ≤ 540): items stay short — the hop and at most a few
-    words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest.
+    words ("같은 AZ 방화벽에서 검사"); the speaker or the document carries the rest,
+    and the routes stay on the note's route line.
     When one row per step doesn't fit, flow the items in one row, 20px between an item's text end and the next badge; wrap to a second
     row 24px below at the same left edge rather than shrinking the text.
 
@@ -564,11 +568,12 @@ a target group spanning the AZs with a zonal EC2 instance in each (it is
   <text x="44" y="664" font-size="12" font-weight="600" fill="#232F3E">IGW → GWLBe</text><text x="168" y="664" font-size="12" fill="#545B64">IGW 엣지 RT가 App 서브넷 CIDR을 같은 AZ의 GWLBe로 보내, 들어오는 트래픽이 EC2보다 먼저 검사 경로로 갑니다.</text>
   <circle cx="26" cy="684" r="10" fill="#232F3E"/><text x="26" y="688" font-size="12" font-weight="700" text-anchor="middle" fill="#FFFFFF">2</text>
   <text x="44" y="688" font-size="12" font-weight="600" fill="#232F3E">GWLBe ⇄ GWLB</text><text x="168" y="688" font-size="12" fill="#545B64">GWLBe는 PrivateLink로 GWLB에 연결된 엔드포인트로, 받은 패킷을 바꾸지 않고 넘깁니다.</text>
-  <text x="16" y="714" font-size="12" fill="#545B64">라우팅 (같은 AZ): ...</text>
+  <text x="16" y="714" font-size="12" fill="#545B64">SG: ... (a line that isn't a step)</text>
   ```
 - **When routes must be shown.** A diagram whose point is the routing — inspection
   (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
-  VPCs or Regions — lists every route its flows need (sub-captions or the note). Other
+  VPCs or Regions — lists every route its flows need (sub-captions, a document's step
+  descriptions, or the note's route line). Other
   diagrams may leave routes out. When routes are shown, every VPC (and on-premises
   network) carries its CIDR — in its container header, or as a 12px sub-caption under a
   single-icon VPC node or the customer gateway — and the routes use those CIDRs, not
