@@ -44,7 +44,7 @@
 | GWLB | Transit Gateway |
 |---|---|
 | ![GWLB 참조 아키텍처](docs/examples/gwlb-reference-architecture.png) | ![Transit Gateway 참조 아키텍처](docs/examples/tgw-reference-architecture.png) |
-| 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결 |
+| 분산 검사: AZ별 GWLBe, 보안 VPC의 GWLB 하나와 방화벽 ASG | 리전 간 TGW peering(peering connection 아이콘)으로 연결한 두 리전의 hub and spoke, 인터넷을 거치는 Site-to-Site VPN으로 온프레미스 연결 |
 
 | AWS Network Firewall |
 |---|

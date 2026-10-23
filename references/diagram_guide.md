@@ -188,7 +188,7 @@ set. Draw every one of them as its icon — never as a text chip, pill or labele
 | EC2 Instance Connect Endpoint | `resource/Amazon-VPC_Endpoints` (no dedicated icon) | inside its subnet, labeled "EICE" |
 | Gateway Load Balancer endpoint | `resource/Amazon-VPC_Endpoints` (no dedicated icon) | one per AZ in its GWLBe subnet, labeled "GWLBe"; the GWLB itself is one node in the appliance VPC |
 | Virtual private gateway (VGW) / customer gateway | `resource/Amazon-VPC_VPN-Gateway` / `_Customer-Gateway` | on the VPC border / on-prem side |
-| Peering connection | `resource/Amazon-VPC_Peering-Connection` | between the two VPCs |
+| VPC peering connection / TGW peering attachment | `resource/Amazon-VPC_Peering-Connection` (AWS uses it for both) | on the link between the two VPCs or the two TGWs, the line broken at the icon; across Regions or accounts, in the gap between their boxes (it belongs to neither); label "VPC peering" / "TGW peering" |
 | Route table (VPC subnet route table, TGW route table) | `resource/Amazon-Route-53_Route-Table` (the package's only route table icon; filed under Route 53 but used for every route table) | inside the VPC outside the subnets (TGW route table: next to the TGW), with the table name as label and the key route as a 12px sub-caption ("10.0.0.0/8 → TGW"); never a text chip |
 | Router, NACL, ENI, Flow Logs | `resource/Amazon-VPC_Router`, `_Network-Access-Control-List`, `_Elastic-Network-Interface`, `_Flow-Logs` | as needed |
 
@@ -262,8 +262,10 @@ the protocol on the connector ("IPsec", "GENEVE :6081"). Place it where the read
 expects it on the path: a Site-to-Site VPN is the link between on-premises and AWS, so
 its icon sits **outside the AWS Cloud box**, between the Internet icon and the Cloud
 border (see below). Don't add a duplicate when
-another node already is that service (a GWLBe is the PrivateLink endpoint). Only a
-connection with no icon in the bundle (TGW peering) stays a connector label.
+another node already is that service (a GWLBe is the PrivateLink endpoint). A TGW
+peering is drawn the way the AWS docs draw it: the peering connection icon
+(`resource/Amazon-VPC_Peering-Connection`) on the TGW–TGW line, labeled "TGW peering".
+Only a connection with no icon in the bundle stays a connector label.
 
 **Show what a hybrid connection runs over.** A Site-to-Site VPN is IPsec over the
 public Internet, so its path is customer gateway → `resource/Internet` →
@@ -433,7 +435,8 @@ far as their contents need.
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
 - **One arrowhead style, one stroke width** (1.5px) for all connectors. The only
-  exception is an inter-Region backbone link (TGW peering, the Cloud WAN "AWS 백본"
+  exception is an inter-Region backbone link (TGW peering — both segments either side of
+  its icon —, the Cloud WAN "AWS 백본"
   line), drawn 2.5px so it reads as the backbone. A genuinely two-way link
   (GWLBe ⇄ GWLB, GWLB ⇄ appliances over GENEVE, TGW ⇄ an inspection attachment) gets
   the mirrored `arrowStart` marker on its other end; ordinary request/response flows
@@ -608,7 +611,8 @@ check every hop and caption against how the services actually behave:
   each TGW needs `<remote Region CIDRs> → peering`, and the remote TGW needs
   `<on-premises CIDR> → peering` for on-premises ↔ remote-Region traffic.
 - **TGW attachments are lines.** A VPC, VPN or peering attachment is the connector
-  between the TGW and what it attaches; `resource/AWS-Transit-Gateway_Attachment` is
+  between the TGW and what it attaches (a peering attachment also carries the peering
+  connection icon on its line, as above); `resource/AWS-Transit-Gateway_Attachment` is
   only for the attachment's ENIs drawn inside their subnets ("TGW ENI"). A VPC drawn as
   a single node uses `service/Amazon-Virtual-Private-Cloud`.
 - **Credit each mechanism with what it does.** TGW appliance mode keeps both directions

@@ -38,6 +38,10 @@ ALIASES = {
     "igw": "internet gateway", "nat": "nat gateway", "natgw": "nat gateway",
     "vgw": "vpn gateway", "cgw": "customer gateway", "eni": "elastic network interface",
     "nacl": "network access control list", "pcx": "peering connection",
+    # AWS draws a TGW peering attachment with the VPC peering connection icon
+    "vpc peering": "vpc peering connection", "tgw peering": "vpc peering connection",
+    "transit gateway peering": "vpc peering connection",
+    "peering attachment": "vpc peering connection", "tgw peering attachment": "vpc peering connection",
     "vpce": "vpc endpoints", "endpoint": "vpc endpoints",
     "gateway endpoint": "vpc endpoints", "interface endpoint": "vpc endpoints",
     "s3 gateway endpoint": "vpc endpoints", "dynamodb gateway endpoint": "vpc endpoints",

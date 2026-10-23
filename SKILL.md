@@ -64,7 +64,8 @@ settle the slide titles (one line each, or none) and the list of slides.
 ### 1b. Start from the closest reference example
 `docs/examples/` holds finished, checked reference layouts — NLB, ALB (3-tier with
 WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
-spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Network
+spoke in two Regions joined by TGW peering drawn as the peering connection icon between
+the Regions, VPCs as single icons) and AWS Network
 Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
 route tables and NAT egress) — as document-size drafts (`*.svg`) with their PNGs.
 `slides/` holds a slide-size version of each (`slides/*.svg`, ≤ 1108 × 540, all text
@@ -103,14 +104,16 @@ yet — see the guide's "Bedrock and AgentCore" for how to draw them.
 
 **Every AWS service or resource in the diagram that has an official icon is drawn as
 that icon** — including the ones that are easy to leave as a connector label or a text
-box: Site-to-Site VPN, Direct Connect, PrivateLink, VPC peering, Transit Gateway, Global
+box: Site-to-Site VPN, Direct Connect, PrivateLink, VPC peering, TGW peering, Transit Gateway, Global
 Accelerator, CloudFront, WAF, NAT gateway, endpoints, route tables. Run `find_icon.py`
 on every service or resource you are about to write as text; if it returns a score-95
 `service/` or `resource/` hit, it becomes a node with its icon. Connector labels carry
 only protocols, ports and verbs ("IPsec", "HTTPS :443", "GENEVE :6081", "read/write").
 Two exceptions: a service already shown by another node (the GWLBe *is* the
 PrivateLink endpoint — drop "PrivateLink" from the label rather than adding a second
-icon), and a connection type with no icon in the bundle (TGW peering) stays a label.
+icon), and a connection type with no icon in the bundle stays a label. A TGW peering
+is the peering connection icon (`resource/Amazon-VPC_Peering-Connection`) on the
+TGW–TGW line, as in the AWS docs — across Regions, in the gap between the Region boxes.
 `check_layout.py` flags connector labels that name a service with an icon.
 
 If nothing in `service` matches, search `resource` before concluding there is no
