@@ -31,7 +31,7 @@ ALIASES = {
     "ses": "simple email service", "rds": "relational database service",
     "vpc": "virtual private cloud", "ddb": "dynamodb", "apigw": "api gateway",
     "asg": "ec2 auto scaling", "iam": "identity and access management",
-    "kms": "key management service", "efs": "elastic file system",
+    "kms": "key management service", "acm": "certificate manager", "efs": "elastic file system",
     "ebs": "elastic block store", "msk": "managed streaming for apache kafka",
     "sfn": "step functions", "step functions": "step functions",
     # VPC resources live in the resource set (Amazon-VPC_*)

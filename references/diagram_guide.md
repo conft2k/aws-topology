@@ -107,7 +107,8 @@ separate load balancers.
 - **One icon per load balancer**, placed in the gap between the AZ rows, in the column
   of the tier it serves (public subnets for internet-facing, private for internal), so
   it visibly belongs to every AZ it spans. Keep it clear of the AZ and subnet borders
-  (≥8px; make the gap ≥110px so icon and label fit), label it with the short type:
+  (≥8px). Make the gap ≥110px in a document; on a slide 86px is the minimum (the
+  70px IGW mask plus 8px above and below), label it with the short type:
   "ALB", "NLB", "GWLB". Put the IGW on the VPC border at the same height so the path
   IGW → load balancer is one straight line. Keep Users and the IGW in that gap in
   every diagram of the set, even when the IGW fans out to per-AZ nodes (e.g. GWLB
@@ -117,8 +118,16 @@ separate load balancers.
   Users, the IGW and the load balancer on the same line anyway. Break the line where
   the branches leave and rejoin it (≥40px apart, so it never looks like one direct
   connector), and add numbered step badges — a 10px-radius squid-ink circle with a
-  white bold 12px number next to each hop (① IGW → GWLBe, ② GWLBe → GWLB, ...) —
-  plus a one-line legend in the note. Don't move nodes to separate lanes to avoid the
+  white bold 12px number on **every** hop from where the path leaves the main line until
+  it rejoins it (① IGW → GWLBe,
+  ② GWLBe → GWLB, ...), its bottom 4px above that hop's own line, at the middle of the
+  longest horizontal part of the line between container borders (a connector's protocol or name
+  label goes near the middle of that same part) (a hop drawn inside an AZ row gets its number
+  inside that row, above its line — never on another hop's line; hops that share or run side by side through the AZ gap
+  get one number between them, and on a slide the "keep it clear of the AZ boxes" rule
+  wins over the middle-of-the-line rule); when the hop also has a protocol
+  label, put the label below the line. The legend in the note names exactly the hop
+  each number sits on. Don't move nodes to separate lanes to avoid the
   ambiguity; the numbers resolve it and the alignment stays consistent across the set.
 - **One connector from the load balancer to its targets.** Wrap the targets in one
   Auto Scaling group / target group box that spans the AZs, and point a single arrow
@@ -260,8 +269,9 @@ connection with no icon in the bundle (TGW peering) stays a connector label.
 public Internet, so its path is customer gateway → `resource/Internet` →
 `service/AWS-Site-to-Site-VPN` → TGW/VGW, with the Internet and VPN icons both
 **outside the AWS Cloud box**, between the on-premises group and the Cloud border, and
-"IPsec" on the Internet → VPN segment. Leave ≈260px between the on-premises group and
-the Cloud border for those two hops, and pull the Cloud and Region borders in so they
+"IPsec" on the Internet → VPN segment. Leave 220–280px between the on-premises group and
+the Cloud border for those two hops (enough for both icons, their labels and the
+"IPsec" label with 8px around each), and pull the Cloud and Region borders in so they
 hug their contents rather than leaving the space empty inside. A Direct
 Connect path is private and never passes the Internet icon: customer router →
 `service/AWS-Direct-Connect` (the DX location, outside the Region) → Direct Connect
@@ -417,20 +427,60 @@ far as their contents need.
   change it, and give each label line 16–18px of height when you compute spacing.
   On the slide the px sizes become points through the fit-to-slide scale, so the
   canvas size decides the result: every label must come out at **≥ 10pt** (a titled
-  canvas of at most ~1100 × 540), and only when that is unavoidable down to **8pt**
+  canvas of at most 1108 × 540), and only when that is unavoidable down to **8pt**
   (~1380 × 675), never smaller. Tighten or split the diagram before going under 10pt.
 - **Color discipline.** Icons carry their own colors; keep containers, text, and
   connectors in the AWS neutrals (squid ink `#232F3E`, group border colors above).
   Don't add rainbow connectors.
-- **One arrowhead style, consistent stroke width** (1.5–2px) for all connectors. A
-  genuinely two-way link (GWLBe ⇄ GWLB, GWLB ⇄ appliances over GENEVE) gets the
-  mirrored `arrowStart` marker on its other end; ordinary request/response flows
+- **One arrowhead style, one stroke width** (1.5px) for all connectors. The only
+  exception is an inter-Region backbone link (TGW peering, the Cloud WAN "AWS 백본"
+  line), drawn 2.5px so it reads as the backbone. A genuinely two-way link
+  (GWLBe ⇄ GWLB, GWLB ⇄ appliances over GENEVE, TGW ⇄ an inspection attachment) gets
+  the mirrored `arrowStart` marker on its other end; ordinary request/response flows
   stay one-way.
+- **Topology diagrams may drop the arrowheads.** A diagram that shows what is attached
+  to what rather than how traffic flows (TGW hub and spoke, VPC peering mesh) draws its
+  attachment lines solid, without arrowheads, in any direction; the left → right and
+  "other directions are dashed" rules apply to traffic-flow diagrams only.
+- **Several connectors into one node enter it separately.** When the same hop from
+  each AZ ends at one node (spokes → TGW, NAT gateways → IGW), give each its own
+  arrowhead, entering the node's side 8px above and below its center (10px left and
+  right of center when they come in from above or below; topology lines without
+  arrowheads too) — don't merge them into one trunk with a single arrowhead.
+- **Outbound through a NAT gateway** is the dashed private-node → NAT gateway hop; the
+  NAT gateway → IGW hop may be left implied when the IGW is already on the diagram
+  for inbound traffic. Draw it when egress is the point of the diagram (centralized
+  egress, inspection).
 - **Regional services row.** Services that live in the Region but outside the VPC
-  (Route 53, ACM, AWS WAF, CloudWatch, S3 for logs) go in one row inside the Region,
-  above the VPC, on an even grid (~160px apart), each with its name and a 12px
-  sub-caption saying what it does here ("DNS → ALB (alias)", "ALB 액세스 로그").
-  Draw a connector only for what is on the traffic path (the DNS lookup, dashed).
+  (ACM, AWS WAF for an ALB/API Gateway, CloudWatch, S3 for logs) go in one row inside
+  the Region, above the VPC, on an even grid (~160px apart), each with its name and a
+  12px sub-caption saying what it does here ("HTTPS 리스너 인증서", "ALB 액세스 로그").
+  Draw a connector only for what is on the traffic path; a service attached to a
+  resource (AWS WAF on an ALB, ACM on a listener) gets its caption, not a connector.
+- **Global services sit outside the Region.** Route 53, CloudFront, AWS Global
+  Accelerator, IAM and AWS WAF for CloudFront are global: put them inside the AWS Cloud
+  box but outside every Region box, in a narrow strip to the left of the Region (the
+  side the users are on), at the height of the request they serve (Route 53: where the
+  users' dashed DNS lookup reaches it, any height that keeps that line short); the rest of that
+  strip staying empty is expected, not an "empty area". Never put them in the regional
+  services row. The DNS lookup from the users to Route 53 stays a dashed connector.
+- **Regional services on a slide.** When a row above the VPC doesn't fit the slide's
+  height, stack the regional services in a column beside the VPC (inside the Region),
+  one per slot — a slot is an AZ row or the gap between rows — on the same grid; with
+  more services than slots, use two columns. A slot may stay empty. Keep the node size S the same on every slide of a deck — fit the slide by
+  re-arranging, not by shrinking the icons.
+- **Database hops** carry the engine and port when known ("MySQL :3306",
+  "PostgreSQL :5432"), otherwise "SQL".
+- **Subnet color follows the route table.** A subnet is a public subnet (green) only if
+  its route table sends traffic straight to an IGW (0.0.0.0/0 → IGW): NAT gateway,
+  GWLBe and internet-facing load balancer subnets. A subnet whose default route goes to
+  a GWLBe, a firewall endpoint, a NAT gateway or a TGW is private (teal), even when its
+  instances have public IPs.
+- **Write routes in full CIDR form** — "0.0.0.0/0", "10.0.0.0/8", "10.1.0.0/16" — the
+  same way everywhere; add "같은 AZ" when the target is per-AZ.
+- **ASG and target group boxes inside a subnet** keep 8px from the subnet's borders
+  and 8px between their own border and every label inside; start the box to the right
+  of the subnet's header label, or below it.
 - **Short container labels.** Name subnets by role — "Public subnet", "App subnet",
   "DB subnet", "GWLBe subnet", "Appliance subnet" — not "Private subnet (App)": a long
   header runs into the badge or border of a box that spans it (an ASG, a replication
@@ -438,8 +488,62 @@ far as their contents need.
 - **Room outside the AWS Cloud.** Users/clients sit outside the AWS Cloud box; leave
   enough space between them and the Cloud border (≈80px at 12px) for the connector's
   protocol label to sit clear of the Cloud and Region borders.
-- **Note line.** One 12px note at the bottom right inside the Region, below the VPC,
-  states what the diagram is ("Internet-facing NLB · ...") or the step legend.
+- **Note line.** The note goes **below the diagram, outside the AWS Cloud box**,
+  left-aligned with the leftmost element of the diagram (the Users icon or on-premises
+  box when they sit left of the Cloud, otherwise the Cloud's left edge), 8px or more
+  below the Cloud's bottom border, 12px, never inside a
+  container. At most two lines, 16px apart, each no wider than the canvas: what the
+  diagram is ("Internet-facing NLB · ...") or the step legend, and — when the routes
+  don't fit as sub-captions — the routes ("라우팅: ..."). A qualifier shared by several
+  routes may be said once ("방화벽 · NAT 경로는 같은 AZ"). On a slide the note counts
+  toward the canvas height (≤ 540); the Region's bottom padding may shrink to 8px to
+  make room.
+- **When routes must be shown.** A diagram whose point is the routing — inspection
+  (Network Firewall, GWLB), centralized egress, ingress routing, TGW / peering between
+  VPCs or Regions — lists every route its flows need (sub-captions or the note). Other
+  diagrams may leave routes out. When routes are shown, every VPC (and on-premises
+  network) carries its CIDR — in its container header, or as a 12px sub-caption under a
+  single-icon VPC node or the customer gateway — and the routes use those CIDRs, not
+  placeholders like "app subnet CIDR". A route to a subnet CIDR names the subnet in
+  parentheses: "10.0.1.0/24 (AZ1 App) → GWLBe". TGW propagation captions ("VPC A · B
+  전파") name attachments and need no CIDR.
+- **How gaps are measured.** Every "N px between a label and X" rule is measured from
+  the label's glyph box — baseline − 0.75 × font size to baseline + 0.25 × font size —
+  the same box check_layout.py uses.
+- **Clearances at a glance:** label ↔ container border 8px (a container's own header
+  label follows the fixed header geometry instead, 7.5px below its top border);
+  label ↔ an icon it doesn't label 8px; group badge ↔ node icon 8px; connector ↔ a
+  node or header label 4px; label ↔ label side by side 4px. check_layout.py enforces
+  all of them.
+- **Connector labels** (protocol, name) sit near the middle of the longest horizontal
+  part of their line between container borders, 4–8px above it (below it when a step
+  number takes the space above).
+- **Fixed header geometry.** A container's header label sits at baseline container.y +
+  18; any box nested inside starts at container.y + 30 or lower (VPC → AZ, AZ → subnet).
+  The AWS Cloud's 15px label sits at baseline Cloud.y + 22, so the Region starts at
+  Cloud.y + 34 or lower.
+  The first node icon inside a subnet starts at subnet.y + 28 or lower (6px under the
+  header label).
+- **Side-by-side Regions** (or VPCs drawn as boxes) sit 24–40px apart.
+- **Slide vertical budget.** On a titled slide (540px) a two-AZ diagram fits with: Cloud
+  header 34, Region / VPC headers 30 each, AZ rows of 144 (AZ header 30 + a 106px
+  subnet: icon at +28, 48px icon, label baseline 18 below it, 8px under the label —
+  + 8px padding; ≈152 when an ASG header sits in the row), an 86px AZ gap, 8px paddings and a two-line note (≈30). When split
+  connectors (±8) and a step badge share the gap and there is no room for 90px, keep
+  the badge horizontally clear of the AZ boxes instead. Budget these
+  before placing nodes; if they don't add up, split the diagram rather than shrinking
+  icons or fonts.
+- **Padding between nested containers:** 16–24px in a document; on a slide it may
+  shrink to 8px to fit the 540px height. One draft shared by the document
+  and the slide follows the slide values. Wider gaps are expected
+  where something sits in them: the IGW/VGW mask on a VPC border, the global-services
+  strip, a regional-services row or column, a connector and its label, or the width a
+  container's header label needs. Two labels side by side keep at least 4px apart. A canvas hugs its contents even on a slide
+  — "close to 16:8" is a target, not a reason to leave empty space.
+- **An ASG / target group spanning AZ rows** crosses the AZ and subnet borders by
+  design; put its badge and label inside the first subnet it covers, either to the
+  right of that subnet's header label (8px clear of it, any height) or 8px below it,
+  and 8px clear of every icon.
 - **Legend** only if the diagram has non-obvious symbols.
 
 ## Font
@@ -470,6 +574,56 @@ font by itself.
 Korean labels are fine and common for FSI customer diagrams. Real fonts are a little
 wider or narrower than the estimate, so slide text boxes get slack on both sides and
 never wrap; keep ≥8px between a label and the nearest border, as the layout rules say.
+
+## Technical correctness
+
+A diagram that looks right but would not work as drawn is wrong. Before delivering,
+check every hop and caption against how the services actually behave:
+
+- **Label each hop with the protocol on that hop.** A load balancer that terminates
+  TLS changes the protocol: the client hop is "HTTPS :443" / "TLS :443", and the target
+  hop shows the target group protocol — plaintext on a plaintext port for offload
+  ("HTTP :80", "TCP :8080"), or "HTTPS :443" / "TLS :443" for re-encryption. Never put a
+  plaintext protocol on a TLS port ("TCP :443") after termination; a TCP listener
+  (pass-through) carries "TCP :443" on both hops and needs no certificate.
+- **Gateway Load Balancer.** GWLBe → GWLB runs over PrivateLink (the GWLBe node already
+  says so; no protocol label). GENEVE (UDP 6081) is only between the GWLB and its
+  appliances, so "GENEVE :6081" goes on that hop and nowhere else. In the distributed
+  model the IGW's edge route table sends inbound traffic to the GWLBe in the same AZ.
+- **Routes in both directions.** A route sub-caption must include every route the drawn
+  flows need, return traffic included, or the reader builds a broken network. For a
+  centralized inspection VPC behind a TGW (AWS Network Firewall or GWLB):
+  spoke subnets `0.0.0.0/0 → TGW`; spoke TGW route table `0.0.0.0/0 → inspection attachment`;
+  inspection (firewall) TGW route table: spoke CIDRs propagated; TGW subnet
+  `0.0.0.0/0 → firewall endpoint (same AZ)`; firewall subnet `0.0.0.0/0 → NAT`, `10.0.0.0/8 → TGW`;
+  NAT (public) subnet `0.0.0.0/0 → IGW` **and** `10.0.0.0/8 → firewall endpoint (same AZ)`;
+  appliance mode on the inspection VPC attachment. For distributed GWLB inspection of
+  inbound traffic: IGW edge route table `<app subnet CIDR> → GWLBe (same AZ)` (one route
+  per AZ, with the real CIDRs); app subnet
+  `0.0.0.0/0 → GWLBe (same AZ)`; GWLBe subnet `0.0.0.0/0 → IGW`. When the routes don't
+  fit as sub-captions, list them in the note.
+- **TGW hub and spoke / peering routes:** VPC subnets `<all other VPCs' and
+  on-premises CIDRs> → TGW` (or 0.0.0.0/0 → TGW); VPC and VPN (BGP) attachments
+  propagate into the TGW route table; across a TGW peering only static routes work —
+  each TGW needs `<remote Region CIDRs> → peering`, and the remote TGW needs
+  `<on-premises CIDR> → peering` for on-premises ↔ remote-Region traffic.
+- **TGW attachments are lines.** A VPC, VPN or peering attachment is the connector
+  between the TGW and what it attaches; `resource/AWS-Transit-Gateway_Attachment` is
+  only for the attachment's ENIs drawn inside their subnets ("TGW ENI"). A VPC drawn as
+  a single node uses `service/Amazon-Virtual-Private-Cloud`.
+- **Credit each mechanism with what it does.** TGW appliance mode keeps both directions
+  of a flow on the same AZ's attachment ENI; the per-AZ steering to the firewall is done
+  by the subnet routes. A NAT gateway translates source addresses, it doesn't inspect.
+- **Use AWS terms only in their AWS meaning.** "Shared VPC" is a VPC shared through
+  AWS RAM; a VPC that hosts common services is a "Shared services VPC" (or "Services
+  VPC"). Likewise "Transit VPC" is the legacy appliance-based hub, not a TGW.
+- **Identical hops look identical.** The same hop repeated per AZ (IGW → GWLBe,
+  GWLB ⇄ GWLBe, NAT → IGW) gets the same arrow ends, label and dash style in every AZ.
+- **Captions say what the service does here, accurately.** Health checks are done by
+  the load balancer (or Route 53 health checks), not CloudWatch — CloudWatch is
+  "지표 · 경보" / "로그". An NLB access log needs a TLS listener; RDS Multi-AZ standby
+  replicates synchronously and serves no reads; TGW peering is static-routed.
+- **Global vs regional placement.** See "Global services sit outside the Region".
 
 ## Common diagram types & which layers to draw
 

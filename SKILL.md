@@ -67,7 +67,7 @@ WAF and RDS Multi-AZ), GWLB (distributed inspection), Transit Gateway (hub and
 spoke in two Regions joined by TGW peering, VPCs as single icons) and AWS Network
 Firewall (centralized inspection VPC behind a Transit Gateway, with spoke and firewall
 route tables and NAT egress) — as document-size drafts (`*.svg`) with their PNGs.
-`slides/` holds a slide-size version of each (`slides/*.svg`, ≤ 1100 × 540, all text
+`slides/` holds a slide-size version of each (`slides/*.svg`, ≤ 1108 × 540, all text
 ≥ 10pt on a titled slide), the deck made from them (`reference-architectures.pptx`)
 and a render of each slide (`slides/*.png`). When the request resembles one of them,
 open its SVG — the `slides/` one for a deck — and reuse its layout and coordinates
@@ -180,7 +180,7 @@ and no text halos — mask a label with a white rect instead.
   (below the title band if there is one), so the canvas decides the slide's text size:
   - **Slide text is 10pt or larger.** Every label on the slide — the 12px connector and
     secondary labels included — must land at **≥ 10pt**: with a title a canvas of at
-    most about **1100 × 540** (1100 × 600 without a title), close to 16:8 (16:9 without)
+    most **1108 × 540** (1108 × 600 without a title), close to 16:8 (16:9 without)
     so it fills the slide. Get there by tightening the layout, shortening labels or
     splitting the diagram over two slides.
   - Only when that is genuinely impossible — the diagram can't be split or tightened
@@ -258,6 +258,12 @@ and balance, whitespace and readability still need eyes. Go through this checkli
 - [ ] A Site-to-Site VPN path is CGW → Internet → Site-to-Site VPN → TGW/VGW, with the
       Internet and VPN icons outside the AWS Cloud; a Direct Connect path does not pass
       the Internet icon.
+- [ ] Technically sound (guide, "Technical correctness"): each hop carries the protocol
+      really on it (no "TCP :443" after TLS termination; GENEVE only GWLB ⇄ appliances);
+      route captions include return routes; global services (Route 53, CloudFront)
+      are outside the Region; captions don't credit a service with another's job;
+      identical per-AZ hops are drawn identically.
+- [ ] The note (legend / routes) is below the diagram, outside the AWS Cloud box.
 - [ ] `check_layout.py` prints "Layout OK" and `export.py` exits 0.
 
 Save the outputs where the user asked (in a repo, usually next to the docs that
